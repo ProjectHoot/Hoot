@@ -4,10 +4,9 @@
 
 Principles enforced through decentralized design
 
-* Anti-censorship
-* Welcoming & tolerant
 * Community-governed moderation (no central authority)
-
+* Value agnostic
+* Federated
 
 ## Comparison
 
