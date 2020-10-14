@@ -1,70 +1,38 @@
 <template>
   <v-container>
-    <v-row>
-      <v-col cols="2" class="text-center" justify="space-around" align="center">
-        <v-row>
-          <v-icon @click="upVote(post.id)">
-            mdi-arrow-up-bold
-          </v-icon>
-        </v-row>
+    <v-card v-if="loaded">
+      <v-card-title v-if="post.href"><a :href="post.href">{{ post.title }} <v-icon>mdi-arrow-top-right-thick</v-icon></a></v-card-title>
+      <v-card-title v-else>{{ post.title }}</v-card-title>
+      <v-card-text>
 
-        <v-row>
-          <span>
-            {{ post.voteCount }}
-          </span>
-        </v-row>
-
-        <v-row>
-          <v-icon @click="downVote(post.id)">
-            mdi-arrow-down-bold
-          </v-icon>
-        </v-row>
-      </v-col>
-      <v-col cols="10" class="display-1 primary--text">
-        {{ post.title }}
-      </v-col>
-
-      <v-col cols="12">
-        <span class="text--secondary"><router-link to="" class="grey--text">{{ post.authorUsername }}</router-link> on {{ post.postedDate | moment("MMM DD YYYY, h:MMa") }}</span>
-      </v-col>
-    </v-row>
-
-    <v-row>
-      <v-col cols="12">
-        {{ post.postContent }}
-      </v-col>
-    </v-row>
+      <post :post="post" :id="post.id"></post>
+      </v-card-text>
+    </v-card>
   </v-container>
 </template>
 
 <script>
+import Post from '../components/Post'
 
-import { mapGetters } from 'vuex'
 
 export default {
-  created() {
-    this.fetchData();
-  },
-  watch: {
-    postID() {
-      this.fetchData()
-    },
-  },
-  computed: {
-    ...mapGetters(['postWithID']),
-    postID() {
-      return this.$route.params['postID']
-    },
+  components: {
+      Post
   },
   data() {
     return {
       post: {},
+      loaded: false,
     }
   },
+  mounted: function() {
+    this.postID=this.$route.params.postID;
+    this.$http.get(this.$LOTIDE + "/unstable/posts/" + this.postID).then(this.gotPost);
+  },
   methods: {
-    fetchData() {
-      this.post = {}
-      this.post = Object.assign({}, this.postWithID(this.postID));
+    gotPost: function(d) {
+      this.post=d.data;
+      this.loaded=true;
     },
     upVote() {
       return;
@@ -75,3 +43,8 @@ export default {
   },
 }
 </script>
+<style scoped>
+a:link {
+  text-decoration: none
+}
+</style>
