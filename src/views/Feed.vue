@@ -5,8 +5,9 @@
         <v-list-item :key="index">
           <v-list-item-action>
             <v-icon @click="upVote(post.id)">mdi-arrow-up-bold</v-icon>
+          </v-list-item-action>
+          <v-list-item-action>
             <span>{{ post.voteCount }}</span>
-            <v-icon @click="downVote(post.id)">mdi-arrow-down-bold</v-icon>
           </v-list-item-action>
           <v-list-item-content>
             <v-list-item-title>
