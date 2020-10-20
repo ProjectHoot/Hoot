@@ -1,6 +1,6 @@
 <template>
-  <v-container>
-    <v-card outlined color="transparent" v-if="loaded">
+  <v-container fluid style="padding: 0">
+    <v-card fluid style="padding: 0" outlined color="transparent" v-if="loaded">
       <v-card-title v-if="post.href"><a :href="post.href" class="text--secondary">{{ post.title }} <v-icon>mdi-arrow-top-right-thick</v-icon></a></v-card-title>
       <v-card-title v-else>{{ post.title }}</v-card-title>
       <v-card-text>

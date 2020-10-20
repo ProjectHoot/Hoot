@@ -82,7 +82,7 @@
     <node v-on:connected="showsnackbar($event)"></node>
   
     <v-main>
-      <v-container fluid>
+      <v-container fluid style="padding: 0">
         <router-view :key="viewkey"></router-view>
       </v-container>
     </v-main>
@@ -203,3 +203,6 @@ profile: function() {
   },
 };
 </script>
+<style>
+ @import "~easymde/dist/easymde.min.css";
+</style>

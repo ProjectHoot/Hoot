@@ -1,18 +1,18 @@
 <template>
-    <v-card outlined transparent>
-        <v-card-title>
+    <v-card outlined transparent class="post" >
+        <v-card-title style="padding-right: 0">
             <v-btn v-if="!top" icon @click="expanded=!expanded"><v-icon v-html="expanded ? 'mdi-minus' : 'mdi-plus'"></v-icon></v-btn>
                  By {{ post.author.username }}@{{ post.author.host }} <since :Timestamp="post.created"></since><br>
         </v-card-title>
-        <v-card-text v-if="expanded" class="ql-editor">
+        <v-card-text v-if="expanded" >
             <span v-html="post.content_html ? post.content_html : post.content_text"></span>
         </v-card-text>
         <v-card-actions v-if="expanded && $store.state.Username">    
              <v-btn icon @click="upVote"><v-icon v-html="post.your_vote ? 'mdi-arrow-up-bold' : 'mdi-arrow-up'" ></v-icon></v-btn>
              <v-btn text @click="replybox=!replybox">Reply</v-btn>
         </v-card-actions>
-            <v-card-text v-if="replybox">
-                <vue-editor v-model="editorcontent" :editor-options="editorOptions" ></vue-editor>
+            <v-card-text  v-if="replybox">
+                <vue-easymde v-model="editorcontent" :configs="editorconfig" ></vue-easymde>
                 <v-btn @click="submit">Submit</v-btn>
             </v-card-text>
         <v-card-text v-if="post.comments  && expanded">
@@ -26,22 +26,25 @@
 </template>
 <script>
 import Since from "../components/Since";
-import { VueEditor } from "vue2-editor";
+import VueEasymde from "vue-easymde";
+
+
 
 
 export default {
   components: {
     Since,
-    VueEditor,
+    VueEasymde,
   },
   data: function () {
     return {
       expanded: true,
       replybox: false,
       editorcontent: '',
-      editorOptions: {
-                    bounds: '#editorrow' // add the wrapper class or id of vue-editor
-                },
+      editorconfig: {
+          hideIcons:["fullscreen", "side-by-side" ],
+
+      },
     showalert: false,
     alerttimeout: 5000,
     alerttext: '',
@@ -113,3 +116,21 @@ export default {
   },
 };
 </script>
+
+<style >
+.post img {
+    max-width: 100%;
+    max-height: 800px;
+}
+blockquote blockquote {
+    display: inline;
+}
+blockquote:before {
+    display: inline;
+    content: " | ";
+}
+blockquote p {
+    display: inline;
+}
+
+</style>
