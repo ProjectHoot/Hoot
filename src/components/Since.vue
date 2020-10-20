@@ -1,5 +1,5 @@
 <template>
-    <span>{{ timeSince }}</span>
+    <span> {{ timeSince }}</span>
 </template>
 
 <script>

@@ -1,9 +1,10 @@
 <template>
-    <v-card outlined transparent class="post" >
-        <v-card-title style="padding-right: 0">
-            <v-btn v-if="!top" icon @click="expanded=!expanded"><v-icon v-html="expanded ? 'mdi-minus' : 'mdi-plus'"></v-icon></v-btn>
-                 By {{ post.author.username }}@{{ post.author.host }} <since :Timestamp="post.created"></since><br>
-        </v-card-title>
+    <div :style="'margin-left: ' + level/4 +'em'">
+    <v-card color="rgba(0,0,0,0)" :elevation="level>0 ? 5 : 0" class="post">
+        <v-card-subtitle style="font-weight: bold; overflow-x: hidden">
+            <v-btn v-if="level>0" icon @click="expanded=!expanded"><v-icon v-html="expanded ? 'mdi-minus' : 'mdi-plus'"></v-icon></v-btn>
+                 <span>By {{ post.author.username }} @ {{ post.author.host }} <since :Timestamp="post.created"></since></span><br>
+        </v-card-subtitle>
         <v-card-text v-if="expanded" >
             <span v-html="post.content_html ? post.content_html : post.content_text"></span>
         </v-card-text>
@@ -15,14 +16,17 @@
                 <vue-easymde v-model="editorcontent" :configs="editorconfig" ></vue-easymde>
                 <v-btn @click="submit">Submit</v-btn>
             </v-card-text>
-        <v-card-text v-if="post.comments  && expanded">
-           <post v-for="(p, i) in post.comments" :top="false" :key="i" :post="p" :id="i"></post>
-        </v-card-text>
-        <v-card-text v-else-if="post.has_replies && expanded">
-            <v-btn @click="loadReplies" text>Load more replies...</v-btn>
-        </v-card-text>
-                <v-snackbar v-model="showalert" :timeout="alerttimeout">{{ alerttext }}</v-snackbar>
     </v-card>
+    <br>
+        <div v-if="post.comments  && expanded">
+           <post v-for="(p, i) in post.comments" :level="level+1" :key="i" :post="p" :id="i"></post>
+        </div>
+        <div v-else-if="post.has_replies && expanded">
+            <v-btn @click="loadReplies">Load more replies...</v-btn>
+        </div>
+                <v-snackbar v-model="showalert" :timeout="alerttimeout">{{ alerttext }}</v-snackbar>
+
+    </div>
 </template>
 <script>
 import Since from "../components/Since";
@@ -54,11 +58,11 @@ export default {
   props: {
     post: Object,
     id: Number,
-    top: Boolean
+    level: Number
   },
   methods: {
       upVote: function() {
-        if (this.top) {
+        if (this.level==0) {
             if (!this.post.your_vote) {
                 this.$http.put(this.$LOTIDE + "/unstable/posts/" + this.post.id + "/your_vote").then(this.post.your_vote={});
             } else {
@@ -90,7 +94,7 @@ export default {
         var submission={};
         submission.content_markdown=this.editorcontent;
 
-        if (this.top) this.$http.post(this.$LOTIDE + "/unstable/posts/" + this.post.id + "/replies", submission).then(this.submitsuccess).catch(this.submitfailed);
+        if (this.level==0) this.$http.post(this.$LOTIDE + "/unstable/posts/" + this.post.id + "/replies", submission).then(this.submitsuccess).catch(this.submitfailed);
         else this.$http.post(this.$LOTIDE + "/unstable/comments/" + this.post.id + "/replies", submission).then(this.submitsuccess).catch(this.submitfailed);
 
     },
@@ -99,6 +103,7 @@ export default {
         this.alerttimeout=5000;
         this.showalert=true;
         this.replybox=false;
+        this.$router.go();
   },
     submitfailed: function(e) {
         this.alerttext="Error: " + e.response.status + " : " + e.response.data;
@@ -133,4 +138,7 @@ blockquote p {
     display: inline;
 }
 
+.v-card__text, .v-card__title {
+  word-break: normal; /* maybe !important  */
+}
 </style>

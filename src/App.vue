@@ -83,7 +83,7 @@
   
     <v-main>
       <v-container fluid style="padding: 0">
-        <router-view :key="viewkey"></router-view>
+        <router-view :key="$route.fullPath"></router-view>
       </v-container>
     </v-main>
     <v-snackbar

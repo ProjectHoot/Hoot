@@ -27,6 +27,8 @@ const routes = [
   { path: '/', name: 'Feed', component: Feed },
   { path: '/r/:host/:community/', name: 'Community', component: Community },
   { path: '/p/posts/:postID', name:'PostShow', component: PostShow },
+  { path: '/p/comments/:commentID', name:'PostShow', component: PostShow },
+
 ]
 
 const router = new VueRouter({

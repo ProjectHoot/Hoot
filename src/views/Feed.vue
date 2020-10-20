@@ -1,13 +1,10 @@
 <template>
-  <v-container>
-    <v-list two-line v-if="loaded">
+  <v-container fluid style="padding: 0">
+    <v-list dense two-line v-if="loaded">
       <template v-for="(post,index)  in posts">
-        <v-list-item :key="index">
-          <v-list-item-action>
+        <v-list-item style="padding-left: 0" :key="index">
+          <v-list-item-action style="margin-right: 4px">
             <v-icon @click="upVote(post.id)">mdi-arrow-up-bold</v-icon>
-          </v-list-item-action>
-          <v-list-item-action>
-            <span>{{ post.voteCount }}</span>
           </v-list-item-action>
           <v-list-item-content>
             <v-list-item-title>
