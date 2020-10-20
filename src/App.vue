@@ -47,20 +47,40 @@
           <template v-slot:activator="{ on }">
             <v-btn icon v-on="on"><v-icon color="gray">mdi-account</v-icon></v-btn>
           </template>
-          <v-card>
-            <v-card-title>Login/Sign Up</v-card-title>
-            <v-card-text>
-            <v-form>
-              <v-text-field label="Username" v-model="loginform.username" />
-              <v-text-field type="password" label="Password" v-model="loginform.password" />
-              <v-btn @click="login">Login</v-btn>
-              <v-btn @click="signup">Sign Up</v-btn>
-            </v-form>
-            </v-card-text>
-            </v-card>
-        </v-menu>
+          <v-tabs v-model="logintabs">
+            <v-tab key="0">Login</v-tab>
+            <v-tab key="1">Signup</v-tab>
+          </v-tabs>
+          <v-tabs-items v-model="logintabs">
+            <v-tab-item key="0">
+              <v-card>
+                <v-card-text>
+              <v-form>
+               <v-text-field label="Username" v-model="loginform.username" />
+               <v-text-field type="password" label="Password" v-model="loginform.password" />
+               <v-btn @click="login">Login</v-btn>
+             </v-form>
+                </v-card-text>
+              </v-card>
+           </v-tab-item>
+            <v-tab-item key="1">
+              <v-card>
+                <v-card-text>
+              <v-form>
+               <v-text-field label="Username" v-model="loginform.username" />
+               <v-text-field type="password" label="Password" v-model="loginform.password" />
+               <v-text-field type="password" label="Repeat Password" v-model="loginform.repeatpassword" />
+               <v-text-field type="text" label="Email (optional)" v-model="loginform.email" />
+               <v-btn @click="signup">Sign Up</v-btn>
+             </v-form>
+                </v-card-text>
+              </v-card>
+            </v-tab-item>
+          </v-tabs-items>
+          </v-menu>
     </v-app-bar>
     <node v-on:connected="showsnackbar($event)"></node>
+  
     <v-main>
       <v-container fluid>
         <router-view :key="viewkey"></router-view>
@@ -92,17 +112,18 @@ export default {
     loginform: {
   username: '',
   password: '',
+  repeatpassword: '',
+  email: '',
     },
     viewkey: 0,
   snackbar: false,
+  logintabs: 0,
   snackbartimeout: 5000,
   snackbartext: ""
 //
   }),
   mounted: function() {
- console.log("Now setting dark to " +this.$store.state.Dark );
     this.$vuetify.theme.dark=this.$store.state.Dark;
-
   },
   methods: {
     login: function() {
@@ -120,17 +141,47 @@ export default {
       this.viewkey=Date.now();
 },
     signup: function() {
-
-
-    },
-    profile: function() {
-
+        // Basic form validation
+        if (this.loginform.username.length<3) {
+          alert("Username must be 3 or more characters");
+          return;
+        }
+        if (this.loginform.password.length<6) {
+          alert("Password must be 6 or more characters");
+          return;
+        }
+        if (this.loginform.password!=this.loginform.repeatpassword) {
+          alert("Passwords do not match");
+          return;
+        }
+        if (this.loginform.email.length>0) {
+          // Make sure email isn't clearly invalid
+            const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/; // eslint-disable-line 
+            if (!re.test(this.loginform.email)) {
+              alert("Email address is invalid");
+              return;
+            }
+        }
+        // Actually do the thing
+        var postData={};
+        postData.username=this.loginform.username;
+        postData.password=this.loginform.password;
+        postData.email_address=this.loginform.email;
+        postData.login=true;
+        this.$http.post(this.$LOTIDE + "/unstable/users", postData).then(this.gotLogin).catch(this.failedSignup);
     },
     gotLogin: function(d) {
       this.$store.commit("setToken", d.data.token);
       this.$store.commit("setUsername", this.loginform.username);
       this.useractions=false;
+      this.loginform.username="";
+      this.loginform.password="";
+      this.loginform.repeatpassword="";
+      this.loginform.email="";
       this.viewkey=Date.now();
+    },
+    failedSignup: function(d) {
+      alert("Signup failed: " + d);
     },
     failedLogin: function(d) {
       alert("Login failed: " + d);

@@ -4,9 +4,7 @@
       <v-card-title v-if="post.href"><a :href="post.href" class="text--secondary">{{ post.title }} <v-icon>mdi-arrow-top-right-thick</v-icon></a></v-card-title>
       <v-card-title v-else>{{ post.title }}</v-card-title>
       <v-card-text>
-        <v-list >
             <post :top="true" :post="post" :id="post.id"></post>
-      </v-list>
       </v-card-text>
     </v-card>
   </v-container>
