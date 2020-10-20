@@ -15,8 +15,11 @@
                 <vue-editor v-model="editorcontent" :editor-options="editorOptions" ></vue-editor>
                 <v-btn @click="submit">Submit</v-btn>
             </v-card-text>
-        <v-card-text v-if="post.comments && expanded">
+        <v-card-text v-if="post.comments  && expanded">
            <post v-for="(p, i) in post.comments" :top="false" :key="i" :post="p" :id="i"></post>
+        </v-card-text>
+        <v-card-text v-else-if="post.has_replies && expanded">
+            <v-btn @click="loadReplies" text>Load more replies...</v-btn>
         </v-card-text>
                 <v-snackbar v-model="showalert" :timeout="alerttimeout">{{ alerttext }}</v-snackbar>
     </v-card>
@@ -66,6 +69,13 @@ export default {
             }
 
         }
+      },
+      loadReplies: function() {
+          this.$http.get(this.$LOTIDE + "/unstable/comments/" + this.post.id).then(this.gotReplies);
+      },
+      gotReplies: function(d) {
+          this.post=d.data;
+          this.post.comments=this.post.replies;
       },
     submit: function() {
         if (this.editorcontent=="") {
