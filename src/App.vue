@@ -140,6 +140,9 @@ export default {
       this.useractions=false;
       this.viewkey=Date.now();
 },
+profile: function() {
+
+},
     signup: function() {
         // Basic form validation
         if (this.loginform.username.length<3) {
@@ -166,7 +169,9 @@ export default {
         var postData={};
         postData.username=this.loginform.username;
         postData.password=this.loginform.password;
-        postData.email_address=this.loginform.email;
+        if (this.loginform.email!="") {
+            postData.email_address=this.loginform.email;
+        }
         postData.login=true;
         this.$http.post(this.$LOTIDE + "/unstable/users", postData).then(this.gotLogin).catch(this.failedSignup);
     },
@@ -181,10 +186,10 @@ export default {
       this.viewkey=Date.now();
     },
     failedSignup: function(d) {
-      alert("Signup failed: " + d);
+      alert("Signup failed: " + d.data);
     },
     failedLogin: function(d) {
-      alert("Login failed: " + d);
+      alert("Login failed: " + d.data);
     },
     showsnackbar: function(d) {
       this.snackbartext=d;

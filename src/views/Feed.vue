@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <v-list two-line>
+    <v-list two-line v-if="loaded">
       <template v-for="(post,index)  in posts">
         <v-list-item :key="index">
           <v-list-item-action>
@@ -44,9 +44,10 @@ export default {
   data() {
     return {
       thecols: "6",
-
+    loaded: false,
       posts: [],
-          };
+      tempposts: [],
+    };
   },
   mounted: function() {
     this.loadDefaultPosts();
@@ -54,15 +55,36 @@ export default {
   methods: {
     loadDefaultPosts() {
       if (this.$store.state.Username!="") {
-        this.$http.get(this.$LOTIDE + "/unstable/users/~me/following:posts").then(this.gotPosts);
-      } else {
+        this.$http.get(this.$LOTIDE + "/unstable/users/~me/following:posts").then(this.gotFollowingPosts);
+              } else {
         this.$http.get(this.$LOTIDE + "/unstable/posts").then(this.gotPosts);
-      
       }
+    },
+    gotFollowingPosts: function(d) {
+      this.tempposts=d.data;
+        this.$http.get(this.$LOTIDE + "/unstable/posts").then(this.gotMorePosts);
+      
     },
     gotPosts: function(d) {
       this.posts=d.data;
+      this.loaded=true;
     },
+    gotMorePosts: function(d) {
+      for (var i in d.data) {
+        var flag=false;
+        for (var x in this.tempposts) {
+          if (d.data[i].id == this.tempposts[x].id) {
+            flag=true;
+          }
+        }
+        if (!flag) {
+          this.tempposts.push(d.data[i]);
+        }
+      }
+      this.posts=this.tempposts;
+      this.loaded=true;
+    },
+
     goToUser() {
       return;
     },

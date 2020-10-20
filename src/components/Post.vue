@@ -4,7 +4,7 @@
             <v-btn v-if="!top" icon @click="expanded=!expanded"><v-icon v-html="expanded ? 'mdi-minus' : 'mdi-plus'"></v-icon></v-btn>
                  By {{ post.author.username }}@{{ post.author.host }} <since :Timestamp="post.created"></since><br>
         </v-card-title>
-        <v-card-text v-if="expanded">
+        <v-card-text v-if="expanded" class="ql-editor">
             <span v-html="post.content_html ? post.content_html : post.content_text"></span>
         </v-card-text>
         <v-card-actions v-if="expanded && $store.state.Username">    
