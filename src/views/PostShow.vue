@@ -1,70 +1,76 @@
 <template>
-  <v-container>
+  <v-container fluid>
     <v-row>
-      <v-col cols="2" class="text-center" justify="space-around" align="center">
-        <v-row>
-          <v-icon @click="upVote(post.id)">
-            mdi-arrow-up-bold
-          </v-icon>
-        </v-row>
-
-        <v-row>
-          <span>
-            {{ post.voteCount }}
-          </span>
-        </v-row>
-
-        <v-row>
-          <v-icon @click="downVote(post.id)">
-            mdi-arrow-down-bold
-          </v-icon>
-        </v-row>
-      </v-col>
-      <v-col cols="10" class="display-1 primary--text">
-        {{ post.title }}
-      </v-col>
-
-      <v-col cols="12">
-        <span class="text--secondary"><router-link to="" class="grey--text">{{ post.authorUsername }}</router-link> on {{ post.postedDate | moment("MMM DD YYYY, h:MMa") }}</span>
-      </v-col>
-    </v-row>
-
-    <v-row>
-      <v-col cols="12">
-        {{ post.postContent }}
-      </v-col>
+      <v-list v-if="loaded" width="100%">
+        <v-list-item>
+          <v-list-item-content>
+            <v-list-item-title v-if="post.href">
+              <a :href="post.href" class="text--secondary"
+                >{{ post.title }} <v-icon>mdi-arrow-top-right-thick</v-icon></a
+              >
+            </v-list-item-title>
+            <v-list-item-title v-else>{{ post.title }}</v-list-item-title>
+            <post :level="0" :post="post" :id="post.id" :index="0"></post>
+          </v-list-item-content>
+        </v-list-item>
+      </v-list>
     </v-row>
   </v-container>
 </template>
 
 <script>
-
-import { mapGetters } from 'vuex'
+import Post from "../components/Post";
 
 export default {
-  created() {
-    this.fetchData();
-  },
-  watch: {
-    postID() {
-      this.fetchData()
-    },
-  },
-  computed: {
-    ...mapGetters(['postWithID']),
-    postID() {
-      return this.$route.params['postID']
-    },
+  components: {
+    Post,
   },
   data() {
     return {
       post: {},
+      loaded: false,
+    };
+  },
+  mounted: function () {
+    this.postID = this.$route.params.postID;
+    if (this.$route.params.commentID) {
+      if (this.$store.state.Username) {
+        this.$http
+          .get(
+            this.$LOTIDE +
+              "/unstable/comments/" +
+              this.$route.params.commentID +
+              "?include_your=true"
+          )
+          .then(this.gotPost);
+      } else {
+        this.$http
+          .get(
+            this.$LOTIDE + "/unstable/comments/" + this.$route.params.commentID
+          )
+          .then(this.gotPost);
+      }
+    } else {
+      if (this.$store.state.Username) {
+        this.$http
+          .get(
+            this.$LOTIDE +
+              "/unstable/posts/" +
+              this.postID +
+              "?include_your=true"
+          )
+          .then(this.gotPost);
+      } else {
+        this.$http
+          .get(this.$LOTIDE + "/unstable/posts/" + this.postID)
+          .then(this.gotPost);
+      }
     }
   },
   methods: {
-    fetchData() {
-      this.post = {}
-      this.post = Object.assign({}, this.postWithID(this.postID));
+    gotPost: function (d) {
+      this.post = d.data;
+      this.loaded = true;
     },
     upVote() {
       return;
@@ -73,5 +79,15 @@ export default {
       return;
     },
   },
-}
+};
 </script>
+<style scoped>
+a:link {
+  text-decoration: none;
+}
+
+.v-card__text,
+.v-card__title {
+  word-break: normal; /* maybe !important  */
+}
+</style>
