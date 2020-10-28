@@ -1,44 +1,46 @@
 <template>
-    <div :style="'margin-left: ' + level/4 +'em'">
-    <v-card color="rgba(0,0,0,0)" :elevation="level>0 ? 5 : 0" class="post">
-        <v-card-subtitle style="font-weight: bold; overflow-x: hidden">
-            <v-btn v-if="level>0" icon @click="expanded=!expanded"><v-icon v-html="expanded ? 'mdi-minus' : 'mdi-plus'"></v-icon></v-btn>
-                 <span>By {{ post.author.username }} @ {{ post.author.host }} <since :Timestamp="post.created"></since></span><br>
-        </v-card-subtitle>
-        <v-card-text v-if="expanded" >
-            <span v-html="post.content_html ? post.content_html : post.content_text"></span>
-        </v-card-text>
-        <v-card-actions v-if="expanded && $store.state.Username">    
-             <v-btn icon @click="upVote"><v-icon v-html="post.your_vote ? 'mdi-arrow-up-bold' : 'mdi-arrow-up'" ></v-icon></v-btn>
-             <v-btn text @click="replybox=!replybox">Reply</v-btn>
-        </v-card-actions>
-            <v-card-text  v-if="replybox">
+    <div :style="'margin-left: ' + level +'em;'">
+        <v-card elevation="10" width="98%">
+            <v-card-title>
+         <span> <v-btn v-if="level>0" icon @click="expanded=!expanded"><v-icon v-html="expanded ? 'mdi-minus' : 'mdi-plus'"></v-icon></v-btn></span>
+                <span>{{ post.score }} &nbsp;</span> 
+                      <span><username :username="post.author.username +'@'+post.author.host"></username> <since :Timestamp="post.created"></since></span>
+            </v-card-title>
+            <v-card-text class="post"
+                 v-if="expanded">
+                 <span v-html="post.content_html ? post.content_html : post.content_text">
+                 </span>
+            <span v-if="replybox">
                 <vue-easymde v-model="editorcontent" :configs="editorconfig" ></vue-easymde>
                 <v-btn @click="submit">Submit</v-btn>
+            </span>
             </v-card-text>
-    </v-card>
-    <br>
+            <v-card-actions v-if="$store.state.Username && expanded">
+                      <v-btn icon @click="upVote"><v-icon v-html="post.your_vote ? 'mdi-arrow-up-bold' : 'mdi-arrow-up'" ></v-icon></v-btn>
+                     <v-btn icon @click="replybox=!replybox"><v-icon>mdi-reply</v-icon></v-btn>
+            </v-card-actions>
+        </v-card>
         <div v-if="post.comments  && expanded">
+            <br>
            <post v-for="(p, i) in post.comments" :level="level+1" :key="i" :post="p" :id="i"></post>
         </div>
         <div v-else-if="post.has_replies && expanded">
             <v-btn @click="loadReplies">Load more replies...</v-btn>
+            <br><br>
         </div>
                 <v-snackbar v-model="showalert" :timeout="alerttimeout">{{ alerttext }}</v-snackbar>
-
     </div>
 </template>
 <script>
 import Since from "../components/Since";
 import VueEasymde from "vue-easymde";
-
-
-
+import Username from '../components/Username';
 
 export default {
   components: {
     Since,
     VueEasymde,
+    Username
   },
   data: function () {
     return {
@@ -58,21 +60,25 @@ export default {
   props: {
     post: Object,
     id: Number,
-    level: Number
+    level: Number,
   },
   methods: {
       upVote: function() {
         if (this.level==0) {
             if (!this.post.your_vote) {
                 this.$http.put(this.$LOTIDE + "/unstable/posts/" + this.post.id + "/your_vote").then(this.post.your_vote={});
+                this.post.score++;
             } else {
                 this.$http.delete(this.$LOTIDE +  "/unstable/posts/" + this.post.id + "/your_vote").then(this.post.your_vote=null);
+                this.post.score--;
             }
         } else {
             if (!this.post.your_vote) {
                 this.$http.put(this.$LOTIDE + "/unstable/comments/" + this.post.id + "/your_vote").then(this.post.your_vote={});
+                this.post.score++;
             } else {
                 this.$http.delete(this.$LOTIDE + "/unstable/comments/" + this.post.id + "/your_vote").then(this.post.your_vote=null);
+                this.post.score--;
             }
 
         }
@@ -116,9 +122,20 @@ export default {
           this.post.comments=this.post.replies;
       }
   },
-  mounted: function () {
-    console.log;
+  computed: {
+      bgcolor: function() {
+          if (this.$index()%2) {
+              return("rgba(0,0,0,0)");
+          }
+          return("rgba(0,0,0,0.5)");
+      }
   },
+  mounted: function () {
+      console.log
+      if (this.post.score=="") {
+          this.post.score=0;
+      }
+},
 };
 </script>
 
@@ -140,5 +157,9 @@ blockquote p {
 
 .v-card__text, .v-card__title {
   word-break: normal; /* maybe !important  */
+}
+
+.outerdiv:nth-of-type(odd) {
+    background: rgba(0,0,0,0.5)
 }
 </style>

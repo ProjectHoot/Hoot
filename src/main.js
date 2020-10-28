@@ -27,7 +27,7 @@ const routes = [
   { path: '/', name: 'Feed', component: Feed },
   { path: '/r/:host/:community/', name: 'Community', component: Community },
   { path: '/p/posts/:postID', name:'PostShow', component: PostShow },
-  { path: '/p/comments/:commentID', name:'PostShow', component: PostShow },
+  { path: '/p/comments/:commentID', name:'PostShowExpandedComments', component: PostShow },
 
 ]
 
@@ -51,6 +51,11 @@ axios.interceptors.request.use(function(config) {
 }
 )
 Vue.prototype.$http = axios;
+var postindex=0;
+Vue.prototype.$index=function() {
+  postindex++;
+  return postindex;
+}
 
 new Vue({
   vuetify,
