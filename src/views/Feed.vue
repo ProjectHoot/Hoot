@@ -8,7 +8,6 @@
               ><v-icon v-if="post.your_vote" color="primary">mdi-arrow-up-bold</v-icon>
               <v-icon v-else color="secondary">mdi-arrow-up</v-icon>
             </v-btn>
-            <v-btn v-else>no</v-btn>
             <span
               style="margin-left: auto; margin-right: auto"
               v-if="post.score!=null"

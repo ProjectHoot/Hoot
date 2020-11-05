@@ -38,7 +38,10 @@ const router = new VueRouter({
   routes
 })
 
-Vue.prototype.$LOTIDE = "https://hoot.goldandblack.xyz/api";
+if (window.location.hostname=="localhost")
+  Vue.prototype.$LOTIDE = "https://hoot.goldandblack.xyz/api";
+else 
+  Vue.prototype.$LOTIDE = "/api";
 
 axios.interceptors.request.use(function(config) {
   const token =  store.state.Token;

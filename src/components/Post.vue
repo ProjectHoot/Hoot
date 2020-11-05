@@ -3,7 +3,7 @@
         <v-card elevation="10" width="98%">
             <v-card-title>
          <span> <v-btn v-if="level>0" icon @click="expanded=!expanded"><v-icon v-html="expanded ? 'mdi-minus' : 'mdi-plus'"></v-icon></v-btn></span>
-                <span>{{ post.score }} &nbsp;</span> 
+                <v-chip>{{ post.score }}</v-chip>
                       <span><username :username="post.author.username +'@'+post.author.host"></username> <since :Timestamp="post.created"></since></span>
             </v-card-title>
             <v-card-text class="post"

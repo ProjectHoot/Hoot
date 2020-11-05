@@ -2,7 +2,7 @@
   <v-menu>
     <template v-slot:activator="{ on }">
       <template>
-        <span v-on="on">{{ username }}</span>
+        <span style="margin: 8px;" v-on="on">{{ username }}</span>
       </template>
     </template>
     <v-list dense class="thelist">
