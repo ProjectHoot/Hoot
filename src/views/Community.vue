@@ -52,8 +52,7 @@ export default {
             if (this.communities[me].data==null) {
                 console.log("Show community " + me);
                 this.$http.get(this.$LOTIDE + "/unstable/communities/" + i + "?include_your=true").then(this.gotCommunity);
-            }
-        },
+            } else this.showpop=true;        },
         gotCommunity: function(data) {
             for (var k in this.communities) {
                 if (this.communities[k].id==this.clicked) {
@@ -64,6 +63,10 @@ export default {
                     return
                 }
             }
+        },
+        showcommunitybyid: function(data) {
+            console.log(data);
+            this.showcommunity(this.clicked);
         },
         getIndexById: function(i) {
             for (var k in this.communities) {
@@ -77,7 +80,7 @@ export default {
             this.communities[me].data=null;
             var postdata={};
             postdata.try_wait_for_accept=true;
-            this.$http.post(this.$LOTIDE + "/unstable/communities/" + i + "/follow", postdata).then(this.showcommunity(i))
+            this.$http.post(this.$LOTIDE + "/unstable/communities/" + i + "/follow", postdata).then(this.showcommunitybyid)
         },
         unsubscribe: function(i) {
             var me=this.getIndexById(i);
@@ -85,7 +88,7 @@ export default {
             this.communities[me].data=null;
             var postdata={};
             postdata.try_wait_for_accept=true;
-            this.$http.post(this.$LOTIDE + "/unstable/communities/" + i + "/unfollow", postdata).then(this.showcommunity(i))
+            this.$http.post(this.$LOTIDE + "/unstable/communities/" + i + "/unfollow", postdata).then(this.showcommunitybyid)
 
         }
     },
