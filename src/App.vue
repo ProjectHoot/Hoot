@@ -5,6 +5,7 @@
         <router-link :to="{ name: 'Feed' }" class="title white--text text-decoration-none">Hoot</router-link>
       </v-toolbar-title>
       <v-spacer></v-spacer>
+      <router-link :to="{ name: 'Community List'}" class="white--text text-decoration-none">Community List</router-link>
       <v-btn icon @click="toggleDark">
         <v-icon
           color="secondary"

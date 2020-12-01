@@ -25,9 +25,10 @@ import { store } from './store'
 // TODO: move to separate file/structure
 const routes = [
   { path: '/', name: 'Feed', component: Feed },
-  { path: '/r/:host/:community/', name: 'Community', component: Community },
+//  { path: '/r/:host/:community/', name: 'Community', component: ShowCommunity },
   { path: '/p/posts/:postID', name:'PostShow', component: PostShow },
   { path: '/p/comments/:commentID', name:'PostShowExpandedComments', component: PostShow },
+  { path: '/communities', name: 'Community List', component: Community },
 
 ]
 
@@ -38,7 +39,7 @@ const router = new VueRouter({
   routes
 })
 
-if (window.location.hostname=="localhost")
+if (window.location.hostname=="localhost" || window.location.hostname=="dev.goldandblack.xyz")
   Vue.prototype.$LOTIDE = "https://hoot.goldandblack.xyz/api";
 else 
   Vue.prototype.$LOTIDE = "/api";
