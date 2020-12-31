@@ -6,20 +6,21 @@
       </v-toolbar-title>
       <v-spacer></v-spacer>
       <router-link :to="{ name: 'Community List'}" class="white--text text-decoration-none">Community List</router-link>
-      <v-btn icon @click="toggleDark">
-        <v-icon
-          color="secondary"
-          v-html="$store.state.Dark ? 'mdi-flashlight-off' : 'mdi-flashlight'"
-        ></v-icon>
-      </v-btn>
+  <tooltipbutton :clicked="toggleDark" :icon="$store.state.Dark ? 'mdi-flashlight-off' : 'mdi-flashlight'" hover="Toggle Dark/Light Mode"></tooltipbutton>
       <v-menu v-model="searchwindow" :close-on-click="false" :close-on-content-click="false">
-        <template v-slot:activator="{ on }">
-          <template>
-            <span v-on="on">
-              <v-icon color="secondary">mdi-magnify</v-icon>
-            </span>
+    <template v-slot:activator="{ on: menu, attrs }">
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on: tooltip }">
+            <v-btn icon
+              v-bind="attrs"
+              v-on="{ ...tooltip, ...menu }"
+            ><v-icon>mdi-magnify</v-icon>
+            </v-btn>
           </template>
-        </template>
+          <span>Search</span>
+        </v-tooltip>
+      </template>
+
         <v-card>
           <v-card-text>
             <v-text-field label="Search" prepend-inner-icon="mdi-magnify" single-line />
@@ -36,9 +37,18 @@
         </v-card>
       </v-menu>
         <v-menu v-if="$store.state.Username" v-model="useractions" :close-on-content-click="false" offset-y>
-          <template v-slot:activator="{ on }">
-              <v-btn text v-on="on">{{ $store.state.Username }}<v-icon color="gray">mdi-account</v-icon></v-btn>
+    <template v-slot:activator="{ on: menu, attrs }">
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on: tooltip }">
+            <v-btn text           v-bind="attrs"
+              v-on="{ ...tooltip, ...menu }">
+              <v-icon color="gray">mdi-account</v-icon>
+            {{ $store.state.Username }}
+            </v-btn>
           </template>
+          <span>User Settings</span>
+        </v-tooltip>
+      </template>
           <v-list>
             <v-list-item @click="logout">Logout</v-list-item>
             <v-list-item @click="profile">Profile</v-list-item>
@@ -99,11 +109,13 @@
 
 <script>
 import Node  from "./components/Node.vue";
+import Tooltipbutton from './components/Tooltipbutton.vue'
 
 export default {
   name: "App",
    components: {
-    Node
+    Node,
+    Tooltipbutton,
   },
 
   data: () => ({

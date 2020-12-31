@@ -1,5 +1,26 @@
 <template>
   <v-container fluid style="padding: 0">
+    <v-card v-if="community!=null">
+      <v-card-title>{{ community.name }}</v-card-title>
+      <v-card-subtitle>{{ community.description }}</v-card-subtitle>
+      <v-card-actions>
+
+        <v-btn v-if="community.your_follow.accepted" @click="showeditor=!showeditor">New Post</v-btn>
+                <v-btn  v-if="community.your_follow==null" @click="subscribe(community.id)">Subscribe</v-btn>
+                <v-btn  v-else @click="unsubscribe(community.id)">Unsubscribe</v-btn>
+                
+      </v-card-actions>
+
+    </v-card>
+    <v-card v-if="showeditor">
+      <v-card-title>New Post</v-card-title>
+      <v-card-text>
+        <v-text-field v-model="posttitle" placeholder="Post Title"></v-text-field>
+        <Editor :submit="submit">
+        </Editor>
+      </v-card-text>
+    </v-card>
+
     <v-list dense two-line v-if="loaded">
       <template v-for="(post, index) in posts">
         <v-list-item style="padding-left: 0" :key="index">
@@ -48,11 +69,12 @@
 <script>
 import Username from "../components/Username";
 import Since from "../components/Since";
-
+import Editor from "../components/Editor";
 export default {
   components: {
     Username,
     Since,
+    Editor,
   },
   data() {
     return {
@@ -60,13 +82,39 @@ export default {
       loaded: false,
       posts: [],
       tempposts: [],
+      community: null,
+      posttitle: '',
+    showeditor: false,
     };
   },
   mounted: function () {
+    if (typeof(this.$route.params.communityID)=="undefined") {
+      console.log(this.$route.params);
     this.loadDefaultPosts();
+    } else {
+    // Load community info
+    this.$http.get(this.$LOTIDE + "/unstable/communities/" + this.$route.params.communityID + "?include_your=true").then(this.gotCommunityInfo);
+
+    this.loadPosts();
+    }
   },
   methods: {
-    loadDefaultPosts() {
+    loadPosts() {
+      console.log("Called loadPosts");
+      if (this.$store.state.Username != "") {
+        this.$http
+          .get(this.$LOTIDE + "/unstable/communities/" + this.$route.params.communityID + "/posts?include_your=true")
+          .then(this.gotPosts);
+      } else {
+        this.$http
+                  .get(this.$LOTIDE + "/unstable/communities/" + this.$sroute.params.communityID + "/posts")
+
+        .then(this.gotPosts);
+      }
+    },
+
+loadDefaultPosts() {
+  console.log("Loading default posts");
       if (this.$store.state.Username != "") {
         this.$http
           .get(this.$LOTIDE + "/unstable/users/~me/following:posts?include_your=true")
@@ -74,6 +122,9 @@ export default {
       } else {
         this.$http.get(this.$LOTIDE + "/unstable/posts").then(this.gotPosts);
       }
+    },
+    gotCommunityInfo: function(d) {
+      this.community=d.data;
     },
     gotFollowingPosts: function (d) {
       this.tempposts = d.data;
@@ -137,7 +188,42 @@ export default {
     preview(post) {
       return post.postContent.substring(0, this.thecols * 10);
     },
+        submit: function(editorcontent) {
+          if (this.posttitle=="") {
+            this.alerttext="Your post needs a title.";
+            this.alerttimeout=5000;
+            this.showalert=true;
+          }
+        if (editorcontent=="") {
+            this.alerttext="Type a repsonse before submitting!"
+            this.alerttimeout=5000;
+            this.showalert=true;
+            return;
+        }
+        var submission={};
+        submission.content_markdown=editorcontent;
+        submission.community=this.community.id;
+        submission.title=this.posttitle;
+
+        this.$http.post(this.$LOTIDE + "/unstable/posts", submission).then(this.submitsuccess).catch(this.submitfailed);
+        
+
+    },
+    submitsuccess: function() {
+        this.alerttext="Post submitted!";
+        this.alerttimeout=5000;
+        this.showalert=true;
+        this.replybox=false;
+        this.$router.go();
   },
+    submitfailed: function(e) {
+        this.alerttext="Error: " + e.response.status + " : " + e.response.data;
+        this.alerttimeout=5000;
+        this.showalert=true;
+    }
+  },
+
+  
 };
 </script>
 <style>

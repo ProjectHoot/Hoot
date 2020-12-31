@@ -11,8 +11,7 @@
                  <span v-html="post.content_html ? post.content_html : post.content_text">
                  </span>
             <span v-if="replybox">
-                <vue-easymde v-model="editorcontent" :configs="editorconfig" ></vue-easymde>
-                <v-btn @click="submit">Submit</v-btn>
+                <editor :submit="submit"></editor>
             </span>
             </v-card-text>
             <v-card-actions v-if="$store.state.Username && expanded">
@@ -33,24 +32,19 @@
 </template>
 <script>
 import Since from "../components/Since";
-import VueEasymde from "vue-easymde";
 import Username from '../components/Username';
+import Editor from "../components/Editor"
 
 export default {
   components: {
     Since,
-    VueEasymde,
-    Username
+    Username,
+    Editor
   },
   data: function () {
     return {
       expanded: true,
       replybox: false,
-      editorcontent: '',
-      editorconfig: {
-          hideIcons:["fullscreen", "side-by-side" ],
-
-      },
     showalert: false,
     alerttimeout: 5000,
     alerttext: '',
@@ -90,15 +84,15 @@ export default {
           this.post=d.data;
           this.post.comments=this.post.replies;
       },
-    submit: function() {
-        if (this.editorcontent=="") {
+    submit: function(editorcontent) {
+        if (editorcontent=="") {
             this.alerttext="Type a repsonse before submitting!"
             this.alerttimeout=5000;
             this.showalert=true;
             return;
         }
         var submission={};
-        submission.content_markdown=this.editorcontent;
+        submission.content_markdown=editorcontent;
 
         if (this.level==0) this.$http.post(this.$LOTIDE + "/unstable/posts/" + this.post.id + "/replies", submission).then(this.submitsuccess).catch(this.submitfailed);
         else this.$http.post(this.$LOTIDE + "/unstable/comments/" + this.post.id + "/replies", submission).then(this.submitsuccess).catch(this.submitfailed);

@@ -29,6 +29,7 @@ const routes = [
   { path: '/p/posts/:postID', name:'PostShow', component: PostShow },
   { path: '/p/comments/:commentID', name:'PostShowExpandedComments', component: PostShow },
   { path: '/communities', name: 'Community List', component: Community },
+  { path: '/c/:communityID/:communityName', name: 'Community', component: Feed },
 
 ]
 
