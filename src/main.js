@@ -61,7 +61,6 @@ Vue.prototype.$index=function() {
   postindex++;
   return postindex;
 }
-
 new Vue({
   vuetify,
   router,

@@ -5,11 +5,11 @@
         <v-list-item>
           <v-list-item-content>
             <v-list-item-title v-if="post.href">
-              <a :href="post.href" class="text--secondary"
-                >{{ post.title }} <v-icon>mdi-arrow-top-right-thick</v-icon></a
+              <a :href="post.href" 
+                ><h1>{{ post.title }} ({{ post.domain }}) <v-icon>mdi-arrow-top-right-thick</v-icon></h1></a
               >
             </v-list-item-title>
-            <v-list-item-title v-else>{{ post.title }}</v-list-item-title>
+            <v-list-item-title v-else><h1>{{ post.title }}</h1></v-list-item-title>
             <post :level="0" :post="post" :id="post.id" :index="0"></post>
           </v-list-item-content>
         </v-list-item>
@@ -70,6 +70,8 @@ export default {
   methods: {
     gotPost: function (d) {
       this.post = d.data;
+      if (this.post.href!=null)
+          this.post.domain=this.post.href.split('/')[2];
       this.loaded = true;
     },
     upVote() {

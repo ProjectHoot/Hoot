@@ -53,7 +53,7 @@
             <v-list-item-subtitle>
               <span class="text--secondary">
                 Posted by
-                <Username :username="post.author.username"></Username> in
+                <Username :username="post.author.username" :userid="post.author.id"></Username> in
                 {{ post.community.name }} @ {{ post.community.host }}
                 <since :Timestamp="post.created"></since>
               </span>

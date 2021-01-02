@@ -2,10 +2,11 @@
   <v-app>
     <v-app-bar app color="primary">
       <v-toolbar-title>
-        <router-link :to="{ name: 'Feed' }" class="title white--text text-decoration-none">Hoot</router-link>
+        <router-link :to="{ name: 'Feed' }" class="text--primary title text-decoration-none">Hoot</router-link>
       </v-toolbar-title>
       <v-spacer></v-spacer>
-      <router-link :to="{ name: 'Community List'}" class="white--text text-decoration-none">Community List</router-link>
+    
+      <router-link :to="{ name: 'Community List'}" class="text-decoration-none">Community List</router-link>
   <tooltipbutton :clicked="toggleDark" :icon="$store.state.Dark ? 'mdi-flashlight-off' : 'mdi-flashlight'" hover="Toggle Dark/Light Mode"></tooltipbutton>
       <v-menu v-model="searchwindow" :close-on-click="false" :close-on-content-click="false">
     <template v-slot:activator="{ on: menu, attrs }">
@@ -14,13 +15,12 @@
             <v-btn icon
               v-bind="attrs"
               v-on="{ ...tooltip, ...menu }"
-            ><v-icon>mdi-magnify</v-icon>
+            ><v-icon class='text--primary'>mdi-magnify</v-icon>
             </v-btn>
           </template>
           <span>Search</span>
         </v-tooltip>
       </template>
-
         <v-card>
           <v-card-text>
             <v-text-field label="Search" prepend-inner-icon="mdi-magnify" single-line />
@@ -90,7 +90,8 @@
           </v-tabs-items>
           </v-menu>
     </v-app-bar>
-    <node v-on:connected="showsnackbar($event)"></node>
+    
+    <node ></node>
   
     <v-main>
       <v-container fluid style="padding: 0">
@@ -101,7 +102,7 @@
       v-model="snackbar"
       :timeout="snackbartimeout"
     >
-      {{ snackbartext }}
+    {{ snackbartext }}
 
     </v-snackbar>
   </v-app>
@@ -110,6 +111,7 @@
 <script>
 import Node  from "./components/Node.vue";
 import Tooltipbutton from './components/Tooltipbutton.vue'
+import EventBus from './EventBus.js'
 
 export default {
   name: "App",
@@ -137,6 +139,7 @@ export default {
   }),
   mounted: function() {
     this.$vuetify.theme.dark=this.$store.state.Dark;
+    EventBus.$on("message", this.showsnackbar);
   },
   methods: {
     login: function() {

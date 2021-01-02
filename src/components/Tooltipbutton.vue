@@ -6,6 +6,7 @@
           v-bind="attrs"
           v-on="onTooltip"
           v-html="icon"
+          class='text--primary'
         >
         </v-icon>
         </v-btn>

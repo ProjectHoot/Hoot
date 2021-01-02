@@ -4,13 +4,14 @@
     
 </template>
 <script>
+import EventBus from '../EventBus.js'
 export default {
     mounted: function() {
         this.$http.get(this.$LOTIDE +"/unstable/instance").then(this.gotServerInfo);
     },
     methods: {
         gotServerInfo: function(d) {
-            this.$emit("connected", "Connected to server " + d.data.software.name + " version " + d.data.software.version);
+            EventBus.$emit("message", "Connected to server " + d.data.software.name + " version " + d.data.software.version);
 }
     },
     data: function() {

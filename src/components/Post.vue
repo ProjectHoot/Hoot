@@ -4,7 +4,7 @@
             <v-card-title>
          <span> <v-btn v-if="level>0" icon @click="expanded=!expanded"><v-icon v-html="expanded ? 'mdi-minus' : 'mdi-plus'"></v-icon></v-btn></span>
                 <v-chip>{{ post.score }}</v-chip>
-                      <span><username :username="post.author.username +'@'+post.author.host"></username> <since :Timestamp="post.created"></since></span>
+                      <span><username :username="post.author.username" :userid="post.author.id"></username> <since :Timestamp="post.created"></since></span>
             </v-card-title>
             <v-card-text class="post"
                  v-if="expanded">
@@ -15,7 +15,7 @@
             </span>
             </v-card-text>
             <v-card-actions v-if="$store.state.Username && expanded">
-                      <v-btn icon @click="upVote"><v-icon v-html="post.your_vote ? 'mdi-arrow-up-bold' : 'mdi-arrow-up'" ></v-icon></v-btn>
+                      <v-btn icon @click="upVote"><v-icon :color="post.your_vote ? 'primary' : 'secondary'" v-html="post.your_vote ? 'mdi-arrow-up-bold' : 'mdi-arrow-up'" ></v-icon></v-btn>
                      <v-btn icon @click="replybox=!replybox"><v-icon>mdi-reply</v-icon></v-btn>
             </v-card-actions>
         </v-card>
