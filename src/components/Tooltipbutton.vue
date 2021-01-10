@@ -1,7 +1,7 @@
 <template>
     <v-tooltip bottom>
       <template v-slot:activator="{ on: onTooltip, attrs }">
-        <v-btn @click="onClicked" icon>
+        <v-btn :to="to ? to : ''" @click="onClicked" icon>
         <v-icon
           v-bind="attrs"
           v-on="onTooltip"
@@ -20,10 +20,12 @@ export default {
     props: {
         icon: String,
         clicked: Function,
-        hover: String
+        hover: String,
+        to: Object
     },
     methods: {
         onClicked: function() {
+          if (this.clicked!=null)
             this.clicked();
         }
     }

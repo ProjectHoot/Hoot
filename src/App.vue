@@ -5,8 +5,7 @@
         <router-link :to="{ name: 'Feed' }" class="text--primary title text-decoration-none">Hoot</router-link>
       </v-toolbar-title>
       <v-spacer></v-spacer>
-    
-      <router-link :to="{ name: 'Community List'}" class="text-decoration-none">Community List</router-link>
+    <tooltipbutton :to="{ name: 'Community List'}" icon="mdi-clipboard-list" hover="Community List"></tooltipbutton>
   <tooltipbutton :clicked="toggleDark" :icon="$store.state.Dark ? 'mdi-flashlight-off' : 'mdi-flashlight'" hover="Toggle Dark/Light Mode"></tooltipbutton>
       <v-menu v-model="searchwindow" :close-on-click="false" :close-on-content-click="false">
     <template v-slot:activator="{ on: menu, attrs }">

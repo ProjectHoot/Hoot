@@ -1,23 +1,32 @@
 <template>
   <v-container fluid style="padding: 0">
-    <v-card v-if="community!=null">
+    <v-card v-if="community != null">
       <v-card-title>{{ community.name }}</v-card-title>
       <v-card-subtitle>{{ community.description }}</v-card-subtitle>
       <v-card-actions>
-
-        <v-btn v-if="community.your_follow.accepted" @click="showeditor=!showeditor">New Post</v-btn>
-                <v-btn  v-if="community.your_follow==null" @click="subscribe(community.id)">Subscribe</v-btn>
-                <v-btn  v-else @click="unsubscribe(community.id)">Unsubscribe</v-btn>
-                
+        <v-btn
+          v-if="community.your_follow && community.your_follow.accepted"
+          @click="showeditor = !showeditor"
+          >New Post</v-btn
+        >
+        <v-btn
+          v-if="
+            community.your_follow && community.your_follow.accepted
+          "
+          @click="unsubscribe"
+          ><v-icon left>mdi-trash-can</v-icon>Unsubscribe</v-btn
+        >
+        <v-btn v-else @click="subscribe"><v-icon left>mdi-plus-box</v-icon>Subscribe</v-btn>
       </v-card-actions>
-
     </v-card>
     <v-card v-if="showeditor">
       <v-card-title>New Post</v-card-title>
       <v-card-text>
-        <v-text-field v-model="posttitle" placeholder="Post Title"></v-text-field>
-        <Editor :submit="submit">
-        </Editor>
+        <v-text-field
+          v-model="posttitle"
+          placeholder="Post Title"
+        ></v-text-field>
+        <Editor :submit="submit"> </Editor>
       </v-card-text>
     </v-card>
 
@@ -26,12 +35,14 @@
         <v-list-item style="padding-left: 0" :key="index">
           <v-list-item-action style="margin-right: 4px">
             <v-btn icon v-if="$store.state.Username" @click="upVote(index)"
-              ><v-icon v-if="post.your_vote" color="primary">mdi-arrow-up-bold</v-icon>
+              ><v-icon v-if="post.your_vote" color="primary"
+                >mdi-arrow-up-bold</v-icon
+              >
               <v-icon v-else color="secondary">mdi-arrow-up</v-icon>
             </v-btn>
             <span
               style="margin-left: auto; margin-right: auto"
-              v-if="post.score!=null"
+              v-if="post.score != null"
               >{{ post.score }}</span
             >
           </v-list-item-action>
@@ -53,8 +64,11 @@
             <v-list-item-subtitle>
               <span class="text--secondary">
                 Posted by
-                <Username :username="post.author.username" :userid="post.author.id"></Username> in
-                {{ post.community.name }} @ {{ post.community.host }}
+                <Username
+                  :username="post.author.username"
+                  :userid="post.author.id"
+                ></Username>
+                in {{ post.community.name }} @ {{ post.community.host }}
                 <since :Timestamp="post.created"></since>
               </span>
             </v-list-item-subtitle>
@@ -83,57 +97,103 @@ export default {
       posts: [],
       tempposts: [],
       community: null,
-      posttitle: '',
-    showeditor: false,
+      posttitle: "",
+      showeditor: false,
     };
   },
   mounted: function () {
-    if (typeof(this.$route.params.communityID)=="undefined") {
+    if (typeof this.$route.params.communityID == "undefined") {
       console.log(this.$route.params);
-    this.loadDefaultPosts();
+      this.loadDefaultPosts();
     } else {
-    // Load community info
-    this.$http.get(this.$LOTIDE + "/unstable/communities/" + this.$route.params.communityID + "?include_your=true").then(this.gotCommunityInfo);
+      // Load community info
+      this.$http
+        .get(
+          this.$LOTIDE +
+            "/unstable/communities/" +
+            this.$route.params.communityID +
+            "?include_your=true"
+        )
+        .then(this.gotCommunityInfo);
 
-    this.loadPosts();
+      this.loadPosts();
     }
   },
   methods: {
+    subscribe: function () {
+      var postdata = {};
+      postdata.try_wait_for_accept = true;
+      this.$http
+        .post(this.$LOTIDE + "/unstable/communities/" + this.community.id + "/follow", postdata)
+        .then(this.gotsubscribed);
+    },
+    gotunsubscribed: function () {
+      this.$router.go();
+    },
+    gotsubscribed: function () {
+      this.$router.go();
+    },
+    unsubscribe: function () {
+      var postdata = {};
+      postdata.try_wait_for_accept = true;
+      this.$http
+        .post(
+          this.$LOTIDE + "/unstable/communities/" + this.community.id + "/unfollow",
+          postdata
+        )
+        .then(this.gotunsubscribed);
+    },
+
     loadPosts() {
       console.log("Called loadPosts");
       if (this.$store.state.Username != "") {
         this.$http
-          .get(this.$LOTIDE + "/unstable/communities/" + this.$route.params.communityID + "/posts?include_your=true")
+          .get(
+            this.$LOTIDE +
+              "/unstable/communities/" +
+              this.$route.params.communityID +
+              "/posts?include_your=true"
+          )
           .then(this.gotPosts);
       } else {
         this.$http
-                  .get(this.$LOTIDE + "/unstable/communities/" + this.$sroute.params.communityID + "/posts")
+          .get(
+            this.$LOTIDE +
+              "/unstable/communities/" +
+              this.$sroute.params.communityID +
+              "/posts"
+          )
 
-        .then(this.gotPosts);
+          .then(this.gotPosts);
       }
     },
 
-loadDefaultPosts() {
-  console.log("Loading default posts");
+    loadDefaultPosts() {
+      console.log("Loading default posts");
       if (this.$store.state.Username != "") {
         this.$http
-          .get(this.$LOTIDE + "/unstable/users/~me/following:posts?include_your=true")
+          .get(
+            this.$LOTIDE +
+              "/unstable/users/~me/following:posts?include_your=true"
+          )
           .then(this.gotFollowingPosts);
       } else {
         this.$http.get(this.$LOTIDE + "/unstable/posts").then(this.gotPosts);
       }
     },
-    gotCommunityInfo: function(d) {
-      this.community=d.data;
+    gotCommunityInfo: function (d) {
+      this.community = d.data;
     },
     gotFollowingPosts: function (d) {
       this.tempposts = d.data;
-      this.$http.get(this.$LOTIDE + "/unstable/posts?include_your=true").then(this.gotMorePosts);
+      this.$http
+        .get(this.$LOTIDE + "/unstable/posts?include_your=true")
+        .then(this.gotMorePosts);
     },
     gotPosts: function (d) {
       this.posts = d.data;
       for (var x in this.posts) {
-        if (typeof(this.posts[x].score)=="undefined") this.posts[x].score=0;
+        if (typeof this.posts[x].score == "undefined") this.posts[x].score = 0;
       }
       this.loaded = true;
     },
@@ -166,7 +226,7 @@ loadDefaultPosts() {
               "/your_vote"
           )
           .then((this.posts[index].your_vote = {}));
-          this.posts[index].score++;
+        this.posts[index].score++;
       } else {
         this.$http
           .delete(
@@ -188,42 +248,41 @@ loadDefaultPosts() {
     preview(post) {
       return post.postContent.substring(0, this.thecols * 10);
     },
-        submit: function(editorcontent) {
-          if (this.posttitle=="") {
-            this.alerttext="Your post needs a title.";
-            this.alerttimeout=5000;
-            this.showalert=true;
-          }
-        if (editorcontent=="") {
-            this.alerttext="Type a repsonse before submitting!"
-            this.alerttimeout=5000;
-            this.showalert=true;
-            return;
-        }
-        var submission={};
-        submission.content_markdown=editorcontent;
-        submission.community=this.community.id;
-        submission.title=this.posttitle;
+    submit: function (editorcontent) {
+      if (this.posttitle == "") {
+        this.alerttext = "Your post needs a title.";
+        this.alerttimeout = 5000;
+        this.showalert = true;
+      }
+      if (editorcontent == "") {
+        this.alerttext = "Type a repsonse before submitting!";
+        this.alerttimeout = 5000;
+        this.showalert = true;
+        return;
+      }
+      var submission = {};
+      submission.content_markdown = editorcontent;
+      submission.community = this.community.id;
+      submission.title = this.posttitle;
 
-        this.$http.post(this.$LOTIDE + "/unstable/posts", submission).then(this.submitsuccess).catch(this.submitfailed);
-        
-
+      this.$http
+        .post(this.$LOTIDE + "/unstable/posts", submission)
+        .then(this.submitsuccess)
+        .catch(this.submitfailed);
     },
-    submitsuccess: function() {
-        this.alerttext="Post submitted!";
-        this.alerttimeout=5000;
-        this.showalert=true;
-        this.replybox=false;
-        this.$router.go();
+    submitsuccess: function () {
+      this.alerttext = "Post submitted!";
+      this.alerttimeout = 5000;
+      this.showalert = true;
+      this.replybox = false;
+      this.$router.go();
+    },
+    submitfailed: function (e) {
+      this.alerttext = "Error: " + e.response.status + " : " + e.response.data;
+      this.alerttimeout = 5000;
+      this.showalert = true;
+    },
   },
-    submitfailed: function(e) {
-        this.alerttext="Error: " + e.response.status + " : " + e.response.data;
-        this.alerttimeout=5000;
-        this.showalert=true;
-    }
-  },
-
-  
 };
 </script>
 <style>

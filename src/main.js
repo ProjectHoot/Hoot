@@ -1,9 +1,6 @@
 import Vue from 'vue'
 import vuetify from './plugins/vuetify';
-import 'roboto-fontface/css/roboto/roboto-fontface.css'
-import '@mdi/font/css/materialdesignicons.css'
 import VueRouter from 'vue-router'
-import VueCookies from 'vue-cookies'
 import axios from "axios"
 import Vuex from 'vuex'
 
@@ -11,7 +8,6 @@ import Vuex from 'vuex'
 Vue.config.productionTip = false
 Vue.use(require('vue-moment'));
 Vue.use(VueRouter)
-Vue.use(VueCookies);
 Vue.use(axios);
 Vue.use(Vuex);
 
