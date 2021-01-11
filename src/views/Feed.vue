@@ -7,7 +7,8 @@
         <v-btn
           v-if="community.your_follow && community.your_follow.accepted"
           @click="showeditor = !showeditor"
-          >New Post</v-btn
+          ><v-icon left>mdi-pencil</v-icon>
+          New Post</v-btn
         >
         <v-btn
           v-if="
