@@ -9,9 +9,9 @@ Hoot expects a working [lotide](https://git.sr.ht/~vpzom/lotide) server on the s
 # Build
 
 You'll need node/npm to build Hoot. Building is simple:
-``` npm install
-npm build
-```
+    npm install
+    npm build
+
 
 After the build complated, the results are output to tht dist/ directory. Copy those files to your web root and Hoot should now be accessible.
 
