@@ -105,7 +105,7 @@ export default {
   mounted: function () {
       console.log(this.$route.params);
 
-if (typeof (this.$route.params) == "undefined") {
+if (typeof (this.$route.params.communityID) == "undefined") {
       this.loadDefaultPosts();
     } else {
       // Load community info
