@@ -16,6 +16,7 @@ import Feed from './views/Feed.vue'
 import App from './App.vue'
 import Community from './views/Community.vue'
 import { store } from './store'
+import Profile from './views/Profile.vue'
 
 
 // TODO: move to separate file/structure
@@ -26,6 +27,7 @@ const routes = [
   { path: '/p/comments/:commentID', name:'PostShowExpandedComments', component: PostShow },
   { path: '/communities', name: 'Community List', component: Community },
   { path: '/c/:communityID/:communityName', name: 'Community', component: Feed },
+  { path: '/me', name: 'My Profile', component: Profile },
 
 ]
 

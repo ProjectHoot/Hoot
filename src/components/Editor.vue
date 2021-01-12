@@ -14,10 +14,11 @@ export default {
     },
     props: {
         submit: Function,
+        initialcontent: String,
     },
     data: function() {
         return {
-            editorcontent: '',
+            editorcontent: this.initialcontent,
       editorconfig: {
           hideIcons:["fullscreen", "side-by-side" ],
 
