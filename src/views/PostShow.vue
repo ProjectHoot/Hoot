@@ -35,6 +35,7 @@ export default {
     this.postID = this.$route.params.postID;
     if (this.$route.params.commentID) {
       if (this.$store.state.Username) {
+        console.log(this.$store.state.Username);
         this.$http
           .get(
             this.$LOTIDE +

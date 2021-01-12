@@ -103,11 +103,13 @@ export default {
     };
   },
   mounted: function () {
-    if (typeof this.$route.params.communityID == "undefined") {
       console.log(this.$route.params);
+
+if (typeof (this.$route.params) == "undefined") {
       this.loadDefaultPosts();
     } else {
       // Load community info
+      if (this.$store.Username)
       this.$http
         .get(
           this.$LOTIDE +
@@ -116,6 +118,15 @@ export default {
             "?include_your=true"
         )
         .then(this.gotCommunityInfo);
+      else
+            this.$http
+        .get(
+          this.$LOTIDE +
+            "/unstable/communities/" +
+            this.$route.params.communityID
+        )
+        .then(this.gotCommunityInfo);
+
 
       this.loadPosts();
     }
@@ -161,7 +172,7 @@ export default {
           .get(
             this.$LOTIDE +
               "/unstable/communities/" +
-              this.$sroute.params.communityID +
+              this.$route.params.communityID +
               "/posts"
           )
 
@@ -186,12 +197,14 @@ export default {
       this.community = d.data;
     },
     gotFollowingPosts: function (d) {
+      console.log("gotFollowingPosts");
       this.tempposts = d.data;
       this.$http
         .get(this.$LOTIDE + "/unstable/posts?include_your=true")
         .then(this.gotMorePosts);
     },
     gotPosts: function (d) {
+      console.log("got posts");
       this.posts = d.data;
       for (var x in this.posts) {
         if (typeof this.posts[x].score == "undefined") this.posts[x].score = 0;

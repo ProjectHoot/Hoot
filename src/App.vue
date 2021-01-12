@@ -136,7 +136,7 @@
                     label="Repeat Password"
                     v-model="loginform.repeatpassword"
                   />
-                  <v-alert v-if="newPassword != verifyPassword"
+                  <v-alert v-if="loginform.password != loginform.repeatpassword"
                     ><v-icon>mdi-alert-circle</v-icon>Passwords don't
                     match</v-alert
                   >
