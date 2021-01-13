@@ -2,7 +2,7 @@
   <v-dialog max-width="600px">
     <template v-slot:activator="{ on }">
       <template>
-        <span @click="loaduser" style="margin: 8px" v-on="on">{{
+        <span @click="loaduser"  v-on="on">{{
           username
         }}</span>
       </template>

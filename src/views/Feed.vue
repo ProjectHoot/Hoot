@@ -68,8 +68,8 @@
                 <Username
                   :username="post.author.username"
                   :userid="post.author.id"
-                ></Username>
-                in {{ post.community.name }} @ {{ post.community.host }}
+                ></Username>@{{ post.author.host }}
+                in {{ post.community.name }}@{{ post.community.host }}
                 <since :Timestamp="post.created"></since>
               </span>
             </v-list-item-subtitle>
@@ -300,4 +300,7 @@ if (typeof (this.$route.params.communityID) == "undefined") {
 };
 </script>
 <style>
+.v-list-item__title {
+  white-space: normal;
+}
 </style>
