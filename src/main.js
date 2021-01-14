@@ -38,6 +38,11 @@ const router = new VueRouter({
   routes
 })
 
+router.beforeEach((to, from, next) => {
+  document.title = "Hoot: " + to.name;
+  next();
+});
+
 if (window.location.hostname=="localhost" || window.location.hostname=="dev.goldandblack.xyz")
   Vue.prototype.$LOTIDE = "https://hoot.goldandblack.xyz/api";
 else 
