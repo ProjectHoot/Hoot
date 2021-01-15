@@ -109,7 +109,7 @@ if (typeof (this.$route.params.communityID) == "undefined") {
       this.loadDefaultPosts();
     } else {
       // Load community info
-      if (this.$store.Username)
+      if (this.$store.state.Username)
       this.$http
         .get(
           this.$LOTIDE +

@@ -8,7 +8,6 @@ import Vuex from 'vuex'
 Vue.config.productionTip = false
 Vue.use(require('vue-moment'));
 Vue.use(VueRouter)
-Vue.use(axios);
 Vue.use(Vuex);
 
 import PostShow from './views/PostShow.vue'
