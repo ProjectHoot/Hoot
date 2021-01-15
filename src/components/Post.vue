@@ -1,34 +1,42 @@
 <template>
-    <div :style="'margin-left: ' + level +'em;'">
-        <v-card elevation="10" width="98%">
-            <v-card-title>
-         <span> <v-btn v-if="level>0" icon @click="expanded=!expanded"><v-icon v-html="expanded ? 'mdi-minus' : 'mdi-plus'"></v-icon></v-btn></span>
-                <v-chip>{{ post.score }}</v-chip>
-                      <span><username :username="post.author.username" :userid="post.author.id"></username>@{{ post.author.host }} <since :Timestamp="post.created"></since></span>
-            </v-card-title>
-            <v-card-text class="post"
+    <v-list>
+    <v-list-item :style="'margin-left: ' + level +'em;'">
+        <v-list-item-content>
+            <v-list-item-title>
+                        <v-btn v-if="level>0" icon @click="expanded=!expanded"><v-icon v-html="expanded ? 'mdi-minus' : 'mdi-plus'"></v-icon></v-btn>
+                      <username :username="post.author.username" :userid="post.author.id"></username>
+                      <span style="font-size: 0.6em"> @{{ post.author.host }}</span>
+                      <br><span style="font-size: 0.6em;"> {{ post.score }} points
+<since :Timestamp="post.created"></since></span>
+            </v-list-item-title>
+            <v-list-item-subtitle>
+            <span  class="post"
                  v-if="expanded">
                  <span v-html="post.content_html ? post.content_html : post.content_text">
                  </span>
-            <span v-if="replybox">
+            <v-dialog overlay-opacity=1 v-model="replybox">
+
                 <editor :submit="submit"></editor>
+            </v-dialog>
             </span>
-            </v-card-text>
-            <v-card-actions v-if="$store.state.Username && expanded">
+            </v-list-item-subtitle>
+            <v-list-item-subtitle>
                       <v-btn icon @click="upVote"><v-icon :color="post.your_vote ? 'primary' : 'secondary'" v-html="post.your_vote ? 'mdi-arrow-up-bold' : 'mdi-arrow-up'" ></v-icon></v-btn>
                      <v-btn icon @click="replybox=!replybox"><v-icon>mdi-reply</v-icon></v-btn>
-            </v-card-actions>
-        </v-card>
+            </v-list-item-subtitle>
+        
+        </v-list-item-content>
+    </v-list-item>
         <div v-if="post.comments  && expanded">
-            <br>
            <post v-for="(p, i) in post.comments" :level="level+1" :key="i" :post="p" :id="i"></post>
         </div>
         <div v-else-if="post.has_replies && expanded">
             <v-btn @click="loadReplies">Load more replies...</v-btn>
             <br><br>
         </div>
+
                 <v-snackbar v-model="showalert" :timeout="alerttimeout">{{ alerttext }}</v-snackbar>
-    </div>
+    </v-list>
 </template>
 <script>
 import Since from "../components/Since";
@@ -122,6 +130,10 @@ export default {
               return("rgba(0,0,0,0)");
           }
           return("rgba(0,0,0,0.5)");
+      },
+      posttest: function() {
+          console.log(this.post);
+          return "";
       }
   },
   mounted: function () {
@@ -150,10 +162,14 @@ blockquote p {
 }
 
 .v-card__text, .v-card__title {
-  word-break: normal; /* maybe !important  */
+  word-break: break-word; /* maybe !important  */
 }
 
 .outerdiv:nth-of-type(odd) {
     background: rgba(0,0,0,0.5)
+}
+.v-list-item__subtitle {
+    word-break: break-word !important;
+    white-space: normal;
 }
 </style>

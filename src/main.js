@@ -8,7 +8,6 @@ import Vuex from 'vuex'
 Vue.config.productionTip = false
 Vue.use(require('vue-moment'));
 Vue.use(VueRouter)
-Vue.use(axios);
 Vue.use(Vuex);
 
 import PostShow from './views/PostShow.vue'
@@ -37,6 +36,11 @@ const router = new VueRouter({
   linkActiveClass: 'active',
   routes
 })
+
+router.beforeEach((to, from, next) => {
+  document.title = "Hoot: " + to.name;
+  next();
+});
 
 if (window.location.hostname=="localhost" || window.location.hostname=="dev.goldandblack.xyz")
   Vue.prototype.$LOTIDE = "https://hoot.goldandblack.xyz/api";
