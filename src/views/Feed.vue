@@ -356,9 +356,9 @@ export default {
       this.alerttext = "Error: " + e.response.status + " : " + e.response.data;
       this.alerttimeout = 5000;
       this.showalert = true;
-    }
-  }
-}
+    },
+  },
+};
 </script>
 <style>
 .v-list-item__title {
