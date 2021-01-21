@@ -2,15 +2,16 @@
   <v-container fluid v-if="loaded">
     <v-card width="100%">
       <v-card-title v-if="post.href">
-              <a :href="post.href" 
-                >{{ post.title }} ({{ post.domain }}) <v-icon>mdi-arrow-top-right-thick</v-icon></a
-              >
+        <a :href="post.href"
+          >{{ post.title }} ({{ post.domain }})
+          <v-icon>mdi-arrow-top-right-thick</v-icon></a
+        >
       </v-card-title>
       <v-card-title v-else>
         {{ post.title }}
       </v-card-title>
       <v-card-text>
-            <post :level="0" :post="post" :id="post.id" :index="0"></post>
+        <Post :level="0" :post="post" :id="post.id" :index="0" />
       </v-card-text>
     </v-card>
   </v-container>
@@ -69,9 +70,9 @@ export default {
   methods: {
     gotPost: function (d) {
       this.post = d.data;
-      if (this.post.href!=null)
-          this.post.domain=this.post.href.split('/')[2];
-      this.post.comments=this.post.replies;
+      if (this.post.href != null)
+        this.post.domain = this.post.href.split("/")[2];
+      this.post.comments = this.post.replies;
       this.loaded = true;
     },
     upVote() {

@@ -6,24 +6,28 @@
       <v-card-actions>
         <v-btn
           v-if="community.your_follow && community.your_follow.accepted"
-          @click="showeditor = !showeditor; showlinkinput = false"
-          ><v-icon left>mdi-pencil</v-icon>
-          New Post</v-btn
+          @click="
+            showeditor = !showeditor;
+            showlinkinput = false;
+          "
+          ><v-icon left>mdi-pencil</v-icon> New Post</v-btn
         >
         <v-btn
           v-if="community.your_follow && community.your_follow.accepted"
-          @click="showlinkinput = !showlinkinput; showeditor = false"
-          ><v-icon left>mdi-link</v-icon>
-        New Link</v-btn
+          @click="
+            showlinkinput = !showlinkinput;
+            showeditor = false;
+          "
+          ><v-icon left>mdi-link</v-icon> New Link</v-btn
         >
         <v-btn
-          v-if="
-            community.your_follow && community.your_follow.accepted
-          "
+          v-if="community.your_follow && community.your_follow.accepted"
           @click="unsubscribe"
           ><v-icon left>mdi-trash-can</v-icon>Unsubscribe</v-btn
         >
-        <v-btn v-else @click="subscribe"><v-icon left>mdi-plus-box</v-icon>Subscribe</v-btn>
+        <v-btn v-else @click="subscribe"
+          ><v-icon left>mdi-plus-box</v-icon>Subscribe</v-btn
+        >
       </v-card-actions>
     </v-card>
     <v-card v-if="showeditor">
@@ -43,9 +47,19 @@
           v-model="posttitle"
           placeholder="Post Title"
         ></v-text-field>
-        <form> 
-          <input v-model="linkinput" class="linkinput" type="text" placeholder="Enter Url"/>
-          <v-btn :disabled="!isValidLinkForm()" class="submitlinkbutton" @click="submitlink">Submit</v-btn>
+        <form>
+          <input
+            v-model="linkinput"
+            class="linkinput"
+            type="text"
+            placeholder="Enter Url"
+          />
+          <v-btn
+            :disabled="!isValidLinkForm()"
+            class="submitlinkbutton"
+            @click="submitlink"
+            >Submit</v-btn
+          >
         </form>
       </v-card-text>
     </v-card>
@@ -87,9 +101,11 @@
                 <Username
                   :username="post.author.username"
                   :userid="post.author.id"
-                ></Username>@{{ post.author.host }}
-                in {{ post.community.name }}@{{ post.community.host }}
-                <since :Timestamp="post.created"></since>
+                ></Username
+                >@{{ post.author.host }} in {{ post.community.name }}@{{
+                  post.community.host
+                }}
+                <Since :Timestamp="post.created" />
               </span>
             </v-list-item-subtitle>
           </v-list-item-content>
@@ -120,33 +136,33 @@ export default {
       posttitle: "",
       showeditor: false,
       showlinkinput: false,
-      linkinput: ''
+      linkinput: "",
     };
   },
   mounted: function () {
-      console.log(this.$route.params);
+    console.log(this.$route.params);
 
-    if (typeof (this.$route.params.communityID) == "undefined") {
+    if (typeof this.$route.params.communityID == "undefined") {
       this.loadDefaultPosts();
     } else {
       // Load community info
       if (this.$store.state.Username)
-      this.$http
-        .get(
-          this.$LOTIDE +
-            "/unstable/communities/" +
-            this.$route.params.communityID +
-            "?include_your=true"
-        )
-        .then(this.gotCommunityInfo);
+        this.$http
+          .get(
+            this.$LOTIDE +
+              "/unstable/communities/" +
+              this.$route.params.communityID +
+              "?include_your=true"
+          )
+          .then(this.gotCommunityInfo);
       else
-            this.$http
-        .get(
-          this.$LOTIDE +
-            "/unstable/communities/" +
-            this.$route.params.communityID
-        )
-        .then(this.gotCommunityInfo);
+        this.$http
+          .get(
+            this.$LOTIDE +
+              "/unstable/communities/" +
+              this.$route.params.communityID
+          )
+          .then(this.gotCommunityInfo);
 
       this.loadPosts();
     }
@@ -156,7 +172,13 @@ export default {
       var postdata = {};
       postdata.try_wait_for_accept = true;
       this.$http
-        .post(this.$LOTIDE + "/unstable/communities/" + this.community.id + "/follow", postdata)
+        .post(
+          this.$LOTIDE +
+            "/unstable/communities/" +
+            this.community.id +
+            "/follow",
+          postdata
+        )
         .then(this.gotsubscribed);
     },
     gotunsubscribed: function () {
@@ -170,7 +192,10 @@ export default {
       postdata.try_wait_for_accept = true;
       this.$http
         .post(
-          this.$LOTIDE + "/unstable/communities/" + this.community.id + "/unfollow",
+          this.$LOTIDE +
+            "/unstable/communities/" +
+            this.community.id +
+            "/unfollow",
           postdata
         )
         .then(this.gotunsubscribed);
@@ -308,13 +333,13 @@ export default {
         this.showalert = true;
         return;
       }
-      if(!this.linkinput || this.linkinput == "") {
+      if (!this.linkinput || this.linkinput == "") {
         this.alerttext = "Type a url before submitting!";
         this.alerttimeout = 5000;
         this.showalert = true;
         return;
       }
-      if(!this.isValidUrl(this.linkinput)) {
+      if (!this.isValidUrl(this.linkinput)) {
         this.alerttext = "Url is invalid!";
         this.alerttimeout = 5000;
         this.showalert = true;
@@ -331,18 +356,18 @@ export default {
         .then(this.submitsuccess)
         .catch(this.submitfailed);
     },
-    isValidUrl: function(string) {
+    isValidUrl: function (string) {
       let url;
 
       try {
         url = new URL(string);
       } catch (_) {
-        return false;  
+        return false;
       }
 
       return url.protocol === "http:" || url.protocol === "https:";
     },
-    isValidLinkForm: function() {
+    isValidLinkForm: function () {
       return this.posttitle && this.isValidUrl(this.linkinput);
     },
     submitsuccess: function () {

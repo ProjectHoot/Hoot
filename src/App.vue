@@ -9,16 +9,16 @@
         >
       </v-toolbar-title>
       <v-spacer></v-spacer>
-      <tooltipbutton
+      <TooltipButton
         :to="{ name: 'Community List' }"
         icon="mdi-clipboard-list"
         hover="Community List"
-      ></tooltipbutton>
-      <tooltipbutton
+      />
+      <TooltipButton
         :clicked="toggleDark"
         :icon="$store.state.Dark ? 'mdi-flashlight-off' : 'mdi-flashlight'"
         hover="Toggle Dark/Light Mode"
-      ></tooltipbutton>
+      />
       <v-menu
         v-model="searchwindow"
         :close-on-click="false"
@@ -57,18 +57,13 @@
           </v-card-text>
         </v-card>
       </v-menu>
-      <v-menu
-        v-if="$store.state.Username"
-        v-model="useractions"
-  
-        offset-y
-      >
+      <v-menu v-if="loggedIn" v-model="useractions" offset-y>
         <template v-slot:activator="{ on: menu, attrs }">
           <v-tooltip bottom>
             <template v-slot:activator="{ on: tooltip }">
               <v-btn text v-bind="attrs" v-on="{ ...tooltip, ...menu }">
                 <v-icon color="gray">mdi-account</v-icon>
-                {{ $store.state.Username }}
+                {{ user.username }}
               </v-btn>
             </template>
             <span>User Settings</span>
@@ -99,55 +94,14 @@
           <v-tab-item key="0">
             <v-card>
               <v-card-text>
-                <v-form>
-                  <v-text-field label="Username" v-model="loginform.username" />
-                  <v-text-field
-                    type="password"
-                    label="Password"
-                    v-model="loginform.password"
-                  />
-                  <v-btn @click="login">Login</v-btn>
-                </v-form>
+                <LoginForm />
               </v-card-text>
             </v-card>
           </v-tab-item>
           <v-tab-item key="1">
             <v-card>
               <v-card-text>
-                <v-form>
-                  <v-text-field label="Username" v-model="loginform.username" />
-                  <v-text-field
-                    type="password"
-                    label="Password"
-                    v-model="loginform.password"
-                  />
-                  <v-alert
-                    v-if="
-                      loginform.password.length != 0 &&
-                      loginform.password.length < 6
-                    "
-                  >
-                    <v-icon>mdi-alert-circle</v-icon>Password must be at least 6
-                    characters</v-alert
-                  >
-
-                  <v-text-field
-                    type="password"
-                    label="Repeat Password"
-                    v-model="loginform.repeatpassword"
-                  />
-                  <v-alert v-if="loginform.password != loginform.repeatpassword"
-                    ><v-icon>mdi-alert-circle</v-icon>Passwords don't
-                    match</v-alert
-                  >
-
-                  <v-text-field
-                    type="text"
-                    label="Email (optional)"
-                    v-model="loginform.email"
-                  />
-                  <v-btn @click="signup">Sign Up</v-btn>
-                </v-form>
+                <RegistrationForm />
               </v-card-text>
             </v-card>
           </v-tab-item>
@@ -155,7 +109,7 @@
       </v-menu>
     </v-app-bar>
 
-    <node></node>
+    <Node></Node>
 
     <v-main>
       <v-container fluid style="padding: 0">
@@ -175,26 +129,25 @@
 
 <script>
 import Node from "./components/Node.vue";
-import Tooltipbutton from "./components/Tooltipbutton.vue";
+import TooltipButton from "./components/TooltipButton.vue";
 import EventBus from "./EventBus.js";
+import LoginForm from "@/modules/auth/components/LoginForm";
+import RegistrationForm from "@/modules/auth/components/RegistrationForm";
+import { mapActions, mapState } from "vuex";
 
 export default {
   name: "App",
   components: {
+    RegistrationForm,
+    LoginForm,
     Node,
-    Tooltipbutton,
+    TooltipButton,
   },
 
   data: () => ({
     useractions: false,
     limitsearch: true,
     searchwindow: false,
-    loginform: {
-      username: "",
-      password: "",
-      repeatpassword: "",
-      email: "",
-    },
     viewkey: 0,
     snackbar: false,
     logintabs: 0,
@@ -202,24 +155,15 @@ export default {
     snackbartext: "",
     snackbarcolor: "",
     snackbaricon: "",
-    //
   }),
-  mounted: function () {
+  mounted() {
     this.$vuetify.theme.dark = this.$store.state.Dark;
-    EventBus.$on("message", this.showmessage);
-    EventBus.$on("error", this.showerror);
+    EventBus.$on("message", this.showMessage);
+    EventBus.$on("error", this.showError);
   },
   methods: {
-    login: function () {
-      var postData = {};
-      postData.username = this.loginform.username;
-      postData.password = this.loginform.password;
-      this.$http
-        .post(this.$LOTIDE + "/unstable/logins", postData)
-        .then(this.gotLogin)
-        .catch(this.failedLogin);
-    },
-    logout: function () {
+    ...mapActions("$auth", ["logout"]),
+    /*logout() {
       this.$http.post(this.$LOTIDE + "/unstable/logins/~current");
 
       this.$store.commit("setToken", "");
@@ -227,44 +171,9 @@ export default {
       this.useractions = false;
       this.viewkey = Date.now();
       this.$router.go();
-    },
-    profile: function () {
+    },*/
+    profile() {
       this.$router.push("/me");
-    },
-    signup: function () {
-      // Basic form validation
-      if (this.loginform.username.length < 3) {
-        alert("Username must be 3 or more characters");
-        return;
-      }
-      if (this.loginform.password.length < 6) {
-        alert("Password must be 6 or more characters");
-        return;
-      }
-      if (this.loginform.password != this.loginform.repeatpassword) {
-        alert("Passwords do not match");
-        return;
-      }
-      if (this.loginform.email.length > 0) {
-        // Make sure email isn't clearly invalid
-        const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/; // eslint-disable-line
-        if (!re.test(this.loginform.email)) {
-          alert("Email address is invalid");
-          return;
-        }
-      }
-      // Actually do the thing
-      var postData = {};
-      postData.username = this.loginform.username;
-      postData.password = this.loginform.password;
-      if (this.loginform.email != "") {
-        postData.email_address = this.loginform.email;
-      }
-      postData.login = true;
-      this.$http
-        .post(this.$LOTIDE + "/unstable/users", postData)
-        .then(this.gotLogin)
-        .catch(this.failedSignup);
     },
     gotLogin: function (d) {
       this.$store.commit("setToken", d.data.token);
@@ -277,30 +186,38 @@ export default {
       this.viewkey = Date.now();
       this.$router.go();
     },
-    failedSignup: function () {
+    failedSignup() {
       EventBus.$emit("error", "Username is not available, try another");
     },
-    failedLogin: function () {
+    failedLogin() {
       EventBus.$emit("error", "Login failed");
     },
-    showmessage: function (d) {
-      this.snackbartext = d;
+    showMessage(text) {
+      this.snackbartext = text;
       this.snackbarcolor = "primary";
       this.snackbaricon = "mdi-information";
       this.snackbar = true;
     },
-    showerror: function (d) {
-      this.snackbartext = d;
+    showError(text) {
+      this.snackbartext = text;
       this.snackbarcolor = "error";
       this.snackbaricon = "mdi-alert-circle";
       this.snackbar = true;
     },
-    toggleDark: function () {
-      var tmp = this.$store.state.Dark;
+    toggleDark() {
+      const tmp = this.$store.state.Dark;
       this.$store.commit("setDark", !tmp);
       this.$vuetify.theme.dark = this.$store.state.Dark;
     },
   },
+
+  computed: {
+    ...mapState("$auth", ["user"]),
+
+    loggedIn() {
+      return Boolean(this.$store.state.$auth.token);
+    }
+  }
 };
 </script>
 <style>
