@@ -67,9 +67,8 @@ class ClassGenerator {
           }
         }
 
-        new ClassGenerator(type, value, this.debug);
-
         if (type !== this.name) {
+          new ClassGenerator(type, value, this.debug);
           this.dependencies.push(type);
         }
       }
@@ -126,8 +125,7 @@ class ClassGenerator {
 
   finalize() {
     if (this.debug) {
-      console.log("\x1b[41m", `${this.name}.js`);
-      console.log("\x1b[0m");
+      console.log("\x1b[41m", `${this.name}.js`, "\x1b[0m");
       console.log(this.template);
     }
 
