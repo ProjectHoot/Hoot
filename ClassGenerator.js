@@ -69,7 +69,9 @@ class ClassGenerator {
 
         new ClassGenerator(type, value, this.debug);
 
-        this.dependencies.push(type);
+        if (type !== this.name) {
+          this.dependencies.push(type);
+        }
       }
       // default back to string for null-values
       this.properties[key] = value !== null ? `${type}${isArray ? "[]" : ""}` : "string";
@@ -78,24 +80,23 @@ class ClassGenerator {
 
   injectDependencies() {
     this.dependencies.forEach(dependency => {
-      this.template += `import ${dependency} from "./${dependency}";
-`
+      this.template += `import ${dependency} from "./${dependency}";\n`
     });
+
+    if (this.dependencies.length > 0) {
+      this.template += `\n`;
+    }
   }
 
   describeClass() {
-    this.template += `
-/**`;
+    this.template += `/**`;
     this.keys.forEach((key) => {
       const type = this.properties[key];
 
-      this.template += `
- * @property {${type}} ${key}`;
+      this.template += `\n * @property {${type}} ${key}`;
     });
 
-    this.template += `
- */
-`;
+    this.template += `\n */\n`;
   }
 
   buildClass() {
