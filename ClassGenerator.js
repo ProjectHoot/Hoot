@@ -22,7 +22,8 @@ const post = {
     {
       id: 1,
       comment: "Piece of text",
-      replies: []
+      replies: [],
+      author: {}
     }
   ],
   locked: false,
@@ -68,7 +69,10 @@ class ClassGenerator {
         }
 
         if (type !== this.name) {
-          new ClassGenerator(type, value, this.debug);
+          if (Object.keys(value).length > 0) {
+            new ClassGenerator(type, value, this.debug);
+          }
+
           this.dependencies.push(type);
         }
       }
