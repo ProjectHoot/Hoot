@@ -1,5 +1,7 @@
 <template>
   <v-container fluid style="padding: 0">
+    <Post v-for="post in posts" :key="post.id" :post="post" />
+
     <v-card v-if="community != null">
       <v-card-title>{{ community.name }}</v-card-title>
       <v-card-subtitle>{{ community.description }}</v-card-subtitle>
@@ -120,8 +122,13 @@
 import Username from "../components/Username";
 import Since from "../components/Since";
 import Editor from "../components/Editor";
+
+import { mapState } from "vuex";
+import Post from "@/modules/feed/components/Post";
+
 export default {
   components: {
+    Post,
     Username,
     Since,
     Editor,
@@ -130,7 +137,6 @@ export default {
     return {
       thecols: "6",
       loaded: false,
-      posts: [],
       tempposts: [],
       community: null,
       posttitle: "",
@@ -139,10 +145,12 @@ export default {
       linkinput: "",
     };
   },
-  mounted: function () {
-    console.log(this.$route.params);
+  mounted() {
+    this.$store.dispatch("$feed/getDefaultPosts").then((posts) => {
+      console.log(posts);
+    });
 
-    if (typeof this.$route.params.communityID == "undefined") {
+    /*if (typeof this.$route.params.communityID == "undefined") {
       this.loadDefaultPosts();
     } else {
       // Load community info
@@ -165,10 +173,10 @@ export default {
           .then(this.gotCommunityInfo);
 
       this.loadPosts();
-    }
+    }*/
   },
   methods: {
-    subscribe: function () {
+    subscribe() {
       var postdata = {};
       postdata.try_wait_for_accept = true;
       this.$http
@@ -181,13 +189,13 @@ export default {
         )
         .then(this.gotsubscribed);
     },
-    gotunsubscribed: function () {
+    gotunsubscribed() {
       this.$router.go();
     },
-    gotsubscribed: function () {
+    gotsubscribed() {
       this.$router.go();
     },
-    unsubscribe: function () {
+    unsubscribe() {
       var postdata = {};
       postdata.try_wait_for_accept = true;
       this.$http
@@ -224,7 +232,7 @@ export default {
     },
     loadDefaultPosts() {
       console.log("Loading default posts");
-      if (this.$store.state.Username != "") {
+      if (this.$store.state["$auth/user"].username !== "") {
         this.$http
           .get(
             this.$LOTIDE +
@@ -326,7 +334,7 @@ export default {
         .then(this.submitsuccess)
         .catch(this.submitfailed);
     },
-    submitlink: function () {
+    submitlink() {
       if (this.posttitle == "") {
         this.alerttext = "Your post needs a title.";
         this.alerttimeout = 5000;
@@ -367,10 +375,10 @@ export default {
 
       return url.protocol === "http:" || url.protocol === "https:";
     },
-    isValidLinkForm: function () {
+    isValidLinkForm() {
       return this.posttitle && this.isValidUrl(this.linkinput);
     },
-    submitsuccess: function () {
+    submitsuccess() {
       this.alerttext = "Post submitted!";
       this.alerttimeout = 5000;
       this.showalert = true;
@@ -382,6 +390,10 @@ export default {
       this.alerttimeout = 5000;
       this.showalert = true;
     },
+  },
+
+  computed: {
+    ...mapState("$feed", ["posts"]),
   },
 };
 </script>

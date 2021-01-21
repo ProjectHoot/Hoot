@@ -10,13 +10,14 @@ Vue.use(VueRouter);
 Vue.use(Vuex);
 
 import PostShow from "./views/PostShow.vue";
-import Feed from "./views/Feed.vue";
+import Feed from "@/modules/feed/views/Feed";
 import App from "./App.vue";
 import Community from "./views/Community.vue";
 import store from "./store";
 import Profile from "./views/Profile.vue";
 
 import EventBus from "@/EventBus";
+import Post from "@/modules/feed/views/Post";
 
 Vue.prototype.$store = store;
 Vue.prototype.$eventBus = EventBus;
@@ -25,7 +26,7 @@ Vue.prototype.$eventBus = EventBus;
 const routes = [
   { path: "/", name: "Feed", component: Feed },
   //  { path: '/r/:host/:community/', name: 'Community', component: ShowCommunity },
-  { path: "/p/posts/:postID", name: "PostShow", component: PostShow },
+  { path: "/p/posts/:id", name: "Post", component: Post },
   {
     path: "/p/comments/:commentID",
     name: "PostShowExpandedComments",

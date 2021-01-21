@@ -3,6 +3,7 @@ import Vuex from "vuex";
 import createPersistedState from "vuex-persistedstate";
 
 import authStore from "@/modules/auth/store";
+import feedStore from "@/modules/feed/store";
 
 Vue.use(Vuex);
 
@@ -29,6 +30,7 @@ export const store = new Vuex.Store({
 
 export default new Vuex.Store({
   modules: {
-    $auth: authStore
+    $auth: authStore,
+    $feed: feedStore
   }
 });
