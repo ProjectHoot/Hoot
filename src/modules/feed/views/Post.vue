@@ -11,7 +11,8 @@
           <v-card-title
             ><h2>{{ post.title }}</h2></v-card-title
           >
-          <v-card-text v-html="post.content_html" id="content"> </v-card-text>
+          <v-card-subtitle>{{ post.createdDistance }} ago by {{ post.author.username }} - {{ post.score }} points</v-card-subtitle>
+          <v-card-text v-html="post.content_html || post.content_text" id="content"> </v-card-text>
         </v-card>
       </v-col>
 

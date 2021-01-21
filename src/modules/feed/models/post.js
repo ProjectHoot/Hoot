@@ -1,3 +1,4 @@
+import FormatDistance from "date-fns/formatDistance";
 import Author from "./author";
 import Community from "./community";
 import Reply from "./reply";
@@ -40,5 +41,10 @@ export default class Post {
     this.replies_count_total = replies_count_total;
     this.score = score;
     this.title = title;
+  }
+
+  /** @returns {string} */
+  get createdDistance() {
+    return FormatDistance(this.created, new Date());
   }
 }
