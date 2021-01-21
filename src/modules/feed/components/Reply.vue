@@ -43,6 +43,7 @@
 import FormatDistance from "date-fns/formatDistance";
 import Reply from "../models/reply";
 import VueEasyMde from "vue-easymde";
+import { mapState } from "vuex";
 
 export default {
   name: "Reply",

@@ -38,6 +38,7 @@ export default {
   },
 
   computed: {
+    /** @returns {string} */
     color() {
       return colors[Math.min(colors.length - 1, this.level)];
     },

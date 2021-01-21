@@ -1,5 +1,5 @@
 <template>
-  <v-app>
+  <v-app :dark="dark">
     <v-app-bar app color="primary">
       <v-toolbar-title>
         <router-link
@@ -157,7 +157,7 @@ export default {
     snackbaricon: "",
   }),
   mounted() {
-    this.$vuetify.theme.dark = this.$store.state.Dark;
+    this.$vuetify.theme.dark = this.$store.state.$preferences.dark;
     EventBus.$on("message", this.showMessage);
     EventBus.$on("error", this.showError);
   },
@@ -205,19 +205,18 @@ export default {
       this.snackbar = true;
     },
     toggleDark() {
-      const tmp = this.$store.state.Dark;
-      this.$store.commit("setDark", !tmp);
-      this.$vuetify.theme.dark = this.$store.state.Dark;
+      this.$store.commit("$preferences/setDarkState", !this.dark);
     },
   },
 
   computed: {
+    ...mapState("$preferences", ["dark"]),
     ...mapState("$auth", ["user"]),
 
     loggedIn() {
       return Boolean(this.$store.state.$auth.token);
-    }
-  }
+    },
+  },
 };
 </script>
 <style>

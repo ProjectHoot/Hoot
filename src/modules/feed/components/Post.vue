@@ -1,9 +1,12 @@
 <template>
-  <v-card elevation="2" @click="openPost" class="mt-2">
+  <v-card elevation="2" @click="openPost" class="mt-2" :dark="dark">
     <v-card-title>
       {{ post.title }}
     </v-card-title>
-    <v-card-subtitle>Posted {{ createdFormatted }} ago by {{ post.author.username }} in {{ post.community.name }}</v-card-subtitle>
+    <v-card-subtitle
+      >Posted {{ createdFormatted }} ago by {{ post.author.username }} in
+      {{ post.community.name }}</v-card-subtitle
+    >
     <v-card-actions>
       <v-btn text @click.stop="gotoPost" color="orange">Comments</v-btn>
     </v-card-actions>
@@ -13,14 +16,15 @@
 <script>
 import Post from "../models/post";
 import FormatDistance from "date-fns/formatDistance";
+import { mapState } from "vuex";
 
 export default {
   name: "Post",
   props: {
     post: {
       type: Post,
-      required: true
-    }
+      required: true,
+    },
   },
 
   methods: {
@@ -38,18 +42,18 @@ export default {
       this.$router.push({
         name: "Post",
         params: {
-          id: this.post.id
-        }
+          id: this.post.id,
+        },
       });
-    }
+    },
   },
 
   computed: {
     /** @returns {string} */
     createdFormatted() {
       return FormatDistance(this.post.created, new Date());
-    }
-  }
+    },
+  },
 };
 </script>
 
