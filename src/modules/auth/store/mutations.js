@@ -5,7 +5,7 @@ export default {
   },
 
   /** @param {User} user */
-  setUsername(state, user) {
+  setUser(state, user) {
     state.user = user;
   }
 }
