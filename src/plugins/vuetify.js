@@ -10,7 +10,7 @@ export default new Vuetify({
   theme: {
     dark: true,
     themes: {
-      /*light: {
+      light: {
         background: "",
         primary: colors.yellow.darken3, // '#DDBD37', // gold
         secondary: colors.grey.darken4, // '#373c3f', // black/grey
@@ -28,7 +28,7 @@ export default new Vuetify({
         accent: "#BE5A29",
         error: "#5EC39F",
         success: "#1DF26B",
-      },*/
+      },
     },
   },
 });

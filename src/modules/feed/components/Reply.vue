@@ -1,6 +1,6 @@
 <template>
-  <div class="mb-2">
-    <v-card :elevation="0" :class="{ 'border-bottom': borderBottom }">
+  <div id="reply" :class="{ dark, root }">
+    <v-card :elevation="0" :class="{ 'border-bottom': borderBottom }" class="pb-2">
       <v-card-subtitle>
         <v-chip label>
           {{ reply.author.username }}
@@ -34,16 +34,17 @@
       </v-card-actions>
 
       <VueEasyMde v-if="replying" v-model="myReply" />
+
+      <slot></slot>
     </v-card>
-    <slot></slot>
   </div>
 </template>
 
 <script>
 import FormatDistance from "date-fns/formatDistance";
+import { mapState } from "vuex";
 import Reply from "../models/reply";
 import VueEasyMde from "vue-easymde";
-import { mapState } from "vuex";
 
 export default {
   name: "Reply",
@@ -53,6 +54,11 @@ export default {
       type: Reply,
       required: true,
     },
+
+    level: {
+      type: Number,
+      default: 0
+    }
   },
 
   data: () => ({
@@ -71,6 +77,8 @@ export default {
   },
 
   computed: {
+    ...mapState("$preferences", ["dark"]),
+
     /** @returns {string} */
     createdFormatted() {
       return FormatDistance(this.reply.created, new Date());
@@ -79,6 +87,11 @@ export default {
     /** @returns {boolean} */
     borderBottom() {
       return this.reply.replies.length > 0;
+    },
+
+    /** @returns {boolean} */
+    root() {
+      return this.level === 0;
     },
   },
 
@@ -92,9 +105,17 @@ export default {
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 >>> .editor-toolbar {
   color: black;
+}
+
+#reply:not(.root) {
+  border-left: 1px solid black;
+
+  .dark {
+    border-color: white;
+  }
 }
 
 .border-bottom {

@@ -1,5 +1,5 @@
 <template>
-  <v-card elevation="2" @click="openPost" class="mt-2" :dark="dark">
+  <v-card elevation="2" @click="openPost" class="mt-2">
     <v-card-title>
       {{ post.title }}
     </v-card-title>
@@ -16,7 +16,6 @@
 <script>
 import Post from "../models/post";
 import FormatDistance from "date-fns/formatDistance";
-import { mapState } from "vuex";
 
 export default {
   name: "Post",

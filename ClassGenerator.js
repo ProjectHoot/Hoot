@@ -4,32 +4,86 @@
  * Lazy, but it works
  */
 
-const obj = {"id":177,"content_text":null,"content_html":"<p>Not surprised\nNext sentence: shocking.</p>\n<p>Credibility: 0</p>\n","attachments":[],"author":{"id":65,"username":"MarriedWChildren256","local":true,"host":"hoot.goldandblack.xyz","remote_url":null},"created":"2021-01-12T14:24:12.175483+00:00","deleted":false,"local":true,"replies":[{"id":178,"content_text":null,"content_html":"<p>Edit, also SLATE.  I think the only job description must be \"Do you hate Trump/MAGA/1À or natural rights?\"</p>\n","attachments":[],"author":{"id":65,"username":"MarriedWChildren256","local":true,"host":"hoot.goldandblack.xyz","remote_url":null},"created":"2021-01-12T14:26:18.328424+00:00","deleted":false,"local":true,"replies":[],"has_replies":false,"score":1}],"has_replies":true,"score":2};
+const fs = require("fs");
+
+const post = {
+  id: 1,
+  title: "Title of post",
+  author: {
+    id: 1,
+    name: "Tim",
+    someOtherClass: {
+      id: 1,
+      title: "Hey",
+      visible: false,
+    },
+  },
+  replies: [
+    {
+      id: 1,
+      comment: "Piece of text"
+    }
+  ],
+  locked: false,
+};
 
 class ClassGenerator {
-  constructor(name, obj) {
+  constructor(name, obj, debug = false) {
+    this.debug = debug;
+    this.template = "";
     this.name = name;
     this.obj = obj;
     this.keys = Object.keys(obj);
     this.properties = {};
-    this.template = `/**`;
+    this.dependencies = [];
 
     this.determineTypes();
+    this.injectDependencies();
     this.describeClass();
     this.buildClass();
+    this.finalize();
   }
 
   determineTypes() {
-    this.keys.forEach(key => {
-      const value = this.obj[key];
-      const type = typeof value;
+    this.keys.forEach((key) => {
+      let value = this.obj[key];
+      let type = typeof value;
+      let isArray = false;
+
+      if (type === "object") {
+        type = key
+          .split("")
+          .map((l, i) => (i === 0 ? l.toUpperCase() : l))
+          .join("");
+
+        isArray = Array.isArray(value);
+
+        if (isArray) {
+          value = value[0];
+
+          type = type.replace("ies", "y");
+        }
+
+        new ClassGenerator(type, value, this.debug);
+
+        this.dependencies.push(type);
+      }
       // default back to string for null-values
-      this.properties[key] = value !== null ? type : "string";
+      this.properties[key] = value !== null ? `${type}${isArray ? "[]" : ""}` : "string";
+    });
+  }
+
+  injectDependencies() {
+    this.dependencies.forEach(dependency => {
+      this.template += `import ${dependency} from "./${dependency}";
+`
     });
   }
 
   describeClass() {
-    this.keys.forEach(key => {
+    this.template += `
+/**`;
+    this.keys.forEach((key) => {
       const type = this.properties[key];
 
       this.template += `
@@ -42,16 +96,48 @@ class ClassGenerator {
   }
 
   buildClass() {
-    const propertySetters = this.keys.map(key => {
-      return `this.${key} = ${key};`
+    const propertySetters = this.keys.map((key) => {
+      const type = this.properties[key];
+
+      if (!["string", "number", "boolean"].includes(type)) {
+        if (type.indexOf("[]") > -1) {
+          const short = key.substr(0, 1);
+
+          return `this.${key} = ${key} ? ${key}.map(${short} => new ${type.replace("[]", "")}(${short})) : [];`;
+        }
+
+        return `this.${key} = new ${type}(${key} || {});`;
+      }
+
+      return `this.${key} = ${key};`;
     });
 
     this.template += `export default class ${this.name} {
   constructor({ ${this.keys.join(", ")} }) {
-    ${propertySetters.join('\n    ')}
+    ${propertySetters.join("\n    ")}
   }
-}`
+}
+`;
+  }
+
+  finalize() {
+    if (this.debug) {
+      console.log("\x1b[41m", `${this.name}.js`);
+      console.log("\x1b[0m");
+      console.log(this.template);
+    }
+
+    fs.writeFile(`./generated/${this.name}.js`, this.template, {
+      encoding: "utf-8",
+    }, e => {
+      if (e) {
+        console.error(`Failed to save ${this.name}!`);
+        console.error(e);
+      } else {
+        console.log(`Generated ${this.name} class`);
+      }
+    });
   }
 }
 
-console.log(new ClassGenerator("Reply", obj).template);
+new ClassGenerator("Post", post, true);

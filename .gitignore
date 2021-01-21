@@ -26,3 +26,6 @@ pnpm-debug.log*
 /src-cordova/plugins
 /public/cordova.js
 /src-cordova
+
+# Custom Generated stuff
+/generated

@@ -1,20 +1,19 @@
 <template>
-  <v-timeline dense>
-    <v-timeline-item
+  <div id="reply" :class="{ uneven }">
+    <Reply
       v-for="reply in replies"
       :key="reply.id"
-      :color="color"
-      small
+      :reply="reply"
+      :level="level"
     >
-      <v-row class="pt-1">
-        <v-col class="elevation-1">
-          <Reply :reply="reply">
-            <Replies v-if="reply.replies.length > 0" :replies="reply.replies" :level="level + 1" />
-          </Reply>
-        </v-col>
-      </v-row>
-    </v-timeline-item>
-  </v-timeline>
+      <Replies
+        v-if="reply.replies.length > 0"
+        :replies="reply.replies"
+        :level="level + 1"
+        class="pl-5"
+      />
+    </Reply>
+  </div>
 </template>
 
 <script>
@@ -42,8 +41,11 @@ export default {
     color() {
       return colors[Math.min(colors.length - 1, this.level)];
     },
+
+    /** @returns {boolean} */
+    uneven() {
+      return this.level % 2 !== 0;
+    },
   },
 };
 </script>
-
-<style scoped></style>
