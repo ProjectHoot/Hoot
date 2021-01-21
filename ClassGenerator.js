@@ -21,7 +21,8 @@ const post = {
   replies: [
     {
       id: 1,
-      comment: "Piece of text"
+      comment: "Piece of text",
+      replies: []
     }
   ],
   locked: false,
@@ -59,9 +60,11 @@ class ClassGenerator {
         isArray = Array.isArray(value);
 
         if (isArray) {
-          value = value[0];
-
           type = type.replace("ies", "y");
+
+          if (type !== this.name) {
+            value = value[0];
+          }
         }
 
         new ClassGenerator(type, value, this.debug);
