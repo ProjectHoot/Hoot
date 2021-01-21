@@ -1,7 +1,9 @@
 <template>
   <v-card elevation="2" @click="openPost" class="mt-2">
-    <v-card-title>{{ post.title }}</v-card-title>
-    <v-card-subtitle>{{ post.community.name }}</v-card-subtitle>
+    <v-card-title>
+      {{ post.title }}
+    </v-card-title>
+    <v-card-subtitle>Posted {{ createdFormatted }} ago by {{ post.author.username }} in {{ post.community.name }}</v-card-subtitle>
     <v-card-actions>
       <v-btn text @click.stop="gotoPost" color="orange">Comments</v-btn>
     </v-card-actions>
@@ -10,6 +12,7 @@
 
 <script>
 import Post from "../models/post";
+import FormatDistance from "date-fns/formatDistance";
 
 export default {
   name: "Post",
@@ -38,6 +41,13 @@ export default {
           id: this.post.id
         }
       });
+    }
+  },
+
+  computed: {
+    /** @returns {string} */
+    createdFormatted() {
+      return FormatDistance(this.post.created, new Date());
     }
   }
 };

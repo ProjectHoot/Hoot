@@ -4,7 +4,7 @@
  * Lazy, but it works
  */
 
-const obj = JSON.parse(`{"author":{"host":"hoot.goldandblack.xyz","id":1,"local":true,"remote_url":null,"username":"jd"},"community":{"host":"hoot.goldandblack.xyz","id":23,"local":true,"name":"gaming","remote_url":null},"content_html":"<p><img src=\\"https://i.imgur.com/DNsFIFM.png\\" alt=\\"\\">\\n<a href=\\"https://i.imgur.com/DNsFIFM.png\\" rel=\\"noopener noreferrer\\">https://i.imgur.com/DNsFIFM.png</a></p>\\n","content_text":null,"created":"2021-01-21T16:15:50.693645+00:00","href":null,"id":91,"replies_count_total":0,"score":0,"title":"What a lovely city of death. "}`);
+const obj = {"id":177,"content_text":null,"content_html":"<p>Not surprised\nNext sentence: shocking.</p>\n<p>Credibility: 0</p>\n","attachments":[],"author":{"id":65,"username":"MarriedWChildren256","local":true,"host":"hoot.goldandblack.xyz","remote_url":null},"created":"2021-01-12T14:24:12.175483+00:00","deleted":false,"local":true,"replies":[{"id":178,"content_text":null,"content_html":"<p>Edit, also SLATE.  I think the only job description must be \"Do you hate Trump/MAGA/1À or natural rights?\"</p>\n","attachments":[],"author":{"id":65,"username":"MarriedWChildren256","local":true,"host":"hoot.goldandblack.xyz","remote_url":null},"created":"2021-01-12T14:26:18.328424+00:00","deleted":false,"local":true,"replies":[],"has_replies":false,"score":1}],"has_replies":true,"score":2};
 
 class ClassGenerator {
   constructor(name, obj) {
@@ -54,4 +54,4 @@ class ClassGenerator {
   }
 }
 
-console.log(new ClassGenerator("Post", obj).template);
+console.log(new ClassGenerator("Reply", obj).template);

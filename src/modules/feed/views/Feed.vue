@@ -146,9 +146,9 @@ export default {
     };
   },
   mounted() {
-    this.$store.dispatch("$feed/getDefaultPosts").then((posts) => {
-      console.log(posts);
-    });
+    if (this.posts.length === 0) {
+      this.$store.dispatch("$feed/getDefaultPosts");
+    }
 
     /*if (typeof this.$route.params.communityID == "undefined") {
       this.loadDefaultPosts();
