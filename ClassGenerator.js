@@ -23,10 +23,14 @@ const post = {
       id: 1,
       comment: "Piece of text",
       replies: [],
-      author: {}
-    }
+      author: {},
+    },
   ],
   locked: false,
+};
+
+const isDate = (date) => {
+  return date instanceof Date && !isNaN(date);
 };
 
 class ClassGenerator {
@@ -52,7 +56,7 @@ class ClassGenerator {
       let type = typeof value;
       let isArray = false;
 
-      if (type === "object") {
+      if (type === "object" && value !== null && !isDate(value)) {
         type = key
           .split("")
           .map((l, i) => (i === 0 ? l.toUpperCase() : l))
@@ -62,6 +66,11 @@ class ClassGenerator {
 
         if (isArray) {
           type = type.replace("ies", "y");
+
+          if (type.slice(-1) === "s") {
+            type = type.substr(0, type.length - 1);
+            console.log("Goed lul", type);
+          }
 
           if (type !== this.name) {
             value = value[0];
@@ -76,14 +85,20 @@ class ClassGenerator {
           this.dependencies.push(type);
         }
       }
+
+      if (isDate(value)) {
+        type = "Date";
+      }
+
       // default back to string for null-values
-      this.properties[key] = value !== null ? `${type}${isArray ? "[]" : ""}` : "string";
+      this.properties[key] =
+        value !== null ? `${type}${isArray ? "[]" : ""}` : "string";
     });
   }
 
   injectDependencies() {
-    this.dependencies.forEach(dependency => {
-      this.template += `import ${dependency} from "./${dependency}";\n`
+    this.dependencies.forEach((dependency) => {
+      this.template += `import ${dependency} from "./${dependency}";\n`;
     });
 
     if (this.dependencies.length > 0) {
@@ -106,14 +121,21 @@ class ClassGenerator {
     const propertySetters = this.keys.map((key) => {
       const type = this.properties[key];
 
-      if (!["string", "number", "boolean"].includes(type)) {
+      if (!["string", "number", "boolean", "Date"].includes(type)) {
         if (type.indexOf("[]") > -1) {
           const short = key.substr(0, 1);
 
-          return `this.${key} = ${key} ? ${key}.map(${short} => new ${type.replace("[]", "")}(${short})) : [];`;
+          return `this.${key} = ${key} ? ${key}.map(${short} => new ${type.replace(
+            "[]",
+            ""
+          )}(${short})) : [];`;
         }
 
         return `this.${key} = new ${type}(${key} || {});`;
+      }
+
+      if (type === "Date") {
+        return `this.${key} = new Date(${key});`
       }
 
       return `this.${key} = ${key};`;
@@ -133,17 +155,44 @@ class ClassGenerator {
       console.log(this.template);
     }
 
-    fs.writeFile(`./generated/${this.name}.js`, this.template, {
-      encoding: "utf-8",
-    }, e => {
-      if (e) {
-        console.error(`Failed to save ${this.name}!`);
-        console.error(e);
-      } else {
-        console.log(`Generated ${this.name} class`);
+    fs.writeFile(
+      `./generated/${this.name}.js`,
+      this.template,
+      {
+        encoding: "utf-8",
+      },
+      (e) => {
+        if (e) {
+          console.error(`Failed to save ${this.name}!`);
+          console.error(e);
+        } else {
+          console.log(`Generated ${this.name} class`);
+        }
       }
-    });
+    );
   }
 }
 
-new ClassGenerator("Post", post, true);
+const article = {
+  id: 1,
+  parentId: 2,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  author: {
+    id: 1,
+    profile: {
+      username: "Tim",
+      birthdate: new Date(),
+      locked: false,
+      items: [
+        {
+          id: 1337,
+          name: "item",
+          power: 1000,
+        },
+      ],
+    },
+  },
+};
+
+new ClassGenerator("Article", article, true);
