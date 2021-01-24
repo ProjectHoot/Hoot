@@ -22,7 +22,6 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
       - name: Set up Docker Buildx
@@ -39,7 +38,7 @@ jobs:
           context: $GITHUB_WORKSPACE
           file: $GITHUB_WORKSPACE/docker/release.Dockerfile
           push: true
-          tags: "npmaile/Hoot:latest,npmaile/Hoot:${HOOT_VERSION}"
+          tags: npmaile/Hoot:latest
       - name: Image Digest
         run: echo ${{ steps.docker_build.outputs.digest }}
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -51,12 +50,3 @@ jobs:
           cd $GITHUB_WORKSPACE
           docker build -t "hoot-dev:${IMAGE_VERSION}" -f <./docker/dev.Dockerfile> .
           
-      - name: set release version
-        uses: actions/create-release@v1
-        env: 
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: RELEASE ${{ github.ref }}
-          draft: false
-          prerelease: false
