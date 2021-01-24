@@ -41,8 +41,6 @@ export default {
   components: { ReplyModal, Replies },
   data: () => ({
     loading: false,
-    /** @type {Post} */
-    post: new Post({}),
   }),
 
   mounted() {
@@ -51,30 +49,23 @@ export default {
 
   methods: {
     ...mapMutations("$feed", ["setReplyingToId"]),
-    ...mapActions("$feed", ["getCommunity"]),
+    ...mapActions("$feed", ["getCommunity", "getPost"]),
 
-    loadPost() {
+    async loadPost() {
       this.loading = true;
 
-      api.posts
-        .getById(this.postId)
-        .then((post) => {
-          this.post = post;
-          if (!this.community) {
-            this.getCommunity(post.community.id);
-          }
-        })
-        .catch(() => {
-          // Can't load post, what do?
-        })
-        .finally(() => {
-          this.loading = false;
-        });
+      await this.getPost(this.postId);
+
+      if (!this.community) {
+        await this.getCommunity(this.post.community.id);
+      }
+
+      this.loading = false;
     },
   },
 
   computed: {
-    ...mapState("$feed", ["replyingToId"]),
+    ...mapState("$feed", ["replyingToId", "post"]),
 
     /** @returns {number} */
     postId() {

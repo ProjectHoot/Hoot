@@ -11,11 +11,25 @@
  * @property {boolean} has_replies
  * @property {number} score
  * @property {boolean} collapsed
+ * @property {string} createdDistance
  */
 import Author from "./author";
+import { formatDistance, isValid } from "date-fns";
 
 export default class Reply {
-  constructor({ id, content_text, content_html, attachments, author, created, deleted, local, replies, has_replies, score }) {
+  constructor({
+    id,
+    content_text,
+    content_html,
+    attachments,
+    author,
+    created,
+    deleted,
+    local,
+    replies,
+    has_replies,
+    score,
+  }) {
     this.id = id;
     this.content_text = content_text;
     this.content_html = content_html;
@@ -24,9 +38,16 @@ export default class Reply {
     this.created = new Date(created);
     this.deleted = deleted;
     this.local = local;
-    this.replies = replies ? replies.map(reply => new Reply(reply)) : [];
+    this.replies = replies ? replies.map((reply) => new Reply(reply)) : [];
     this.has_replies = has_replies;
     this.score = score;
     this.collapsed = false;
+  }
+
+  /** @returns {string} */
+  get createdDistance() {
+    return isValid(this.created)
+      ? formatDistance(this.created, new Date())
+      : "";
   }
 }

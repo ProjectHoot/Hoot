@@ -11,7 +11,7 @@
         <Tooltip
           :top="true"
           :value="reply.created"
-          :label="createdFormatted + ' ago'"
+          :label="reply.createdDistance + ' ago'"
         />
       </v-card-subtitle>
 
@@ -76,24 +76,11 @@ export default {
   computed: {
     ...mapState("$preferences", ["dark"]),
 
-    /** @returns {string} */
-    createdFormatted() {
-      return FormatDistance(this.reply.created, new Date());
-    },
-
     /** @returns {boolean} */
     root() {
       return this.level === 0;
     },
-  },
-
-  watch: {
-    replying(v) {
-      if (!v) {
-        this.myReply = "";
-      }
-    },
-  },
+  }
 };
 </script>
 

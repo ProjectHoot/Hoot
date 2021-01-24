@@ -1,4 +1,5 @@
 import api from "@/services/api";
+import { findReplyById } from "@/modules/feed/store/helpers";
 
 export default {
   /** @returns {Promise<Post[]>} */
@@ -7,6 +8,18 @@ export default {
       commit("setPosts", posts);
 
       return posts;
+    });
+  },
+
+  /**
+   * @param {number} id
+   * @returns {Promise<Post>}
+   */
+  getPost({ commit }, id) {
+    return api.posts.getById(id).then((post) => {
+      commit("setPost", post);
+
+      return post;
     });
   },
 
@@ -35,12 +48,13 @@ export default {
   },
 
   /**
-   * @param reply
+   * @param {Post} post
+   * @param {string} reply
    * @returns {Promise<unknown>}
    */
-  submitReply(_, reply) {
-    return new Promise((resolve) => {
-      setTimeout(() => resolve(), 1200);
-    });
+  submitReply({ state }, { post, reply }) {
+    console.log(findReplyById(post.replies, state.replyingToId).content_html);
+    return new Promise((r) => r());
+    // return api.posts.replyToReply(state.replyingToId, reply);
   },
 };

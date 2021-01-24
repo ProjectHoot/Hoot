@@ -4,6 +4,11 @@ export default {
     state.posts = posts;
   },
 
+  /** @param {Post} post */
+  setPost(state, post) {
+    state.post = post;
+  },
+
   /** @param {Community} community */
   setCommunity(state, community) {
     state.community = community;

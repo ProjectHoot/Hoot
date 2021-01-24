@@ -11,9 +11,9 @@
       <v-btn @click="submit" class="pa-2">
         <span v-if="!submitting">Submit</span>
         <v-progress-linear
-            v-else
-            :color="dark ? 'white' : 'black'"
-            indeterminate
+          v-else
+          :color="dark ? 'white' : 'black'"
+          indeterminate
         ></v-progress-linear>
       </v-btn>
     </template>
@@ -54,7 +54,7 @@ export default {
 
       this.submitting = true;
 
-      this.submitReply(this.myReply)
+      this.submitReply({ post: this.post, reply: this.myReply })
         .then(() => {
           this.close();
         })
@@ -66,6 +66,7 @@ export default {
 
   computed: {
     ...mapState("$preferences", ["dark"]),
+    ...mapState("$feed", ["post"]),
   },
 };
 </script>

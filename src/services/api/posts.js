@@ -8,10 +8,9 @@ export default new (class Auth extends Api {
 
   /** @returns {Promise<Post[]>} */
   get() {
-    return this.axios.get(`${this.baseUrl}/posts`)
-      .then(({ data }) => {
-        return data.map(post => new Post(post));
-      });
+    return this.axios.get(`${this.baseUrl}/posts`).then(({ data }) => {
+      return data.map((post) => new Post(post));
+    });
   }
 
   /**
@@ -19,9 +18,19 @@ export default new (class Auth extends Api {
    * @returns {Promise<Post>}
    */
   getById(id) {
-    return this.axios.get(`${this.baseUrl}/posts/${id}`)
-      .then(({ data }) => {
-        return new Post(data);
-      });
+    return this.axios.get(`${this.baseUrl}/posts/${id}`).then(({ data }) => {
+      return new Post(data);
+    });
+  }
+
+  /**
+   * @param {number} id
+   * @param {string} content_markdown
+   * @returns {Promise<AxiosResponse<any>>}
+   */
+  replyToReply(id, content_markdown) {
+    return this.axios.post(`${this.baseUrl}/comments/${id}/replies`, {
+      content_markdown,
+    });
   }
 })();
