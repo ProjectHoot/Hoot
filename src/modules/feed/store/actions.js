@@ -8,4 +8,12 @@ export default {
       return posts;
     });
   },
+
+  getCommunityPosts({ commit }, id) {
+    return api.communities.getPosts(id).then((posts) => {
+      commit("setPosts", posts);
+
+      return posts;
+    });
+  },
 };

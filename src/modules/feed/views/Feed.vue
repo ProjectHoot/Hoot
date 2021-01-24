@@ -1,5 +1,10 @@
 <template>
   <v-container fluid style="padding: 0">
+    <v-skeleton-loader
+        v-if="loading"
+        type="article"
+    ></v-skeleton-loader>
+
     <Post v-for="post in posts" :key="post.id" :post="post" />
 
     <v-card v-if="community != null">
@@ -135,6 +140,7 @@ export default {
   },
   data() {
     return {
+      loading: false,
       thecols: "6",
       loaded: false,
       tempposts: [],
@@ -146,9 +152,7 @@ export default {
     };
   },
   mounted() {
-    if (this.posts.length === 0) {
-      this.$store.dispatch("$feed/getDefaultPosts");
-    }
+    this.getPosts();
 
     /*if (typeof this.$route.params.communityID == "undefined") {
       this.loadDefaultPosts();
@@ -176,6 +180,19 @@ export default {
     }*/
   },
   methods: {
+    async getPosts() {
+      this.$store.commit("$feed/setPosts", []);
+      this.loading = true;
+
+      if (!this.communityId) {
+        await this.$store.dispatch("$feed/getDefaultPosts");
+      } else {
+        await this.$store.dispatch("$feed/getCommunityPosts", this.communityId);
+      }
+
+      this.loading = false;
+    },
+
     subscribe() {
       var postdata = {};
       postdata.try_wait_for_accept = true;
@@ -394,6 +411,16 @@ export default {
 
   computed: {
     ...mapState("$feed", ["posts"]),
+
+    /** @returns {number} */
+    communityId() {
+      return +this.$route.params.id;
+    },
+
+    /** @returns {string} */
+    communityName() {
+      return this.$route.params.name;
+    },
   },
 };
 </script>

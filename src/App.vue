@@ -10,7 +10,7 @@
       </v-toolbar-title>
       <v-spacer></v-spacer>
       <TooltipButton
-        :to="{ name: 'Community List' }"
+        :to="{ name: 'Communities' }"
         icon="mdi-clipboard-list"
         hover="Community List"
       />

@@ -1,8 +1,9 @@
-import axios from "axios";
 import auth from "./auth";
-import posts from "@/services/api/posts";
+import posts from "./posts";
+import communities from "./communities";
 
 export default {
   auth,
-  posts
+  posts,
+  communities,
 };

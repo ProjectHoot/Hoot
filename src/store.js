@@ -3,6 +3,7 @@ import Vuex from "vuex";
 
 import authStore from "@/modules/auth/store";
 import feedStore from "@/modules/feed/store";
+import communityStore from "@/modules/community/store";
 
 import Vuetify from "./plugins/vuetify";
 
@@ -27,6 +28,7 @@ export default new Vuex.Store({
   modules: {
     $auth: authStore,
     $feed: feedStore,
+    $community: communityStore,
     $preferences,
   },
 });

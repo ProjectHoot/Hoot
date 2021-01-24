@@ -69,7 +69,6 @@ class ClassGenerator {
 
           if (type.slice(-1) === "s") {
             type = type.substr(0, type.length - 1);
-            console.log("Goed lul", type);
           }
 
           if (type !== this.name) {
@@ -151,7 +150,7 @@ class ClassGenerator {
 
   finalize() {
     if (this.debug) {
-      console.log("\x1b[41m", `${this.name}.js`, "\x1b[0m");
+      // console.log("\x1b[41m", `${this.name}.js`, "\x1b[0m");
       console.log(this.template);
     }
 
@@ -173,26 +172,47 @@ class ClassGenerator {
   }
 }
 
-const article = {
+const declaration = {
   id: 1,
-  parentId: 2,
   createdAt: new Date(),
   updatedAt: new Date(),
-  author: {
+  user: {
     id: 1,
     profile: {
       username: "Tim",
       birthdate: new Date(),
       locked: false,
-      items: [
+      roles: [
         {
-          id: 1337,
-          name: "item",
-          power: 1000,
-        },
-      ],
+          id: 10,
+          name: "edit"
+        }
+      ]
     },
   },
+  products: [
+    {
+      id: 1,
+      name: "Pakje Marlboro",
+      vatRate: 1
+    }
+  ],
+  travels: [
+    {
+      id: 1,
+      from: {
+        address: {
+          street: "Newtonstraat 140",
+          city: "Osdorp"
+        }
+      },
+      to: {
+        address: {
+
+        }
+      }
+    }
+  ]
 };
 
-new ClassGenerator("Article", article, true);
+new ClassGenerator("Declaration", declaration, true);

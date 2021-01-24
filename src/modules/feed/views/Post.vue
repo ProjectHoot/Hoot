@@ -4,7 +4,7 @@
       <v-col cols="12">
         <v-skeleton-loader
           v-if="loading"
-          type="card-avatar, article, actions"
+          type="card"
         ></v-skeleton-loader>
 
         <v-card v-else>

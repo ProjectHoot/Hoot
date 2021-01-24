@@ -12,7 +12,7 @@ Vue.use(Vuex);
 import PostShow from "./views/PostShow.vue";
 import Feed from "@/modules/feed/views/Feed";
 import App from "./App.vue";
-import Community from "./views/Community.vue";
+import Communities from "@/modules/community/views/Communities";
 import store from "./store";
 import Profile from "./views/Profile.vue";
 
@@ -32,9 +32,9 @@ const routes = [
     name: "PostShowExpandedComments",
     component: PostShow,
   },
-  { path: "/communities", name: "Community List", component: Community },
+  { path: "/communities", name: "Communities", component: Communities },
   {
-    path: "/c/:communityID/:communityName",
+    path: "/c/:id/:name",
     name: "Community",
     component: Feed,
   },

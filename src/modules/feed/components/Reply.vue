@@ -1,6 +1,6 @@
 <template>
   <div id="reply" :class="{ dark, root }">
-    <v-card :elevation="0" :class="{ 'border-bottom': borderBottom }" class="pb-2">
+    <v-card :elevation="0" class="pb-2">
       <v-card-subtitle>
         <v-chip label>
           {{ reply.author.username }}
@@ -85,11 +85,6 @@ export default {
     },
 
     /** @returns {boolean} */
-    borderBottom() {
-      return this.reply.replies.length > 0;
-    },
-
-    /** @returns {boolean} */
     root() {
       return this.level === 0;
     },
@@ -105,20 +100,16 @@ export default {
 };
 </script>
 
-<style scoped lang="scss">
+<style scoped>
 >>> .editor-toolbar {
   color: black;
 }
 
 #reply:not(.root) {
   border-left: 1px solid black;
-
-  .dark {
-    border-color: white;
-  }
 }
 
-.border-bottom {
-  border-bottom: 1px solid #80808063;
+#reply:not(.root) .dark {
+  border-color: white;
 }
 </style>
