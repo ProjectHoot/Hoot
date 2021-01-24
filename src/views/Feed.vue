@@ -6,9 +6,15 @@
       <v-card-actions>
         <v-btn
           v-if="community.your_follow && community.your_follow.accepted"
-          @click="showeditor = !showeditor"
+          @click="showeditor = !showeditor; showlinkinput = false"
           ><v-icon left>mdi-pencil</v-icon>
           New Post</v-btn
+        >
+        <v-btn
+          v-if="community.your_follow && community.your_follow.accepted"
+          @click="showlinkinput = !showlinkinput; showeditor = false"
+          ><v-icon left>mdi-link</v-icon>
+        New Link</v-btn
         >
         <v-btn
           v-if="
@@ -28,6 +34,19 @@
           placeholder="Post Title"
         ></v-text-field>
         <Editor :submit="submit"> </Editor>
+      </v-card-text>
+    </v-card>
+    <v-card v-if="showlinkinput">
+      <v-card-title>New Link</v-card-title>
+      <v-card-text>
+        <v-text-field
+          v-model="posttitle"
+          placeholder="Post Title"
+        ></v-text-field>
+        <form> 
+          <input v-model="linkinput" class="linkinput" type="text" placeholder="Enter Url"/>
+          <v-btn :disabled="!isValidLinkForm()" class="submitlinkbutton" @click="submitlink">Submit</v-btn>
+        </form>
       </v-card-text>
     </v-card>
 
@@ -100,12 +119,14 @@ export default {
       community: null,
       posttitle: "",
       showeditor: false,
+      showlinkinput: false,
+      linkinput: ''
     };
   },
   mounted: function () {
       console.log(this.$route.params);
 
-if (typeof (this.$route.params.communityID) == "undefined") {
+    if (typeof (this.$route.params.communityID) == "undefined") {
       this.loadDefaultPosts();
     } else {
       // Load community info
@@ -126,7 +147,6 @@ if (typeof (this.$route.params.communityID) == "undefined") {
             this.$route.params.communityID
         )
         .then(this.gotCommunityInfo);
-
 
       this.loadPosts();
     }
@@ -155,7 +175,6 @@ if (typeof (this.$route.params.communityID) == "undefined") {
         )
         .then(this.gotunsubscribed);
     },
-
     loadPosts() {
       console.log("Called loadPosts");
       if (this.$store.state.Username != "") {
@@ -175,11 +194,9 @@ if (typeof (this.$route.params.communityID) == "undefined") {
               this.$route.params.communityID +
               "/posts"
           )
-
           .then(this.gotPosts);
       }
     },
-
     loadDefaultPosts() {
       console.log("Loading default posts");
       if (this.$store.state.Username != "") {
@@ -226,7 +243,6 @@ if (typeof (this.$route.params.communityID) == "undefined") {
       this.posts = this.tempposts;
       this.loaded = true;
     },
-
     goToUser() {
       return;
     },
@@ -267,9 +283,10 @@ if (typeof (this.$route.params.communityID) == "undefined") {
         this.alerttext = "Your post needs a title.";
         this.alerttimeout = 5000;
         this.showalert = true;
+        return;
       }
-      if (editorcontent == "") {
-        this.alerttext = "Type a repsonse before submitting!";
+      if (!editorcontent || editorcontent == "") {
+        this.alerttext = "Type a response before submitting!";
         this.alerttimeout = 5000;
         this.showalert = true;
         return;
@@ -283,6 +300,50 @@ if (typeof (this.$route.params.communityID) == "undefined") {
         .post(this.$LOTIDE + "/unstable/posts", submission)
         .then(this.submitsuccess)
         .catch(this.submitfailed);
+    },
+    submitlink: function () {
+      if (this.posttitle == "") {
+        this.alerttext = "Your post needs a title.";
+        this.alerttimeout = 5000;
+        this.showalert = true;
+        return;
+      }
+      if(!this.linkinput || this.linkinput == "") {
+        this.alerttext = "Type a url before submitting!";
+        this.alerttimeout = 5000;
+        this.showalert = true;
+        return;
+      }
+      if(!this.isValidUrl(this.linkinput)) {
+        this.alerttext = "Url is invalid!";
+        this.alerttimeout = 5000;
+        this.showalert = true;
+        return;
+      }
+
+      var submission = {};
+      submission.href = this.linkinput;
+      submission.community = this.community.id;
+      submission.title = this.posttitle;
+
+      this.$http
+        .post(this.$LOTIDE + "/unstable/posts", submission)
+        .then(this.submitsuccess)
+        .catch(this.submitfailed);
+    },
+    isValidUrl: function(string) {
+      let url;
+
+      try {
+        url = new URL(string);
+      } catch (_) {
+        return false;  
+      }
+
+      return url.protocol === "http:" || url.protocol === "https:";
+    },
+    isValidLinkForm: function() {
+      return this.posttitle && this.isValidUrl(this.linkinput);
     },
     submitsuccess: function () {
       this.alerttext = "Post submitted!";
@@ -302,5 +363,15 @@ if (typeof (this.$route.params.communityID) == "undefined") {
 <style>
 .v-list-item__title {
   white-space: normal;
+}
+
+.linkinput {
+  background-color: white;
+  width: 100%;
+}
+
+.submitlinkbutton {
+  display: block;
+  margin-top: 8px;
 }
 </style>
