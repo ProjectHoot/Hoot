@@ -40,15 +40,8 @@ jobs:
           context: $GITHUB_WORKSPACE
           file: $GITHUB_WORKSPACE/docker/release.Dockerfile
           push: true
-          tags: npmaile/Hoot:latest
+          tags: npmaile/hoot:latest
       - name: Image Digest
         run: echo ${{ steps.docker_build.outputs.digest }}
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
-
-      # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
-        run: |
-          cd $GITHUB_WORKSPACE
-          docker build -t "hoot-dev:${IMAGE_VERSION}" -f <./docker/dev.Dockerfile> .
-          
