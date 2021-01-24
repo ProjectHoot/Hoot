@@ -8,13 +8,11 @@
         </v-chip>
 
         {{ reply.score }} points -
-        <v-tooltip top>
-          <template v-slot:activator="{ on }">
-            <span v-on="on">{{ createdFormatted }} ago</span>
-          </template>
-
-          <span>{{ reply.created }}</span>
-        </v-tooltip>
+        <Tooltip
+          :top="true"
+          :value="reply.created"
+          :label="createdFormatted + ' ago'"
+        />
       </v-card-subtitle>
 
       <v-card-text v-html="reply.content_html" />
@@ -33,8 +31,6 @@
         </v-btn>
       </v-card-actions>
 
-      <VueEasyMde v-if="replying" v-model="myReply" />
-
       <slot></slot>
     </v-card>
   </div>
@@ -42,13 +38,13 @@
 
 <script>
 import FormatDistance from "date-fns/formatDistance";
-import { mapState } from "vuex";
+import { mapState, mapMutations } from "vuex";
 import Reply from "../models/reply";
-import VueEasyMde from "vue-easymde";
+import Tooltip from "@/components/Tooltip";
 
 export default {
   name: "Reply",
-  components: { VueEasyMde },
+  components: { Tooltip },
   props: {
     reply: {
       type: Reply,
@@ -57,22 +53,23 @@ export default {
 
     level: {
       type: Number,
-      default: 0
-    }
+      default: 0,
+    },
   },
 
-  data: () => ({
-    myReply: "",
-    replying: false,
-  }),
-
   methods: {
-    upvote() {},
+    ...mapMutations("$feed", ["setReplyingToId"]),
 
-    downvote() {},
+    upvote() {
+      throw new Error("Not implemented");
+    },
+
+    downvote() {
+      throw new Error("Not implemented");
+    },
 
     replyTo() {
-      this.replying = true;
+      this.setReplyingToId(this.reply.id);
     },
   },
 

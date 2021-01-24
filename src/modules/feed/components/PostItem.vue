@@ -18,7 +18,7 @@ import Post from "../models/post";
 import FormatDistance from "date-fns/formatDistance";
 
 export default {
-  name: "Post",
+  name: "PostItem",
   props: {
     post: {
       type: Post,

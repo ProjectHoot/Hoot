@@ -11,7 +11,7 @@
 import Community from "../models/community";
 
 export default {
-  name: "Community",
+  name: "CommunityItem",
   props: {
     community: {
       type: Community,

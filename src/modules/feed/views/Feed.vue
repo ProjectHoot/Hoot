@@ -5,11 +5,16 @@
         type="article"
     ></v-skeleton-loader>
 
-    <div>
-      {{ $store.state.$auth.user }}
-    </div>
+    <template v-if="communityId">
+      <v-skeleton-loader v-if="!community" />
+      <v-card v-else>
+        <v-card-title>{{ community.name }}</v-card-title>
+        <v-card-subtitle>{{ community.host }}</v-card-subtitle>
+        <v-card-text>{{ community.description }}</v-card-text>
+      </v-card>
+    </template>
 
-    <Post v-for="post in posts" :key="post.id" :post="post" />
+    <PostItem v-for="post in posts" :key="post.id" :post="post" />
 
     <v-card v-if="community != null">
       <v-card-title>{{ community.name }}</v-card-title>
@@ -133,11 +138,11 @@ import Since from "../components/Since";
 import Editor from "../components/Editor";
 
 import { mapState } from "vuex";
-import Post from "@/modules/feed/components/Post";
+import PostItem from "@/modules/feed/components/PostItem";
 
 export default {
   components: {
-    Post,
+    PostItem,
     Username,
     Since,
     Editor,
@@ -148,7 +153,6 @@ export default {
       thecols: "6",
       loaded: false,
       tempposts: [],
-      community: null,
       posttitle: "",
       showeditor: false,
       showlinkinput: false,
@@ -157,6 +161,10 @@ export default {
   },
   mounted() {
     this.getPosts();
+
+    if (this.communityId) {
+      this.getCommunity();
+    }
 
     /*if (typeof this.$route.params.communityID == "undefined") {
       this.loadDefaultPosts();
@@ -195,6 +203,10 @@ export default {
       }
 
       this.loading = false;
+    },
+
+    async getCommunity() {
+      await this.$store.dispatch("$feed/getCommunity", this.communityId);
     },
 
     subscribe() {
@@ -414,16 +426,11 @@ export default {
   },
 
   computed: {
-    ...mapState("$feed", ["posts"]),
+    ...mapState("$feed", ["posts", "community"]),
 
     /** @returns {number} */
     communityId() {
       return +this.$route.params.id;
-    },
-
-    /** @returns {string} */
-    communityName() {
-      return this.$route.params.name;
     },
   },
 };

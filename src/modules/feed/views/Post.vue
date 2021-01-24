@@ -2,10 +2,7 @@
   <v-container fluid>
     <v-row>
       <v-col cols="12">
-        <v-skeleton-loader
-          v-if="loading"
-          type="card"
-        ></v-skeleton-loader>
+        <v-skeleton-loader v-if="loading" type="card"></v-skeleton-loader>
 
         <v-card v-else>
           <v-card-title
@@ -27,6 +24,8 @@
         <Replies :replies="post.replies" v-if="hasReplies" />
       </v-col>
     </v-row>
+
+    <ReplyModal v-model="replying" />
   </v-container>
 </template>
 
@@ -34,11 +33,12 @@
 import Post from "../models/post";
 import api from "@/services/api";
 import Replies from "../components/Replies";
-import { mapState } from "vuex";
+import { mapState, mapMutations } from "vuex";
+import ReplyModal from "@/modules/feed/components/ReplyModal";
 
 export default {
   name: "Post",
-  components: { Replies },
+  components: { ReplyModal, Replies },
   data: () => ({
     loading: false,
     /** @type {Post} */
@@ -50,6 +50,8 @@ export default {
   },
 
   methods: {
+    ...mapMutations("$feed", ["setReplyingToId"]),
+
     loadPost() {
       this.loading = true;
 
@@ -68,6 +70,8 @@ export default {
   },
 
   computed: {
+    ...mapState("$feed", ["replyingToId"]),
+
     /** @returns {number} */
     postId() {
       return +this.$route.params.id;
@@ -76,6 +80,17 @@ export default {
     /** @returns {boolean} */
     hasReplies() {
       return this.post.replies.length > 0;
+    },
+
+    replying: {
+      get() {
+        return this.replyingToId !== -1;
+      },
+      set(v) {
+        if (!v) {
+          this.setReplyingToId(-1);
+        }
+      },
     },
   },
 };

@@ -1,28 +1,33 @@
 <template>
   <v-container v-if="loaded">
-    <v-row v-if="$store.state.Username">
+    <v-row v-if="loggedIn">
       <v-col cols="12" md="6">
         <v-card>
           <v-card-title>Change Password</v-card-title>
           <v-card-text>
             <v-text-field
-            type="password"
+              type="password"
               label="Current Password"
               v-model="currentPassword"
             ></v-text-field>
             <v-text-field
-            type="password"
+              type="password"
               label="New Password"
               v-model="newPassword"
             ></v-text-field>
-            <v-alert v-if="newPassword.length!=0 && newPassword.length<6"><v-icon>mdi-alert-circle</v-icon>Must be at least 6 characters</v-alert>
+            <v-alert v-if="newPassword.length != 0 && newPassword.length < 6"
+              ><v-icon>mdi-alert-circle</v-icon>Must be at least 6
+              characters</v-alert
+            >
             <v-text-field
-            type="password"
+              type="password"
               label="Verify New Password"
               v-model="verifyPassword"
             ></v-text-field>
-            <v-alert v-if="newPassword!=verifyPassword"><v-icon>mdi-alert-circle</v-icon>New passwords don't match</v-alert>
-
+            <v-alert v-if="newPassword != verifyPassword"
+              ><v-icon>mdi-alert-circle</v-icon>New passwords don't
+              match</v-alert
+            >
           </v-card-text>
           <v-card-actions>
             <v-btn :disabled="invalidPass" @click="submitChangePassword"
@@ -53,6 +58,7 @@
 </template>
 <script>
 import EventBus from "../EventBus.js";
+import { mapGetters } from "vuex";
 
 export default {
   components: {},
@@ -62,19 +68,19 @@ export default {
       newPassword: "",
       verifyPassword: "",
       loaded: false,
-      description: '',
+      description: "",
       initialdescription: "",
     };
   },
   mounted: function () {
-      if (this.$store.state.Username) {
-    this.$http
-      .get(this.$LOTIDE + "/unstable/users/~me")
-      .then(this.gotProfile)
-      .catch(this.failprofile);
-      } else {
-          this.loaded=true;
-      }
+    if (this.$store.state.Username) {
+      this.$http
+        .get(this.$LOTIDE + "/unstable/users/~me")
+        .then(this.gotProfile)
+        .catch(this.failprofile);
+    } else {
+      this.loaded = true;
+    }
   },
   methods: {
     gotProfile: function (d) {
@@ -120,6 +126,8 @@ export default {
     },
   },
   computed: {
+    ...mapGetters("$auth", ["loggedIn"]),
+
     invalidPass: function () {
       return (
         this.verifyPassword != this.newPassword || this.newPassword.length < 6

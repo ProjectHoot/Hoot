@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Community
+    <CommunityItem
       v-for="community in communities"
       :key="community.id"
       :community="community"
@@ -9,15 +9,15 @@
 </template>
 
 <script>
-import { mapActions, mapState } from "vuex";
-import Community from "../components/Community";
+import { mapActions, mapGetters, mapState } from "vuex";
+import CommunityItem from "../components/CommunityItem";
 
 export default {
   name: "Communities",
-  components: { Community },
+  components: { CommunityItem },
   mounted() {
     if (this.communities.length === 0) {
-      this.getCommunities();
+      this.getCommunities(this.loggedIn);
     }
   },
 
@@ -26,6 +26,7 @@ export default {
   },
 
   computed: {
+    ...mapGetters("$auth", ["loggedIn"]),
     ...mapState("$community", ["communities"]),
   },
 };

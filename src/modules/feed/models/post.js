@@ -1,6 +1,6 @@
 import { formatDistance, isValid } from "date-fns";
 import Author from "./author";
-import Community from "./community";
+import Community from "@/modules/community/models/community";
 import Reply from "./reply";
 
 /**
@@ -45,6 +45,8 @@ export default class Post {
 
   /** @returns {string} */
   get createdDistance() {
-    return isValid(this.created) ? formatDistance(this.created, new Date()) : "";
+    return isValid(this.created)
+      ? formatDistance(this.created, new Date())
+      : "";
   }
 }

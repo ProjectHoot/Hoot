@@ -7,11 +7,18 @@ export default new (class Auth extends Api {
     super();
   }
 
-  /** @returns {Promise<Community[]>} */
-  get() {
-    return this.axios.get(`${this.baseUrl}/communities`).then(({ data }) => {
-      return data.map((community) => new Community(community));
-    });
+  /**
+   * @param {boolean} includeYour
+   * @returns {Promise<Community[]>}
+   */
+  get(includeYour) {
+    return this.axios
+      .get(
+        `${this.baseUrl}/communities${includeYour ? "?include_your=true" : ""}`
+      )
+      .then(({ data }) => {
+        return data.map((community) => new Community(community));
+      });
   }
 
   /**

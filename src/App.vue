@@ -9,6 +9,7 @@
         <router-view :key="$route.fullPath"></router-view>
       </v-container>
     </v-main>
+
     <v-snackbar
       v-model="snackbar"
       :timeout="snackbartimeout"
@@ -37,12 +38,8 @@ export default {
   },
 
   data: () => ({
-    useractions: false,
-    limitsearch: true,
-    searchwindow: false,
     viewkey: 0,
     snackbar: false,
-    logintabs: 0,
     snackbartimeout: 5000,
     snackbartext: "",
     snackbarcolor: "",
@@ -64,20 +61,6 @@ export default {
       this.viewkey = Date.now();
       this.$router.go();
     },*/
-    profile() {
-      this.$router.push("/me");
-    },
-    gotLogin: function (d) {
-      this.$store.commit("setToken", d.data.token);
-      this.$store.commit("setUsername", this.loginform.username);
-      this.useractions = false;
-      this.loginform.username = "";
-      this.loginform.password = "";
-      this.loginform.repeatpassword = "";
-      this.loginform.email = "";
-      this.viewkey = Date.now();
-      this.$router.go();
-    },
     failedSignup() {
       EventBus.$emit("error", "Username is not available, try another");
     },
