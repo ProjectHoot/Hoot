@@ -21,6 +21,12 @@ export default {
     });
   },
 
+  syncUser({ commit }) {
+    api.auth.syncUser().then((user) => {
+      commit("setUser", user);
+    });
+  },
+
   logout({ commit }) {
     api.auth.logout().then(() => {
       commit("setToken", "");

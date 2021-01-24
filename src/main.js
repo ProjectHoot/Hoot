@@ -3,10 +3,12 @@ import vuetify from "./plugins/vuetify";
 import VueRouter from "vue-router";
 import axios from "axios";
 import Vuex from "vuex";
+import Api from "@/services/api/api";
 
 Vue.config.productionTip = false;
 Vue.use(require("vue-moment"));
 Vue.use(VueRouter);
+Vue.use(Api);
 Vue.use(Vuex);
 
 import PostShow from "./views/PostShow.vue";
@@ -78,6 +80,12 @@ Vue.prototype.$index = () => {
   postIndex++;
   return postIndex;
 };
+
+const token = localStorage._token ? localStorage._token : null;
+
+if (token) {
+  store.commit("$auth/setToken", token);
+}
 
 new Vue({
   render: (h) => h(App),

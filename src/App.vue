@@ -1,113 +1,6 @@
 <template>
   <v-app :dark="dark">
-    <v-app-bar app color="primary">
-      <v-toolbar-title>
-        <router-link
-          :to="{ name: 'Feed' }"
-          class="text--primary title text-decoration-none"
-          >Hoot</router-link
-        >
-      </v-toolbar-title>
-      <v-spacer></v-spacer>
-      <TooltipButton
-        :to="{ name: 'Communities' }"
-        icon="mdi-clipboard-list"
-        hover="Community List"
-      />
-      <TooltipButton
-        :clicked="toggleDark"
-        :icon="$store.state.Dark ? 'mdi-flashlight-off' : 'mdi-flashlight'"
-        hover="Toggle Dark/Light Mode"
-      />
-      <v-menu
-        v-model="searchwindow"
-        :close-on-click="false"
-        :close-on-content-click="false"
-      >
-        <template v-slot:activator="{ on: menu, attrs }">
-          <v-tooltip bottom>
-            <template v-slot:activator="{ on: tooltip }">
-              <v-btn icon v-bind="attrs" v-on="{ ...tooltip, ...menu }"
-                ><v-icon class="text--primary">mdi-magnify</v-icon>
-              </v-btn>
-            </template>
-            <span>Search</span>
-          </v-tooltip>
-        </template>
-        <v-card>
-          <v-card-title>This isn't implemented yet</v-card-title>
-          <v-card-text>
-            <v-text-field
-              label="Search"
-              prepend-inner-icon="mdi-magnify"
-              single-line
-            />
-            <v-checkbox
-              v-model="limitsearch"
-              label="Limit results to this server"
-            />
-            <v-row>
-              <v-col cols="6">
-                <v-btn dense @click="searchwindow = false">Search!</v-btn>
-              </v-col>
-              <v-col cols="6">
-                <v-btn dense @click="searchwindow = false">Close</v-btn>
-              </v-col>
-            </v-row>
-          </v-card-text>
-        </v-card>
-      </v-menu>
-      <v-menu v-if="loggedIn" v-model="useractions" offset-y>
-        <template v-slot:activator="{ on: menu, attrs }">
-          <v-tooltip bottom>
-            <template v-slot:activator="{ on: tooltip }">
-              <v-btn text v-bind="attrs" v-on="{ ...tooltip, ...menu }">
-                <v-icon color="gray">mdi-account</v-icon>
-                {{ user.username }}
-              </v-btn>
-            </template>
-            <span>User Settings</span>
-          </v-tooltip>
-        </template>
-        <v-list>
-          <v-list-item @click="logout">Logout</v-list-item>
-          <v-list-item @click="profile">Profile</v-list-item>
-        </v-list>
-      </v-menu>
-      <v-menu
-        v-else
-        v-model="useractions"
-        :close-on-content-click="false"
-        offset-y
-        :nudge-width="200"
-      >
-        <template v-slot:activator="{ on }">
-          <v-btn icon v-on="on"
-            ><v-icon color="gray">mdi-account</v-icon></v-btn
-          >
-        </template>
-        <v-tabs v-model="logintabs">
-          <v-tab key="0">Login</v-tab>
-          <v-tab key="1">Signup</v-tab>
-        </v-tabs>
-        <v-tabs-items v-model="logintabs">
-          <v-tab-item key="0">
-            <v-card>
-              <v-card-text>
-                <LoginForm />
-              </v-card-text>
-            </v-card>
-          </v-tab-item>
-          <v-tab-item key="1">
-            <v-card>
-              <v-card-text>
-                <RegistrationForm />
-              </v-card-text>
-            </v-card>
-          </v-tab-item>
-        </v-tabs-items>
-      </v-menu>
-    </v-app-bar>
+    <AppBar />
 
     <Node></Node>
 
@@ -134,14 +27,13 @@ import EventBus from "./EventBus.js";
 import LoginForm from "@/modules/auth/components/LoginForm";
 import RegistrationForm from "@/modules/auth/components/RegistrationForm";
 import { mapActions, mapState } from "vuex";
+import AppBar from "@/components/menu/AppBar";
 
 export default {
   name: "App",
   components: {
-    RegistrationForm,
-    LoginForm,
+    AppBar,
     Node,
-    TooltipButton,
   },
 
   data: () => ({
@@ -204,18 +96,11 @@ export default {
       this.snackbaricon = "mdi-alert-circle";
       this.snackbar = true;
     },
-    toggleDark() {
-      this.$store.commit("$preferences/setDarkState", !this.dark);
-    },
   },
 
   computed: {
     ...mapState("$preferences", ["dark"]),
     ...mapState("$auth", ["user"]),
-
-    loggedIn() {
-      return Boolean(this.$store.state.$auth.token);
-    },
   },
 };
 </script>

@@ -5,6 +5,8 @@ import authStore from "@/modules/auth/store";
 import feedStore from "@/modules/feed/store";
 import communityStore from "@/modules/community/store";
 
+import syncUserPlugin from "@/modules/auth/store/plugins/user.sync";
+
 import Vuetify from "./plugins/vuetify";
 
 Vue.use(Vuex);
@@ -24,7 +26,8 @@ const $preferences = {
   namespaced: true,
 };
 
-export default new Vuex.Store({
+const store = new Vuex.Store({
+  plugins: [syncUserPlugin],
   modules: {
     $auth: authStore,
     $feed: feedStore,
@@ -32,3 +35,5 @@ export default new Vuex.Store({
     $preferences,
   },
 });
+
+export default store;

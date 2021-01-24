@@ -5,6 +5,10 @@
         type="article"
     ></v-skeleton-loader>
 
+    <div>
+      {{ $store.state.$auth.user }}
+    </div>
+
     <Post v-for="post in posts" :key="post.id" :post="post" />
 
     <v-card v-if="community != null">

@@ -1,5 +1,6 @@
 import { Api } from "./api";
 import LoginResponse from "@/modules/auth/models/loginResponse";
+import User from "@/modules/auth/models/user";
 
 export default new (class Auth extends Api {
   constructor() {
@@ -28,6 +29,13 @@ export default new (class Auth extends Api {
       .then(({ data }) => {
         return new LoginResponse(data);
       });
+  }
+
+  /** @returns {Promise<User>} */
+  syncUser() {
+    return this.axios.get(`${this.baseUrl}/users/~me`).then(({ data }) => {
+      return new User(data);
+    });
   }
 
   logout() {
