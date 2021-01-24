@@ -33,7 +33,7 @@
 import Post from "../models/post";
 import api from "@/services/api";
 import Replies from "../components/Replies";
-import { mapState, mapMutations } from "vuex";
+import { mapState, mapMutations, mapActions } from "vuex";
 import ReplyModal from "@/modules/feed/components/ReplyModal";
 
 export default {
@@ -51,6 +51,7 @@ export default {
 
   methods: {
     ...mapMutations("$feed", ["setReplyingToId"]),
+    ...mapActions("$feed", ["getCommunity"]),
 
     loadPost() {
       this.loading = true;
@@ -59,6 +60,9 @@ export default {
         .getById(this.postId)
         .then((post) => {
           this.post = post;
+          if (!this.community) {
+            this.getCommunity(post.community.id);
+          }
         })
         .catch(() => {
           // Can't load post, what do?

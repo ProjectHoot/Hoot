@@ -8,13 +8,20 @@
     <template v-slot:default>
       <VueEasyMde v-model="myReply" :class="{ dark }" />
 
-      <v-btn @click="submit">Submit</v-btn>
+      <v-btn @click="submit" class="pa-2">
+        <span v-if="!submitting">Submit</span>
+        <v-progress-linear
+            v-else
+            :color="dark ? 'white' : 'black'"
+            indeterminate
+        ></v-progress-linear>
+      </v-btn>
     </template>
   </v-dialog>
 </template>
 
 <script>
-import { mapState, mapMutations } from "vuex";
+import { mapState, mapMutations, mapActions } from "vuex";
 import VueEasyMde from "vue-easymde";
 
 export default {
@@ -29,16 +36,32 @@ export default {
 
   data: () => ({
     myReply: "",
+    submitting: false,
   }),
 
   methods: {
     ...mapMutations("$feed", ["setReplyingToId"]),
+    ...mapActions("$feed", ["submitReply"]),
 
     close() {
       this.setReplyingToId(-1);
     },
 
-    submit() {},
+    submit() {
+      if (this.submitting) {
+        return false;
+      }
+
+      this.submitting = true;
+
+      this.submitReply(this.myReply)
+        .then(() => {
+          this.close();
+        })
+        .finally(() => {
+          this.submitting = false;
+        });
+    },
   },
 
   computed: {
@@ -62,5 +85,10 @@ export default {
 
 >>> .dark .EasyMDEContainer .editor-toolbar {
   color: white;
+}
+
+>>> .dark .EasyMDEContainer button.active,
+>>> .dark .EasyMDEContainer button:hover {
+  background: black;
 }
 </style>

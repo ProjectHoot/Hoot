@@ -33,4 +33,14 @@ export default {
       return community;
     });
   },
+
+  /**
+   * @param reply
+   * @returns {Promise<unknown>}
+   */
+  submitReply(_, reply) {
+    return new Promise((resolve) => {
+      setTimeout(() => resolve(), 1200);
+    });
+  },
 };

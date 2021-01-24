@@ -37,7 +37,9 @@ export default {
 
     /** @returns {string} */
     name() {
-      return this.$route.name === "Community" && this.community.name
+      return (this.$route.name === "Community" ||
+        this.$route.name === "Post") &&
+        this.community.name
         ? this.community.name
         : "Hoot";
     },
