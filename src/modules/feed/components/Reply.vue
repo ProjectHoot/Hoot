@@ -37,7 +37,6 @@
 </template>
 
 <script>
-import FormatDistance from "date-fns/formatDistance";
 import { mapState, mapMutations } from "vuex";
 import Reply from "../models/reply";
 import Tooltip from "@/components/Tooltip";

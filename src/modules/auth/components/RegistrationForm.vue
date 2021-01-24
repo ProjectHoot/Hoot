@@ -29,8 +29,8 @@
 </template>
 
 <script>
-import registrationCredentials from "../models/registrationCredentials";
 import { mapActions } from "vuex";
+import registrationCredentials from "../models/registrationCredentials";
 
 export default {
   name: "RegistrationForm",

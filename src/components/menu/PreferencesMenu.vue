@@ -18,8 +18,8 @@
 </template>
 
 <script>
-import TooltipButton from "@/components/TooltipButton";
 import { mapState } from "vuex";
+import TooltipButton from "@/components/TooltipButton";
 
 export default {
   name: "PreferencesMenu",

@@ -57,8 +57,8 @@
   <v-container v-else><h1>Loading profile</h1></v-container>
 </template>
 <script>
-import EventBus from "../EventBus.js";
 import { mapGetters } from "vuex";
+import EventBus from "../EventBus.js";
 
 export default {
   components: {},

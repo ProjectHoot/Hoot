@@ -22,12 +22,9 @@
 </template>
 
 <script>
-import Node from "./components/Node.vue";
-import TooltipButton from "./components/TooltipButton.vue";
-import EventBus from "./EventBus.js";
-import LoginForm from "@/modules/auth/components/LoginForm";
-import RegistrationForm from "@/modules/auth/components/RegistrationForm";
 import { mapActions, mapState } from "vuex";
+import Node from "./components/Node.vue";
+import EventBus from "./EventBus.js";
 import AppBar from "@/components/menu/AppBar";
 
 export default {

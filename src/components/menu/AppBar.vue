@@ -22,11 +22,11 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 import AuthMenu from "@/components/menu/AuthMenu";
 import SearchMenu from "@/components/menu/SearchMenu";
 import PreferencesMenu from "@/components/menu/PreferencesMenu";
 import TooltipButton from "@/components/TooltipButton";
-import { mapState } from "vuex";
 
 export default {
   name: "AppBar",

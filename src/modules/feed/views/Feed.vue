@@ -121,7 +121,6 @@
                 >@{{ post.author.host }} in {{ post.community.name }}@{{
                   post.community.host
                 }}
-                <Since :Timestamp="post.created" />
               </span>
             </v-list-item-subtitle>
           </v-list-item-content>
@@ -133,18 +132,15 @@
 </template>
 
 <script>
-import Username from "../components/Username";
-import Since from "../components/Since";
-import Editor from "../components/Editor";
-
 import { mapState } from "vuex";
+import Username from "../components/Username";
+import Editor from "../components/Editor";
 import PostItem from "@/modules/feed/components/PostItem";
 
 export default {
   components: {
     PostItem,
     Username,
-    Since,
     Editor,
   },
   data() {

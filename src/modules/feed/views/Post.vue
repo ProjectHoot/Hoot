@@ -30,10 +30,8 @@
 </template>
 
 <script>
-import Post from "../models/post";
-import api from "@/services/api";
-import Replies from "../components/Replies";
 import { mapState, mapMutations, mapActions } from "vuex";
+import Replies from "../components/Replies";
 import ReplyModal from "@/modules/feed/components/ReplyModal";
 
 export default {

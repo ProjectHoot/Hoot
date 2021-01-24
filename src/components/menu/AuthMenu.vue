@@ -39,9 +39,9 @@
 </template>
 
 <script>
+import { mapGetters, mapState } from "vuex";
 import LoginForm from "@/modules/auth/components/LoginForm";
 import RegistrationForm from "@/modules/auth/components/RegistrationForm";
-import { mapGetters, mapState } from "vuex";
 
 export default {
   name: "AuthMenu",
