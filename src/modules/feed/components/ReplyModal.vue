@@ -4,6 +4,7 @@
     max-width="1000"
     v-model="value"
     @click:outside="close"
+    @keydown.esc="close"
   >
     <template v-slot:default>
       <VueEasyMde v-model="myReply" :class="{ dark }" />
@@ -40,11 +41,18 @@ export default {
   }),
 
   methods: {
-    ...mapMutations("$feed", ["setReplyingToId"]),
+    ...mapMutations("$feed", ["setReplyingToState"]),
     ...mapActions("$feed", ["submitReply"]),
 
     close() {
-      this.setReplyingToId(-1);
+      if (this.submitting) {
+        return false;
+      }
+
+      this.setReplyingToState({
+        type: "",
+        id: -1,
+      });
     },
 
     submit() {
@@ -54,7 +62,11 @@ export default {
 
       this.submitting = true;
 
-      this.submitReply({ post: this.post, reply: this.myReply })
+      this.submitReply({
+        author: this.user,
+        post: this.post,
+        reply: this.myReply,
+      })
         .then(() => {
           this.close();
         })
@@ -65,6 +77,7 @@ export default {
   },
 
   computed: {
+    ...mapState("$auth", ["user"]),
     ...mapState("$preferences", ["dark"]),
     ...mapState("$feed", ["post"]),
   },

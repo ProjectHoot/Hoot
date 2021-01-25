@@ -17,6 +17,20 @@
             id="content"
           >
           </v-card-text>
+
+          <v-card-actions>
+            <v-btn icon @click="upvote">
+              <v-icon>mdi-arrow-up</v-icon>
+            </v-btn>
+
+            <v-btn icon @click="downvote">
+              <v-icon>mdi-arrow-down</v-icon>
+            </v-btn>
+
+            <v-btn icon @click="replyTo">
+              <v-icon>mdi-reply</v-icon>
+            </v-btn>
+          </v-card-actions>
         </v-card>
       </v-col>
 
@@ -30,7 +44,7 @@
 </template>
 
 <script>
-import { mapState, mapMutations, mapActions } from "vuex";
+import {mapState, mapMutations, mapActions, mapGetters} from "vuex";
 import Replies from "../components/Replies";
 import ReplyModal from "@/modules/feed/components/ReplyModal";
 
@@ -46,7 +60,7 @@ export default {
   },
 
   methods: {
-    ...mapMutations("$feed", ["setReplyingToId"]),
+    ...mapMutations("$feed", ["setReplyingToState"]),
     ...mapActions("$feed", ["getCommunity", "getPost"]),
 
     async loadPost() {
@@ -60,10 +74,25 @@ export default {
 
       this.loading = false;
     },
+
+    upvote() {
+      throw new Error("Not implemented");
+    },
+
+    downvote() {
+      throw new Error("Not implemented");
+    },
+
+    replyTo() {
+      if (this.loggedIn) {
+        this.setReplyingToState({type: "post", id: this.post.id});
+      }
+    },
   },
 
   computed: {
-    ...mapState("$feed", ["replyingToId", "post"]),
+    ...mapGetters("$auth", ["loggedIn"]),
+    ...mapState("$feed", ["replyingTo", "post"]),
 
     /** @returns {number} */
     postId() {
@@ -77,11 +106,14 @@ export default {
 
     replying: {
       get() {
-        return this.replyingToId !== -1;
+        return this.replyingTo.id !== -1;
       },
       set(v) {
         if (!v) {
-          this.setReplyingToId(-1);
+          this.setReplyingToState({
+            type: "",
+            id: -1,
+          });
         }
       },
     },

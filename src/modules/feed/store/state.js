@@ -8,5 +8,8 @@ export default {
   post: new Post({}),
   /** @type {Community} */
   community: new Community({}),
-  replyingToId: -1,
+  replyingTo: {
+    type: "",
+    id: -1,
+  },
 };

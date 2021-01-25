@@ -1,3 +1,5 @@
+import { findReplyById } from "@/modules/feed/store/helpers";
+
 export default {
   /** @param {Post[]} posts */
   setPosts(state, posts) {
@@ -14,8 +16,40 @@ export default {
     state.community = community;
   },
 
-  /** @param {number} replyingToId */
-  setReplyingToId(state, replyingToId) {
-    state.replyingToId = replyingToId;
+  /**
+   * @param {string} type
+   * @param {number} id
+   */
+  setReplyingToState(state, { type, id }) {
+    state.replyingTo = {
+      type,
+      id,
+    };
+  },
+
+  /**
+   * @param {string} type
+   * @param {Post} post
+   * @param {Reply} reply
+   */
+  addReply(state, { type, post, reply }) {
+    if (state.replyingTo.type === "post") {
+      state.post.replies = [reply, ...state.post.replies];
+    } else {
+      const oldReply = findReplyById(state.post.replies, state.replyingTo.id);
+      oldReply.replies = [reply, ...oldReply.replies];
+    }
+  },
+
+  /**
+   * @param {number} id
+   * @param {number} score
+   */
+  setReplyScore(state, { id, score }) {
+    const reply = findReplyById(state.post.replies, id);
+
+    if (reply) {
+      reply.score = score;
+    }
   },
 };

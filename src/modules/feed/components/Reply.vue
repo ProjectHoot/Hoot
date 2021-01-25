@@ -37,7 +37,7 @@
 </template>
 
 <script>
-import { mapState, mapMutations } from "vuex";
+import {mapState, mapMutations, mapGetters, mapActions} from "vuex";
 import Reply from "../models/reply";
 import Tooltip from "@/components/Tooltip";
 
@@ -57,29 +57,37 @@ export default {
   },
 
   methods: {
-    ...mapMutations("$feed", ["setReplyingToId"]),
+    ...mapActions("$feed", ["upvoteReply", "downvoteReply"]),
+    ...mapMutations("$feed", ["setReplyingToState"]),
 
     upvote() {
-      throw new Error("Not implemented");
+      if (this.loggedIn) {
+        this.upvoteReply(this.reply);
+      }
     },
 
     downvote() {
-      throw new Error("Not implemented");
+      if (this.loggedIn) {
+        this.downvoteReply(this.reply);
+      }
     },
 
     replyTo() {
-      this.setReplyingToId(this.reply.id);
+      if (this.loggedIn) {
+        this.setReplyingToState({type: "reply", id: this.reply.id});
+      }
     },
   },
 
   computed: {
+    ...mapGetters("$auth", ["loggedIn"]),
     ...mapState("$preferences", ["dark"]),
 
     /** @returns {boolean} */
     root() {
       return this.level === 0;
     },
-  }
+  },
 };
 </script>
 

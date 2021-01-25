@@ -134,7 +134,7 @@ class ClassGenerator {
       }
 
       if (type === "Date") {
-        return `this.${key} = new Date(${key});`
+        return `this.${key} = new Date(${key});`;
       }
 
       return `this.${key} = ${key};`;
@@ -172,47 +172,6 @@ class ClassGenerator {
   }
 }
 
-const declaration = {
-  id: 1,
-  createdAt: new Date(),
-  updatedAt: new Date(),
-  user: {
-    id: 1,
-    profile: {
-      username: "Tim",
-      birthdate: new Date(),
-      locked: false,
-      roles: [
-        {
-          id: 10,
-          name: "edit"
-        }
-      ]
-    },
-  },
-  products: [
-    {
-      id: 1,
-      name: "Pakje Marlboro",
-      vatRate: 1
-    }
-  ],
-  travels: [
-    {
-      id: 1,
-      from: {
-        address: {
-          street: "Newtonstraat 140",
-          city: "Osdorp"
-        }
-      },
-      to: {
-        address: {
+const data = { id: 100 };
 
-        }
-      }
-    }
-  ]
-};
-
-new ClassGenerator("Declaration", declaration, true);
+new ClassGenerator("postReplyResponse", data, true);

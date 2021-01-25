@@ -1,5 +1,5 @@
 import api from "@/services/api";
-import { findReplyById } from "@/modules/feed/store/helpers";
+import Reply from "../models/reply";
 
 export default {
   /** @returns {Promise<Post[]>} */
@@ -48,13 +48,53 @@ export default {
   },
 
   /**
+   * @param {User} user
    * @param {Post} post
    * @param {string} reply
-   * @returns {Promise<unknown>}
+   * @returns {Promise<PostReplyResponse>}
    */
-  submitReply({ state }, { post, reply }) {
-    console.log(findReplyById(post.replies, state.replyingToId).content_html);
-    return new Promise((r) => r());
-    // return api.posts.replyToReply(state.replyingToId, reply);
+  submitReply({ commit, state }, { author, post, reply }) {
+    let action;
+    const type = state.replyingTo.type;
+
+    if (type === "post") {
+      action = api.posts.replyToPost(state.replyingTo.id, reply);
+    } else {
+      action = api.posts.replyToReply(state.replyingTo.id, reply);
+    }
+
+    action.then((postReplyResponse) => {
+      const newReply = new Reply({
+        id: postReplyResponse.id,
+        content_text: null,
+        content_html: reply,
+        attachments: [],
+        created: new Date().toISOString(),
+        score: 0,
+        author: author,
+      });
+
+      commit("addReply", { type, post, reply: newReply });
+    });
+
+    return action;
+  },
+
+  /**
+   * @param {Reply} reply
+   */
+  upvoteReply({ commit }, reply) {
+    return api.posts.upvoteReply(reply.id).then(() => {
+      commit("setReplyScore", { id: reply.id, score: reply.score + 1 });
+    });
+  },
+
+  /**
+   * @param {Reply} reply
+   */
+  downvoteReply({ commit }, reply) {
+    return api.posts.downvoteReply(reply.id).then(() => {
+      commit("setReplyScore", { id: reply.id, score: reply.score - 1 });
+    });
   },
 };
