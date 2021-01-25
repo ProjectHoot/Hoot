@@ -18,7 +18,7 @@
       <v-card-text v-html="reply.content_html" />
 
       <v-card-actions>
-        <v-btn icon @click="upvote">
+        <v-btn icon @click="upvote" :color="upvoteIconColor">
           <v-progress-circular
             :width="3"
             indeterminate
