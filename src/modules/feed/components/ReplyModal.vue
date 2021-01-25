@@ -44,8 +44,12 @@ export default {
     ...mapMutations("$feed", ["setReplyingToState"]),
     ...mapActions("$feed", ["submitReply"]),
 
-    close() {
-      if (this.submitting) {
+    /**
+     * @param {boolean} override
+     * @returns {boolean}
+     */
+    close(override = false) {
+      if (this.submitting && !override) {
         return false;
       }
 
@@ -68,7 +72,7 @@ export default {
         reply: this.myReply,
       })
         .then(() => {
-          this.close();
+          this.close(true);
         })
         .finally(() => {
           this.submitting = false;

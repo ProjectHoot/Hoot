@@ -3,7 +3,7 @@
     <v-card :elevation="0" class="pb-2">
       <v-card-subtitle>
         <v-chip label>
-          {{ reply.author.username }}
+          {{ reply.author.username }} {{ reply.id }}
           <v-icon right> mdi-label mdi-rotate-180 </v-icon>
         </v-chip>
 

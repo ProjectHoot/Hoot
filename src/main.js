@@ -24,36 +24,12 @@ import Post from "@/modules/feed/views/Post";
 Vue.prototype.$store = store;
 Vue.prototype.$eventBus = EventBus;
 
-// TODO: move to separate file/structure
-const routes = [
-  { path: "/", name: "Feed", component: Feed },
-  //  { path: '/r/:host/:community/', name: 'Community', component: ShowCommunity },
-  { path: "/p/posts/:id", name: "Post", component: Post },
-  {
-    path: "/p/comments/:commentID",
-    name: "PostShowExpandedComments",
-    component: PostShow,
-  },
-  { path: "/communities", name: "Communities", component: Communities },
-  {
-    path: "/c/:id/:name",
-    name: "Community",
-    component: Feed,
-  },
-  { path: "/me", name: "My Profile", component: Profile },
-];
+import router from "./router";
 
-const router = new VueRouter({
-  base: "/",
-  mode: "history",
-  linkActiveClass: "active",
-  routes,
-});
-
-router.beforeEach((to, from, next) => {
+/*router.beforeEach((to, from, next) => {
   document.title = "Hoot: " + to.name;
   next();
-});
+});*/
 
 if (
   window.location.hostname == "localhost" ||

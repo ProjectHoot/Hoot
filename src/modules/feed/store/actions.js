@@ -76,6 +76,8 @@ export default {
       });
 
       commit("addReply", { type, post, reply: newReply });
+
+      return newReply;
     });
 
     return action;
