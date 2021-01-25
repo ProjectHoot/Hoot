@@ -15,6 +15,7 @@ import Reply from "./reply";
  * @property {Reply[]} replies
  * @property {number} score
  * @property {string} title
+ * @property {object} your_vote
  */
 export default class Post {
   constructor({
@@ -29,6 +30,7 @@ export default class Post {
     replies,
     score,
     title,
+    your_vote,
   }) {
     this.id = id;
     this.author = new Author(author || {});
@@ -41,6 +43,7 @@ export default class Post {
     this.replies_count_total = replies_count_total;
     this.score = score;
     this.title = title;
+    this.your_vote = your_vote;
   }
 
   /** @returns {string} */

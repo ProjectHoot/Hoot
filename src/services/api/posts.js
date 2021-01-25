@@ -7,8 +7,11 @@ export default new (class Auth extends Api {
     super();
   }
 
-  /** @returns {Promise<Post[]>} */
-  get() {
+  /**
+   * @param {boolean} includeYour
+   * @returns {Promise<Post[]>}
+   */
+  get(includeYour) {
     return this.axios.get(`${this.baseUrl}/posts`).then(({ data }) => {
       return data.map((post) => new Post(post));
     });
@@ -16,12 +19,17 @@ export default new (class Auth extends Api {
 
   /**
    * @param {number} id
+   * @param {boolean} includeYour
    * @returns {Promise<Post>}
    */
-  getById(id) {
-    return this.axios.get(`${this.baseUrl}/posts/${id}`).then(({ data }) => {
-      return new Post(data);
-    });
+  getById(id, includeYour) {
+    return this.axios
+      .get(
+        `${this.baseUrl}/posts/${id}${includeYour ? "?include_your=true" : ""}`
+      )
+      .then(({ data }) => {
+        return new Post(data);
+      });
   }
 
   /**
@@ -68,5 +76,21 @@ export default new (class Auth extends Api {
    */
   downvoteReply(id) {
     return this.axios.delete(`${this.baseUrl}/comments/${id}/your_vote`);
+  }
+
+  /**
+   * @param {number} id
+   * @returns {Promise<*>}
+   */
+  upvotePost(id) {
+    return this.axios.put(`${this.baseUrl}/posts/${id}/your_vote`);
+  }
+
+  /**
+   * @param {number} id
+   * @returns {Promise<*>}
+   */
+  downvotePost(id) {
+    return this.axios.delete(`${this.baseUrl}/posts/${id}/your_vote`);
   }
 })();

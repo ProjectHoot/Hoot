@@ -19,7 +19,13 @@
 
       <v-card-actions>
         <v-btn icon @click="upvote">
-          <v-icon>mdi-arrow-up</v-icon>
+          <v-progress-circular
+            :width="3"
+            indeterminate
+            color="primary"
+            v-if="upvoting"
+          ></v-progress-circular>
+          <v-icon v-else>mdi-arrow-up</v-icon>
         </v-btn>
 
         <v-btn icon @click="downvote">
@@ -37,7 +43,7 @@
 </template>
 
 <script>
-import {mapState, mapMutations, mapGetters, mapActions} from "vuex";
+import { mapState, mapMutations, mapGetters, mapActions } from "vuex";
 import Reply from "../models/reply";
 import Tooltip from "@/components/Tooltip";
 
@@ -56,25 +62,39 @@ export default {
     },
   },
 
+  data: () => ({
+    upvoting: false,
+  }),
+
   methods: {
     ...mapActions("$feed", ["upvoteReply", "downvoteReply"]),
     ...mapMutations("$feed", ["setReplyingToState"]),
 
     upvote() {
-      if (this.loggedIn) {
-        this.upvoteReply(this.reply);
+      if (!this.loggedIn) {
+        return false;
+      }
+
+      this.upvoting = true;
+
+      if (!this.reply.your_vote) {
+        this.upvoteReply(this.reply).finally(() => (this.upvoting = false));
+      } else {
+        this.downvoteReply(this.reply).finally(() => (this.upvoting = false));
       }
     },
 
     downvote() {
-      if (this.loggedIn) {
-        this.downvoteReply(this.reply);
+      if (!this.loggedIn) {
+        return false;
       }
+
+      this.downvoteReply(this.reply);
     },
 
     replyTo() {
       if (this.loggedIn) {
-        this.setReplyingToState({type: "reply", id: this.reply.id});
+        this.setReplyingToState({ type: "reply", id: this.reply.id });
       }
     },
   },
@@ -86,6 +106,11 @@ export default {
     /** @returns {boolean} */
     root() {
       return this.level === 0;
+    },
+
+    /** @returns {string} */
+    upvoteIconColor() {
+      return this.reply.your_vote ? "orange" : "white";
     },
   },
 };

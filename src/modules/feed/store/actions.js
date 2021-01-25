@@ -13,10 +13,11 @@ export default {
 
   /**
    * @param {number} id
+   * @param {boolean} includeYour
    * @returns {Promise<Post>}
    */
-  getPost({ commit }, id) {
-    return api.posts.getById(id).then((post) => {
+  getPost({ commit }, { id, includeYour }) {
+    return api.posts.getById(id, includeYour).then((post) => {
       commit("setPost", post);
 
       return post;
@@ -86,6 +87,7 @@ export default {
   upvoteReply({ commit }, reply) {
     return api.posts.upvoteReply(reply.id).then(() => {
       commit("setReplyScore", { id: reply.id, score: reply.score + 1 });
+      commit("setReplyYourVote", { id: reply.id, yourVote: true });
     });
   },
 
@@ -95,6 +97,27 @@ export default {
   downvoteReply({ commit }, reply) {
     return api.posts.downvoteReply(reply.id).then(() => {
       commit("setReplyScore", { id: reply.id, score: reply.score - 1 });
+      commit("setReplyYourVote", { id: reply.id, yourVote: false });
+    });
+  },
+
+  /**
+   * @param {Post} post
+   */
+  upvotePost({ commit }, post) {
+    return api.posts.upvotePost(post.id).then(() => {
+      commit("setPostScore", post.score + 1);
+      commit("setPostYourVote", true);
+    });
+  },
+
+  /**
+   * @param {Post} post
+   */
+  downvotePost({ commit }, post) {
+    return api.posts.downvotePost(post.id).then(() => {
+      commit("setPostScore", post.score - 1);
+      commit("setPostYourVote", false);
     });
   },
 };

@@ -10,6 +10,7 @@
  * @property {Reply[]} replies
  * @property {boolean} has_replies
  * @property {number} score
+ * @property {object} your_vote
  * @property {boolean} collapsed
  * @property {string} createdDistance
  */
@@ -29,6 +30,7 @@ export default class Reply {
     replies,
     has_replies,
     score,
+    your_vote,
   }) {
     this.id = id;
     this.content_text = content_text;
@@ -41,6 +43,7 @@ export default class Reply {
     this.replies = replies ? replies.map((reply) => new Reply(reply)) : [];
     this.has_replies = has_replies;
     this.score = score;
+    this.your_vote = your_vote;
     this.collapsed = false;
   }
 

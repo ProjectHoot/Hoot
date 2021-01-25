@@ -19,8 +19,14 @@
           </v-card-text>
 
           <v-card-actions>
-            <v-btn icon @click="upvote">
-              <v-icon>mdi-arrow-up</v-icon>
+            <v-btn icon @click="upvote" :color="upvoteIconColor">
+              <v-progress-circular
+                :width="3"
+                indeterminate
+                color="primary"
+                v-if="upvoting"
+              ></v-progress-circular>
+              <v-icon v-else>mdi-arrow-up</v-icon>
             </v-btn>
 
             <v-btn icon @click="downvote">
@@ -44,7 +50,7 @@
 </template>
 
 <script>
-import {mapState, mapMutations, mapActions, mapGetters} from "vuex";
+import { mapState, mapMutations, mapActions, mapGetters } from "vuex";
 import Replies from "../components/Replies";
 import ReplyModal from "@/modules/feed/components/ReplyModal";
 
@@ -53,6 +59,7 @@ export default {
   components: { ReplyModal, Replies },
   data: () => ({
     loading: false,
+    upvoting: false,
   }),
 
   mounted() {
@@ -61,12 +68,17 @@ export default {
 
   methods: {
     ...mapMutations("$feed", ["setReplyingToState"]),
-    ...mapActions("$feed", ["getCommunity", "getPost"]),
+    ...mapActions("$feed", [
+      "getCommunity",
+      "getPost",
+      "upvotePost",
+      "downvotePost",
+    ]),
 
     async loadPost() {
       this.loading = true;
 
-      await this.getPost(this.postId);
+      await this.getPost({ id: this.postId, includeYour: this.loggedIn });
 
       if (!this.community) {
         await this.getCommunity(this.post.community.id);
@@ -76,16 +88,26 @@ export default {
     },
 
     upvote() {
-      throw new Error("Not implemented");
+      if (this.loggedIn && this.post && !this.upvoting) {
+        this.upvoting = true;
+
+        if (!this.post.your_vote) {
+          this.upvotePost(this.post).finally(() => (this.upvoting = false));
+        } else {
+          this.downvotePost(this.post).finally(() => (this.upvoting = false));
+        }
+      }
     },
 
     downvote() {
-      throw new Error("Not implemented");
+      if (this.loggedIn) {
+        this.downvotePost(this.post);
+      }
     },
 
     replyTo() {
       if (this.loggedIn) {
-        this.setReplyingToState({type: "post", id: this.post.id});
+        this.setReplyingToState({ type: "post", id: this.post.id });
       }
     },
   },
@@ -102,6 +124,11 @@ export default {
     /** @returns {boolean} */
     hasReplies() {
       return this.post.replies.length > 0;
+    },
+
+    /** @returns {string} */
+    upvoteIconColor() {
+      return this.post.your_vote ? "orange" : "white";
     },
 
     replying: {

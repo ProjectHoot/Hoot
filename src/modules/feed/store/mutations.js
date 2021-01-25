@@ -52,4 +52,34 @@ export default {
       reply.score = score;
     }
   },
+
+  /**
+   * @param {number} score
+   */
+  setPostScore(state, score) {
+    if (state.post) {
+      state.post.score = score;
+    }
+  },
+
+  /**
+   * @param {number} id
+   * @param {boolean} yourVote
+   */
+  setReplyYourVote(state, { id, yourVote }) {
+    const reply = findReplyById(state.post.replies, id);
+
+    if (reply) {
+      reply.your_vote = yourVote ? {} : null;
+    }
+  },
+
+  /**
+   * @param {boolean} yourVote
+   */
+  setPostYourVote(state, yourVote) {
+    if (state.post) {
+      state.post.your_vote = yourVote ? {} : null;
+    }
+  },
 };
