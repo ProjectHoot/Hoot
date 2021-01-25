@@ -110,7 +110,7 @@ export default {
 
     /** @returns {string} */
     upvoteIconColor() {
-      return this.reply.your_vote ? "orange" : "white";
+      return this.reply.your_vote ? "orange" : null;
     },
   },
 };

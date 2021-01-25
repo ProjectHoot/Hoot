@@ -13,13 +13,14 @@ Vue.use(Vuex);
 
 const $preferences = {
   state: {
-    dark: true,
+    dark: localStorage._dark ? +localStorage._dark : true,
   },
 
   mutations: {
     setDarkState(state, dark) {
       state.dark = dark;
       Vuetify.framework.theme.dark = dark;
+      localStorage._dark = +dark;
     },
   },
 

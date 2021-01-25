@@ -128,7 +128,7 @@ export default {
 
     /** @returns {string} */
     upvoteIconColor() {
-      return this.post.your_vote ? "orange" : "white";
+      return this.post.your_vote ? "orange" : null;
     },
 
     replying: {
