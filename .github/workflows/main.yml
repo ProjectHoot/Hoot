@@ -41,6 +41,6 @@ jobs:
           context: ${{ steps.checkout.env.GITHUB_WORKSPACE }}
           file: "${{ steps.checkout.env.GITHUB_WORKSPACE }}/docker/release.Dockerfile"
           push: true
-          tags: npmaile/hoot:latest
+          tags: ${{ secrets.DOCKER_ORG_NAME }}/hoot:latest
       - name: Image Digest
         run: echo ${{ steps.docker_build.outputs.digest }}
