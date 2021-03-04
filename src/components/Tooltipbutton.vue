@@ -21,12 +21,18 @@ export default {
         icon: String,
         clicked: Function,
         hover: String,
-        to: Object
+        to: Object,
+      clickarg: String,
+
     },
     methods: {
         onClicked: function() {
           if (this.clicked!=null)
-            this.clicked();
+            if (this.clickarg!=null)
+              this.clicked(this.clickarg);
+            else
+              this.clicked();
+
         }
     }
 }

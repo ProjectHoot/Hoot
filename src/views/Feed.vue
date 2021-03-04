@@ -54,12 +54,7 @@
       <template v-for="(post, index) in posts">
         <v-list-item style="padding-left: 0" :key="index">
           <v-list-item-action style="margin-right: 4px">
-            <v-btn icon v-if="$store.state.Username" @click="upVote(index)"
-              ><v-icon v-if="post.your_vote" color="primary"
-                >mdi-arrow-up-bold</v-icon
-              >
-              <v-icon v-else color="secondary">mdi-arrow-up</v-icon>
-            </v-btn>
+            <tooltipbutton v-if="$store.state.Username" :clicked="upVote" :clickarg="index" :icon="post.your_vote ? 'mdi-cards-heart' : 'mdi-heart-outline'" :hover="post.your_vote ? 'Un-love' : 'Love'"></tooltipbutton>
             <span
               style="margin-left: auto; margin-right: auto"
               v-if="post.score != null"
@@ -104,11 +99,14 @@
 import Username from "../components/Username";
 import Since from "../components/Since";
 import Editor from "../components/Editor";
+import Tooltipbutton from "@/components/Tooltipbutton";
+
 export default {
   components: {
     Username,
     Since,
     Editor,
+    Tooltipbutton,
   },
   data() {
     return {

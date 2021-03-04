@@ -35,8 +35,4 @@ export default {
 }
 </script>
 <style>
-.editor-toolbar {
-    color: white;
-
-}
 </style>
