@@ -3,7 +3,7 @@
     <v-card v-if="community != null">
       <v-card-title>{{ community.name }}</v-card-title>
       <v-card-subtitle>{{ community.description }}</v-card-subtitle>
-      <v-card-actions>
+      <v-card-actions v-if="$store.state.Username">
         <v-btn
           v-if="community.your_follow && community.your_follow.accepted"
           @click="showeditor = !showeditor; showlinkinput = false"

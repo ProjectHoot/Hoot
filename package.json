@@ -26,6 +26,7 @@
   "dependencies": {
     "ansi-regex": "^5.0.0",
     "axios": "^0.21.1",
+    "chokidar": "^3.5.1",
     "cordova": "^9.0.0",
     "core-js": "^3.8.2",
     "moment": "^2.29.1",
