@@ -3,7 +3,7 @@
     <v-card v-if="community != null">
       <v-card-title>{{ community.name }}</v-card-title>
       <v-card-subtitle>{{ community.description }}</v-card-subtitle>
-      <v-card-actions v-if="$store.state.Username">
+      <v-card-actions v-if="$store.state.LoggedIn">
         <v-btn
           v-if="community.your_follow && community.your_follow.accepted"
           @click="showeditor = !showeditor; showlinkinput = false"
@@ -54,7 +54,7 @@
       <template v-for="(post, index) in posts">
         <v-list-item style="padding-left: 0" :key="index">
           <v-list-item-action style="margin-right: 4px">
-            <tooltipbutton v-if="$store.state.Username" :clicked="upVote" :clickarg="index" :icon="post.your_vote ? 'mdi-cards-heart' : 'mdi-heart-outline'" :hover="post.your_vote ? 'Un-love' : 'Love'"></tooltipbutton>
+            <tooltipbutton v-if="$store.state.LoggedIn" :clicked="upVote" :clickarg="index" :icon="post.your_vote ? 'mdi-cards-heart' : 'mdi-heart-outline'" :hover="post.your_vote ? 'Un-love' : 'Love'"></tooltipbutton>
             <span
               style="margin-left: auto; margin-right: auto"
               v-if="post.score != null"
@@ -122,13 +122,12 @@ export default {
     };
   },
   mounted: function () {
-      console.log(this.$route.params);
 
     if (typeof (this.$route.params.communityID) == "undefined") {
       this.loadDefaultPosts();
     } else {
       // Load community info
-      if (this.$store.state.Username)
+      if (this.$store.state.LoggedIn)
       this.$http
         .get(
           this.$LOTIDE +
@@ -174,8 +173,7 @@ export default {
         .then(this.gotunsubscribed);
     },
     loadPosts() {
-      console.log("Called loadPosts");
-      if (this.$store.state.Username != "") {
+      if (this.$store.state.LoggedIn) {
         this.$http
           .get(
             this.$LOTIDE +
@@ -196,8 +194,7 @@ export default {
       }
     },
     loadDefaultPosts() {
-      console.log("Loading default posts");
-      if (this.$store.state.Username != "") {
+      if (this.$store.state.LoggedIn) {
         this.$http
           .get(
             this.$LOTIDE +
@@ -212,14 +209,12 @@ export default {
       this.community = d.data;
     },
     gotFollowingPosts: function (d) {
-      console.log("gotFollowingPosts");
       this.tempposts = d.data;
       this.$http
         .get(this.$LOTIDE + "/unstable/posts?include_your=true")
         .then(this.gotMorePosts);
     },
     gotPosts: function (d) {
-      console.log("got posts");
       this.posts = d.data;
       for (var x in this.posts) {
         if (typeof this.posts[x].score == "undefined") this.posts[x].score = 0;

@@ -15,8 +15,8 @@
                  </span>
             </span>
       <br>
-      <tooltipbutton v-if="$store.state.Username" :clicked="upVote" :icon="post.your_vote ? 'mdi-cards-heart' : 'mdi-heart-outline'" :hover="post.your_vote ? 'Un-love' : 'Love'"></tooltipbutton>
-      <tooltipbutton v-if="$store.state.Username" :clicked="replyClicked" icon="mdi-reply" hover="Reply"></tooltipbutton>
+      <tooltipbutton v-if="$store.state.LoggedIn" :clicked="upVote" :icon="post.your_vote ? 'mdi-cards-heart' : 'mdi-heart-outline'" :hover="post.your_vote ? 'Un-love' : 'Love'"></tooltipbutton>
+      <tooltipbutton v-if="$store.state.LoggedIn" :clicked="replyClicked" icon="mdi-reply" hover="Reply"></tooltipbutton>
 
     </div>
     <v-card v-if="replybox">

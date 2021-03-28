@@ -1,6 +1,6 @@
 <template>
   <v-container v-if="loaded">
-    <v-row v-if="$store.state.Username">
+    <v-row v-if="$store.state.LoggedIn">
       <v-col cols="12" md="6">
         <v-card>
           <v-card-title>Change Password</v-card-title>
@@ -67,7 +67,7 @@ export default {
     };
   },
   mounted: function () {
-      if (this.$store.state.Username) {
+      if (this.$store.state.LoggedIn) {
     this.$http
       .get(this.$LOTIDE + "/unstable/users/~me")
       .then(this.gotProfile)

@@ -11,7 +11,7 @@
     <v-list v-if="loaded">
               <template v-for="(c) in filteredcommunities">
             <v-list-item :key="c.id"  v-if="subscribed ? c.your_follow : true">
-            <v-list-item-action v-if="$store.state.Username">
+            <v-list-item-action v-if="$store.state.LoggedIn">
                 <v-btn  v-if="c.your_follow==null || c.your_follow==false" @click="subscribe(c.id)"><v-icon left>mdi-plus-box</v-icon>Subscribe</v-btn>
                 <v-btn  v-else @click="unsubscribe(c.id)"><v-icon left>mdi-trash-can</v-icon>Unsubscribe</v-btn>
             </v-list-item-action>
@@ -42,7 +42,7 @@ export default {
         }
     },
     beforeMount: function() {
-        if (this.$store.state.Username)
+        if (this.$store.state.LoggedIn)
             this.$http.get(this.$LOTIDE + "/unstable/communities?include_your=true").then(this.gotCommunities);
         else 
         this.$http.get(this.$LOTIDE + "/unstable/communities").then(this.gotCommunities);

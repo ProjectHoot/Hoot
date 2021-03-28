@@ -58,7 +58,7 @@
         </v-card>
       </v-menu>
       <v-menu
-        v-if="$store.state.Username"
+        v-if="$store.state.LoggedIn"
         v-model="useractions"
   
         offset-y
@@ -206,6 +206,8 @@ export default {
   }),
   mounted: function () {
     this.$vuetify.theme.dark = this.$store.state.Dark;
+    if (this.$store.state.Username) this.$store.commit("login");
+
     EventBus.$on("message", this.showmessage);
     EventBus.$on("error", this.showerror);
   },
@@ -224,6 +226,8 @@ export default {
 
       this.$store.commit("setToken", "");
       this.$store.commit("setUsername", "");
+      this.$store.commit("logout");
+
       this.useractions = false;
       this.viewkey = Date.now();
       this.$router.go();
@@ -269,6 +273,8 @@ export default {
     gotLogin: function (d) {
       this.$store.commit("setToken", d.data.token);
       this.$store.commit("setUsername", this.loginform.username);
+      this.$store.commit("login");
+
       this.useractions = false;
       this.loginform.username = "";
       this.loginform.password = "";

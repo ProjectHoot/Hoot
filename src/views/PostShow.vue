@@ -32,8 +32,7 @@ export default {
   mounted: function () {
     this.postID = this.$route.params.postID;
     if (this.$route.params.commentID) {
-      if (this.$store.state.Username) {
-        console.log(this.$store.state.Username);
+      if (this.$store.state.LoggedIn) {
         this.$http
           .get(
             this.$LOTIDE +
@@ -50,7 +49,7 @@ export default {
           .then(this.gotPost);
       }
     } else {
-      if (this.$store.state.Username) {
+      if (this.$store.state.LoggedIn) {
         this.$http
           .get(
             this.$LOTIDE +
