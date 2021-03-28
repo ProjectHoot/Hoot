@@ -1,29 +1,16 @@
 <template>
   <v-container fluid style="padding: 0">
     <v-card v-if="community != null">
-      <v-card-title>{{ community.name }}</v-card-title>
+      <v-card-title>
+        {{ community.name }}</v-card-title>
       <v-card-subtitle>{{ community.description }}</v-card-subtitle>
       <v-card-actions v-if="$store.state.LoggedIn">
-        <v-btn
-          v-if="community.your_follow && community.your_follow.accepted"
-          @click="showeditor = !showeditor; showlinkinput = false"
-          ><v-icon left>mdi-pencil</v-icon>
-          New Post</v-btn
-        >
-        <v-btn
-          v-if="community.your_follow && community.your_follow.accepted"
-          @click="showlinkinput = !showlinkinput; showeditor = false"
-          ><v-icon left>mdi-link</v-icon>
-        New Link</v-btn
-        >
-        <v-btn
-          v-if="
-            community.your_follow && community.your_follow.accepted
-          "
-          @click="unsubscribe"
-          ><v-icon left>mdi-trash-can</v-icon>Unsubscribe</v-btn
-        >
-        <v-btn v-else @click="subscribe"><v-icon left>mdi-plus-box</v-icon>Subscribe</v-btn>
+        <tooltipbutton v-if="community.your_follow==null || community.your_follow==false" :clicked="subscribe" :clickarg="String(community.id)" icon="mdi-plus-box" hover="Subscribe"></tooltipbutton>
+        <tooltipbutton v-else :clicked="unsubscribe" :clickarg="String(community.id)" icon="mdi-trash-can" hover="Unsubscribe"></tooltipbutton>
+        <tooltipbutton v-if="community.your_follow && community.your_follow.accepted"
+                       :click="togglenewpost" hover="New Post" icon="mdi-pencil"></tooltipbutton>
+        <tooltipbutton v-if="community.your_follow && community.your_follow.accepted"
+                       :click="togglenewlink" hover="New Link" icon="mdi-link"></tooltipbutton>
       </v-card-actions>
     </v-card>
     <v-card v-if="showeditor">
@@ -54,7 +41,7 @@
       <template v-for="(post, index) in posts">
         <v-list-item style="padding-left: 0" :key="index">
           <v-list-item-action style="margin-right: 4px">
-            <tooltipbutton v-if="$store.state.LoggedIn" :clicked="upVote" :clickarg="index" :icon="post.your_vote ? 'mdi-cards-heart' : 'mdi-heart-outline'" :hover="post.your_vote ? 'Un-love' : 'Love'"></tooltipbutton>
+            <tooltipbutton v-if="$store.state.LoggedIn" :clicked="upVote" :clickarg="String(index)" :icon="post.your_vote ? 'mdi-cards-heart' : 'mdi-heart-outline'" :hover="post.your_vote ? 'Un-love' : 'Love'"></tooltipbutton>
             <span
               style="margin-left: auto; margin-right: auto"
               v-if="post.score != null"
@@ -122,7 +109,6 @@ export default {
     };
   },
   mounted: function () {
-
     if (typeof (this.$route.params.communityID) == "undefined") {
       this.loadDefaultPosts();
     } else {
@@ -155,6 +141,15 @@ export default {
       this.$http
         .post(this.$LOTIDE + "/unstable/communities/" + this.community.id + "/follow", postdata)
         .then(this.gotsubscribed);
+    },
+    togglenewlink: function() {
+      this.showlinkinput = !this.showlinkinput;
+      this.showeditor = false;
+
+    },
+    togglenewpost: function() {
+      this.showeditor = !this.showeditor;
+      this.showlinkinput = false;
     },
     gotunsubscribed: function () {
       this.$router.go();
@@ -207,6 +202,7 @@ export default {
     },
     gotCommunityInfo: function (d) {
       this.community = d.data;
+      console.log(this.community);
     },
     gotFollowingPosts: function (d) {
       this.tempposts = d.data;

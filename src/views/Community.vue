@@ -12,8 +12,8 @@
               <template v-for="(c) in filteredcommunities">
             <v-list-item :key="c.id"  v-if="subscribed ? c.your_follow : true">
             <v-list-item-action v-if="$store.state.LoggedIn">
-                <v-btn  v-if="c.your_follow==null || c.your_follow==false" @click="subscribe(c.id)"><v-icon left>mdi-plus-box</v-icon>Subscribe</v-btn>
-                <v-btn  v-else @click="unsubscribe(c.id)"><v-icon left>mdi-trash-can</v-icon>Unsubscribe</v-btn>
+              <tooltipbutton v-if="c.your_follow==null || c.your_follow==false" :clicked="subscribe" :clickarg="String(c.id)" icon="mdi-plus-box" hover="Subscribe"></tooltipbutton>
+              <tooltipbutton v-else :clicked="unsubscribe" :clickarg="String(c.id)" icon="mdi-trash-can" hover="Unsubscribe"></tooltipbutton>
             </v-list-item-action>
                 <v-list-item-content>
             <v-list-item-title><router-link :to="'/c/'+ c.id + '/' + c.name ">{{ c.name }}</router-link> - {{ c.description }}</v-list-item-title>
@@ -28,8 +28,10 @@
     </v-container>
 </template>
 <script>
+import Tooltipbutton from "@/components/Tooltipbutton";
 
 export default {
+  components: { Tooltipbutton, },
     data: function() {
         return {
             communities: [],
