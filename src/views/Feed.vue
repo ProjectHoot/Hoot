@@ -1,16 +1,37 @@
 <template>
   <v-container fluid style="padding: 0">
     <v-card v-if="community != null">
-      <v-card-title>
-        {{ community.name }}</v-card-title>
+      <v-card-title> {{ community.name }}</v-card-title>
       <v-card-subtitle>{{ community.description }}</v-card-subtitle>
       <v-card-actions v-if="$store.state.LoggedIn">
-        <tooltipbutton v-if="community.your_follow==null || community.your_follow==false" :clicked="subscribe" :clickarg="String(community.id)" icon="mdi-plus-box" hover="Subscribe"></tooltipbutton>
-        <tooltipbutton v-else :clicked="unsubscribe" :clickarg="String(community.id)" icon="mdi-trash-can" hover="Unsubscribe"></tooltipbutton>
-        <tooltipbutton v-if="community.your_follow && community.your_follow.accepted"
-                       :click="togglenewpost" hover="New Post" icon="mdi-pencil"></tooltipbutton>
-        <tooltipbutton v-if="community.your_follow && community.your_follow.accepted"
-                       :click="togglenewlink" hover="New Link" icon="mdi-link"></tooltipbutton>
+        <tooltipbutton
+          v-if="community.your_follow == null || community.your_follow == false"
+          :clicked="subscribe"
+          :clickarg="String(community.id)"
+          icon="mdi-plus-box"
+          hover="Subscribe"
+        />
+        <template v-else>
+          <tooltipbutton
+            v-if="community.your_follow && community.your_follow.accepted"
+            :click="togglenewpost"
+            hover="New Post"
+            icon="mdi-pencil"
+          />
+          <tooltipbutton
+            v-if="community.your_follow && community.your_follow.accepted"
+            :click="togglenewlink"
+            hover="New Link"
+            icon="mdi-link"
+          />
+          <v-spacer />
+          <tooltipbutton
+            :clicked="unsubscribe"
+            :clickarg="String(community.id)"
+            icon="mdi-trash-can"
+            hover="Unsubscribe"
+          />
+        </template>
       </v-card-actions>
     </v-card>
     <v-card v-if="showeditor">
@@ -30,9 +51,19 @@
           v-model="posttitle"
           placeholder="Post Title"
         ></v-text-field>
-        <form> 
-          <input v-model="linkinput" class="linkinput" type="text" placeholder="Enter Url"/>
-          <v-btn :disabled="!isValidLinkForm()" class="submitlinkbutton" @click="submitlink">Submit</v-btn>
+        <form>
+          <input
+            v-model="linkinput"
+            class="linkinput"
+            type="text"
+            placeholder="Enter Url"
+          />
+          <v-btn
+            :disabled="!isValidLinkForm()"
+            class="submitlinkbutton"
+            @click="submitlink"
+            >Submit</v-btn
+          >
         </form>
       </v-card-text>
     </v-card>
@@ -41,7 +72,13 @@
       <template v-for="(post, index) in posts">
         <v-list-item style="padding-left: 0" :key="index">
           <v-list-item-action style="margin-right: 4px">
-            <tooltipbutton v-if="$store.state.LoggedIn" :clicked="upVote" :clickarg="String(index)" :icon="post.your_vote ? 'mdi-cards-heart' : 'mdi-heart-outline'" :hover="post.your_vote ? 'Un-love' : 'Love'"></tooltipbutton>
+            <tooltipbutton
+              v-if="$store.state.LoggedIn"
+              :clicked="upVote"
+              :clickarg="String(index)"
+              :icon="post.your_vote ? 'mdi-cards-heart' : 'mdi-heart-outline'"
+              :hover="post.your_vote ? 'Un-love' : 'Love'"
+            ></tooltipbutton>
             <span
               style="margin-left: auto; margin-right: auto"
               v-if="post.score != null"
@@ -69,8 +106,10 @@
                 <Username
                   :username="post.author.username"
                   :userid="post.author.id"
-                ></Username>@{{ post.author.host }}
-                in {{ post.community.name }}@{{ post.community.host }}
+                ></Username
+                >@{{ post.author.host }} in {{ post.community.name }}@{{
+                  post.community.host
+                }}
                 <since :Timestamp="post.created"></since>
               </span>
             </v-list-item-subtitle>
@@ -105,31 +144,31 @@ export default {
       posttitle: "",
       showeditor: false,
       showlinkinput: false,
-      linkinput: ''
+      linkinput: "",
     };
   },
   mounted: function () {
-    if (typeof (this.$route.params.communityID) == "undefined") {
+    if (typeof this.$route.params.communityID == "undefined") {
       this.loadDefaultPosts();
     } else {
       // Load community info
       if (this.$store.state.LoggedIn)
-      this.$http
-        .get(
-          this.$LOTIDE +
-            "/unstable/communities/" +
-            this.$route.params.communityID +
-            "?include_your=true"
-        )
-        .then(this.gotCommunityInfo);
+        this.$http
+          .get(
+            this.$LOTIDE +
+              "/unstable/communities/" +
+              this.$route.params.communityID +
+              "?include_your=true"
+          )
+          .then(this.gotCommunityInfo);
       else
-            this.$http
-        .get(
-          this.$LOTIDE +
-            "/unstable/communities/" +
-            this.$route.params.communityID
-        )
-        .then(this.gotCommunityInfo);
+        this.$http
+          .get(
+            this.$LOTIDE +
+              "/unstable/communities/" +
+              this.$route.params.communityID
+          )
+          .then(this.gotCommunityInfo);
 
       this.loadPosts();
     }
@@ -139,15 +178,20 @@ export default {
       var postdata = {};
       postdata.try_wait_for_accept = true;
       this.$http
-        .post(this.$LOTIDE + "/unstable/communities/" + this.community.id + "/follow", postdata)
+        .post(
+          this.$LOTIDE +
+            "/unstable/communities/" +
+            this.community.id +
+            "/follow",
+          postdata
+        )
         .then(this.gotsubscribed);
     },
-    togglenewlink: function() {
+    togglenewlink: function () {
       this.showlinkinput = !this.showlinkinput;
       this.showeditor = false;
-
     },
-    togglenewpost: function() {
+    togglenewpost: function () {
       this.showeditor = !this.showeditor;
       this.showlinkinput = false;
     },
@@ -162,7 +206,10 @@ export default {
       postdata.try_wait_for_accept = true;
       this.$http
         .post(
-          this.$LOTIDE + "/unstable/communities/" + this.community.id + "/unfollow",
+          this.$LOTIDE +
+            "/unstable/communities/" +
+            this.community.id +
+            "/unfollow",
           postdata
         )
         .then(this.gotunsubscribed);
@@ -297,13 +344,13 @@ export default {
         this.showalert = true;
         return;
       }
-      if(!this.linkinput || this.linkinput == "") {
+      if (!this.linkinput || this.linkinput == "") {
         this.alerttext = "Type a url before submitting!";
         this.alerttimeout = 5000;
         this.showalert = true;
         return;
       }
-      if(!this.isValidUrl(this.linkinput)) {
+      if (!this.isValidUrl(this.linkinput)) {
         this.alerttext = "Url is invalid!";
         this.alerttimeout = 5000;
         this.showalert = true;
@@ -320,18 +367,18 @@ export default {
         .then(this.submitsuccess)
         .catch(this.submitfailed);
     },
-    isValidUrl: function(string) {
+    isValidUrl: function (string) {
       let url;
 
       try {
         url = new URL(string);
       } catch (_) {
-        return false;  
+        return false;
       }
 
       return url.protocol === "http:" || url.protocol === "https:";
     },
-    isValidLinkForm: function() {
+    isValidLinkForm: function () {
       return this.posttitle && this.isValidUrl(this.linkinput);
     },
     submitsuccess: function () {
@@ -349,6 +396,7 @@ export default {
   },
 };
 </script>
+
 <style>
 .v-list-item__title {
   white-space: normal;
