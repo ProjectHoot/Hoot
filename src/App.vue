@@ -5,30 +5,29 @@
         <router-link
           :to="{ name: 'Feed' }"
           class="text--primary title text-decoration-none"
-          >Hoot</router-link
-        >
+          >Hoot
+        </router-link>
       </v-toolbar-title>
       <v-spacer></v-spacer>
       <tooltipbutton
         :to="{ name: 'Community List' }"
-        icon="mdi-clipboard-list"
         hover="Community List"
+        icon="mdi-clipboard-list"
       ></tooltipbutton>
       <tooltipbutton
         :clicked="toggleDark"
         :icon="$store.state.Dark ? 'mdi-flashlight-off' : 'mdi-flashlight'"
         hover="Toggle Dark/Light Mode"
-      ></tooltipbutton>
-      <v-menu
+      ></tooltipbutton
+      ><v-menu
         v-model="searchwindow"
         :close-on-click="false"
         :close-on-content-click="false"
-      >
-        <template v-slot:activator="{ on: menu, attrs }">
+        ><template v-slot:activator="{ on: menu, attrs }">
           <v-tooltip bottom>
             <template v-slot:activator="{ on: tooltip }">
-              <v-btn icon v-bind="attrs" v-on="{ ...tooltip, ...menu }"
-                ><v-icon class="text--primary">mdi-magnify</v-icon>
+              <v-btn v-bind="attrs" v-on="{ ...tooltip, ...menu }" icon>
+                <v-icon class="text--primary">mdi-magnify</v-icon>
               </v-btn>
             </template>
             <span>Search</span>
@@ -45,8 +44,7 @@
             <v-checkbox
               v-model="limitsearch"
               label="Limit results to this server"
-            />
-            <v-row>
+            /><v-row>
               <v-col cols="6">
                 <v-btn dense @click="searchwindow = false">Search!</v-btn>
               </v-col>
@@ -57,16 +55,11 @@
           </v-card-text>
         </v-card>
       </v-menu>
-      <v-menu
-        v-if="$store.state.LoggedIn"
-        v-model="useractions"
-  
-        offset-y
-      >
+      <v-menu v-if="$store.state.LoggedIn" v-model="useractions" offset-y>
         <template v-slot:activator="{ on: menu, attrs }">
           <v-tooltip bottom>
             <template v-slot:activator="{ on: tooltip }">
-              <v-btn text v-bind="attrs" v-on="{ ...tooltip, ...menu }">
+              <v-btn v-bind="attrs" v-on="{ ...tooltip, ...menu }" text>
                 <v-icon color="gray">mdi-account</v-icon>
                 {{ $store.state.Username }}
               </v-btn>
@@ -83,13 +76,13 @@
         v-else
         v-model="useractions"
         :close-on-content-click="false"
-        offset-y
         :nudge-width="200"
+        offset-y
       >
         <template v-slot:activator="{ on }">
-          <v-btn icon v-on="on"
-            ><v-icon color="gray">mdi-account</v-icon></v-btn
-          >
+          <v-btn v-on="on" icon>
+            <v-icon color="gray">mdi-account</v-icon>
+          </v-btn>
         </template>
         <v-tabs v-model="logintabs">
           <v-tab key="0">Login</v-tab>
@@ -100,11 +93,11 @@
             <v-card>
               <v-card-text>
                 <v-form>
-                  <v-text-field label="Username" v-model="loginform.username" />
+                  <v-text-field v-model="loginform.username" label="Username" />
                   <v-text-field
-                    type="password"
-                    label="Password"
                     v-model="loginform.password"
+                    label="Password"
+                    type="password"
                   />
                   <v-btn @click="login">Login</v-btn>
                 </v-form>
@@ -115,36 +108,38 @@
             <v-card>
               <v-card-text>
                 <v-form>
-                  <v-text-field label="Username" v-model="loginform.username" />
+                  <v-text-field v-model="loginform.username" label="Username" />
                   <v-text-field
-                    type="password"
-                    label="Password"
                     v-model="loginform.password"
+                    label="Password"
+                    type="password"
                   />
                   <v-alert
                     v-if="
                       loginform.password.length != 0 &&
-                      loginform.password.length < 6
+                        loginform.password.length < 6
                     "
                   >
-                    <v-icon>mdi-alert-circle</v-icon>Password must be at least 6
-                    characters</v-alert
-                  >
+                    <v-icon>mdi-alert-circle</v-icon>
+                    Password must be at least 6 characters
+                  </v-alert>
 
                   <v-text-field
-                    type="password"
-                    label="Repeat Password"
                     v-model="loginform.repeatpassword"
+                    label="Repeat Password"
+                    type="password"
                   />
-                  <v-alert v-if="loginform.password != loginform.repeatpassword"
-                    ><v-icon>mdi-alert-circle</v-icon>Passwords don't
-                    match</v-alert
+                  <v-alert
+                    v-if="loginform.password != loginform.repeatpassword"
                   >
+                    <v-icon>mdi-alert-circle</v-icon>
+                    Passwords don't match
+                  </v-alert>
 
                   <v-text-field
-                    type="text"
-                    label="Email (optional)"
                     v-model="loginform.email"
+                    label="Email (optional)"
+                    type="text"
                   />
                   <v-btn @click="signup">Sign Up</v-btn>
                 </v-form>
@@ -164,8 +159,8 @@
     </v-main>
     <v-snackbar
       v-model="snackbar"
-      :timeout="snackbartimeout"
       :color="snackbarcolor"
+      :timeout="snackbartimeout"
     >
       <v-icon v-html="snackbaricon"></v-icon>
       {{ snackbartext }}
@@ -182,7 +177,7 @@ export default {
   name: "App",
   components: {
     Node,
-    Tooltipbutton,
+    Tooltipbutton
   },
 
   data: () => ({
@@ -193,7 +188,7 @@ export default {
       username: "",
       password: "",
       repeatpassword: "",
-      email: "",
+      email: ""
     },
     viewkey: 0,
     snackbar: false,
@@ -201,10 +196,10 @@ export default {
     snackbartimeout: 5000,
     snackbartext: "",
     snackbarcolor: "",
-    snackbaricon: "",
+    snackbaricon: ""
     //
   }),
-  mounted: function () {
+  mounted: function() {
     this.$vuetify.theme.dark = this.$store.state.Dark;
     if (this.$store.state.Username) this.$store.commit("login");
 
@@ -212,7 +207,7 @@ export default {
     EventBus.$on("error", this.showerror);
   },
   methods: {
-    login: function () {
+    login: function() {
       var postData = {};
       postData.username = this.loginform.username;
       postData.password = this.loginform.password;
@@ -221,7 +216,7 @@ export default {
         .then(this.gotLogin)
         .catch(this.failedLogin);
     },
-    logout: function () {
+    logout: function() {
       this.$http.post(this.$LOTIDE + "/unstable/logins/~current");
 
       this.$store.commit("setToken", "");
@@ -232,10 +227,10 @@ export default {
       this.viewkey = Date.now();
       this.$router.go();
     },
-    profile: function () {
+    profile: function() {
       this.$router.push("/me");
     },
-    signup: function () {
+    signup: function() {
       // Basic form validation
       if (this.loginform.username.length < 3) {
         alert("Username must be 3 or more characters");
@@ -270,7 +265,7 @@ export default {
         .then(this.gotLogin)
         .catch(this.failedSignup);
     },
-    gotLogin: function (d) {
+    gotLogin: function(d) {
       this.$store.commit("setToken", d.data.token);
       this.$store.commit("setUsername", this.loginform.username);
       this.$store.commit("login");
@@ -283,30 +278,30 @@ export default {
       this.viewkey = Date.now();
       this.$router.go();
     },
-    failedSignup: function () {
+    failedSignup: function() {
       EventBus.$emit("error", "Username is not available, try another");
     },
-    failedLogin: function () {
+    failedLogin: function() {
       EventBus.$emit("error", "Login failed");
     },
-    showmessage: function (d) {
+    showmessage: function(d) {
       this.snackbartext = d;
       this.snackbarcolor = "primary";
       this.snackbaricon = "mdi-information";
       this.snackbar = true;
     },
-    showerror: function (d) {
+    showerror: function(d) {
       this.snackbartext = d;
       this.snackbarcolor = "error";
       this.snackbaricon = "mdi-alert-circle";
       this.snackbar = true;
     },
-    toggleDark: function () {
+    toggleDark: function() {
       var tmp = this.$store.state.Dark;
       this.$store.commit("setDark", !tmp);
       this.$vuetify.theme.dark = this.$store.state.Dark;
-    },
-  },
+    }
+  }
 };
 </script>
 <style>

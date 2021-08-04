@@ -65,13 +65,16 @@
             </v-list-item-title>
             <v-list-item-subtitle>
               <span class="text--secondary">
-                Posted by
+                Posted
+                <since :Timestamp="post.created"></since>
+                by
                 <Username
                   :username="post.author.username"
                   :userid="post.author.id"
                 ></Username>@{{ post.author.host }}
-                in {{ post.community.name }}@{{ post.community.host }}
-                <since :Timestamp="post.created"></since>
+                in
+                {{ post.community.name }}@{{ post.community.host }}
+                ({{ post.replies_count_total }} replies)
               </span>
             </v-list-item-subtitle>
           </v-list-item-content>
