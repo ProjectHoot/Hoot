@@ -1,5 +1,5 @@
 <template>
-  <div :style="'margin-left: ' + level + 'em;' " class="post">
+  <div v-if="loaded" :style="'margin-left: ' + level + 'em;' " class="post">
     <div class="expandbutton" v-if="level!=0">
       <tooltipbutton :clicked="expandClicked" :icon="expanded ? 'mdi-minus' : 'mdi-plus'" :hover="expanded ? 'Compress' : 'Expand'"></tooltipbutton>
     </div>
@@ -26,14 +26,7 @@
       </v-card-text>
     </v-card>
     <v-divider></v-divider>
-    <div v-if="post.comments  && expanded">
       <post v-for="(p, i) in post.comments" :id="i" :key="i" :level="level+1" :post="p"></post>
-    </div>
-    <div v-else-if="post.has_replies && expanded">
-      <v-btn @click="loadReplies">Load more replies...</v-btn>
-      <br><br>
-    </div>
-
     <v-snackbar v-model="showalert" :timeout="alerttimeout">{{ alerttext }}</v-snackbar>
   </div>
 </template>
@@ -57,6 +50,7 @@ export default {
       showalert: false,
       alerttimeout: 5000,
       alerttext: '',
+      loaded: false,
     };
   },
   name: "post",
@@ -93,11 +87,12 @@ export default {
       }
     },
     loadReplies: function () {
-      this.$http.get(this.$LOTIDE + "/unstable/comments/" + this.post.id).then(this.gotReplies);
+      this.$http.get(this.$LOTIDE + "/unstable/posts/" + this.post.id + "/replies").then(this.gotReplies);
     },
     gotReplies: function (d) {
-      this.post = d.data;
-      this.post.comments = this.post.replies;
+      this.post.comments = d.data.items;
+      this.loaded=true;
+//      this.post.comments = this.post.replies;
     },
     submit: function (editorcontent) {
       if (editorcontent == "") {
@@ -126,11 +121,6 @@ export default {
       this.showalert = true;
     }
   },
-  created: function () {
-    if (this.post.replies) {
-      this.post.comments = this.post.replies;
-    }
-  },
   computed: {
     bgcolor: function () {
       if (this.$index() % 2) {
@@ -144,10 +134,14 @@ export default {
     }
   },
   mounted: function () {
-    console.log
+
     if (this.post.score == "") {
       this.post.score = 0;
     }
+    if (this.level==0)
+      this.loadReplies();
+    else
+        this.loaded=true;
   },
 };
 </script>
