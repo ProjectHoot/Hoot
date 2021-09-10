@@ -36,7 +36,6 @@
   </v-dialog>
 </template>
 <script>
-import EventBus from "../EventBus.js";
 export default {
   data: function () {
     return {
@@ -84,7 +83,7 @@ export default {
     updatednote: function () {
       console.log("Updated");
       this.your_note_initial = this.your_note;
-      EventBus.$emit("message", "Updated notes");
+     this.$store.dispatch("message/showMessage", {message: "Updated notes"});
     },
     notupdated: function () {
       console.log("Not Updated");

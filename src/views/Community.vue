@@ -16,7 +16,7 @@
               <tooltipbutton v-else :clicked="unsubscribe" :clickarg="String(c.id)" icon="mdi-trash-can" hover="Unsubscribe"></tooltipbutton>
             </v-list-item-action>
                 <v-list-item-content>
-            <v-list-item-title><router-link :to="'/c/'+ c.id + '/' + c.name ">{{ c.name }}</router-link> - {{ c.description }}</v-list-item-title>
+            <v-list-item-title><nuxt-link :to="'/c/'+ c.id + '/' + c.name ">{{ c.name }}</nuxt-link> - {{ c.description }}</v-list-item-title>
             <v-list-item-subtitle>{{ c.host }}</v-list-item-subtitle>
                 </v-list-item-content>
         </v-list-item>

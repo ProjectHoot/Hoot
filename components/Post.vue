@@ -31,9 +31,9 @@
   </div>
 </template>
 <script>
-import Since from "../components/Since";
-import Username from '../components/Username';
-import Editor from "../components/Editor"
+import Since from "~/components/Since";
+import Username from '~/components/Username';
+import Editor from "~/components/Editor"
 import Tooltipbutton from "@/components/Tooltipbutton";
 
 export default {

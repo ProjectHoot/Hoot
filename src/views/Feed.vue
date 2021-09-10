@@ -50,7 +50,7 @@
           </v-list-item-action>
           <v-list-item-content>
             <v-list-item-title>
-              <router-link
+              <nuxt-link
                 class="text-h5 text-decoration-none"
                 :to="{
                   name: 'PostShow',
@@ -60,7 +60,7 @@
                     postID: post.id,
                   },
                 }"
-                >{{ post.title }}</router-link
+                >{{ post.title }}</nuxt-link
               >
             </v-list-item-title>
             <v-list-item-subtitle>
@@ -86,9 +86,9 @@
 </template>
 
 <script>
-import Username from "../components/Username";
-import Since from "../components/Since";
-import Editor from "../components/Editor";
+import Username from "~/components/Username";
+import Since from "~/components/Since";
+import Editor from "~/components/Editor";
 import Tooltipbutton from "@/components/Tooltipbutton";
 
 export default {

@@ -52,7 +52,6 @@
   <v-container v-else><h1>Loading profile</h1></v-container>
 </template>
 <script>
-import EventBus from "../EventBus.js";
 
 export default {
   components: {},
@@ -91,18 +90,18 @@ export default {
         .catch(this.failDescriptionChange);
     },
     gotDescriptionChanged: function () {
-      EventBus.$emit("message", "Description updated.");
+      this.$store.dispatch("message/showMessage", {message: "Description updated."});
     },
     failDescriptionChange: function (e) {
-      EventBus.$emit("error", "Description update failed: " + e.data);
+      this.$store.dispatch("message/showError", {message: "Description update failed: " + e.data});
     },
     submitChangePassword: function () {
       if (this.verifyPassword != this.newPassword) {
-        EventBus.$emit("error", "New passwords don't match");
+        Ethis.$store.dispatch("message/showError", {message:"New passwords don't match"});
         return;
       }
       if (this.newPassword.length < 6) {
-        EventBus.$emit("error", "New password must be at least 6 characters");
+        Ethis.$store.dispatch("message/showError", {message:"New password must be at least 6 characters"});
         return;
       }
       var m = {};
@@ -113,10 +112,10 @@ export default {
         .catch(this.failChangePassword);
     },
     gotChangedPassword: function () {
-      EventBus.$emit("message", "Password has been updated");
+     this.$store.dispatch("message/showMessage" ,{message: "Password has been updated"});
     },
     failChangePassword: function () {
-      EventBus.$emite("error", "Password change failed");
+      this.$store.dispatch("message/showError", {message: "Password change failed"});
     },
   },
   computed: {
