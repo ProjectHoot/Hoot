@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid v-if="loaded">
+  <v-container v-if="loaded" fluid>
     <v-card width="100%">
       <v-card-title v-if="post.href">
               <a :href="post.href" 
@@ -10,7 +10,7 @@
         {{ post.title }}
       </v-card-title>
       <v-card-text>
-            <post :level="0" :post="post" :id="post.id" :index="0"></post>
+            <post :id="post.id" :level="0" :post="post" :index="0"></post>
       </v-card-text>
     </v-card>
   </v-container>
@@ -29,55 +29,53 @@ export default {
       loaded: false,
     };
   },
-  mounted: function () {
+  mounted () {
     this.postID = this.$route.params.postID;
     if (this.$route.params.commentID) {
       if (this.$store.state.LoggedIn) {
-        this.$http
+        this.$axios
           .get(
-            this.$LOTIDE +
-              "/unstable/comments/" +
+             
+               "/api/comments/" +
               this.$route.params.commentID +
               "?include_your=true"
           )
           .then(this.gotPost);
       } else {
-        this.$http
+        this.$axios
           .get(
-            this.$LOTIDE + "/unstable/comments/" + this.$route.params.commentID
+            "/api/comments/" + this.$route.params.commentID
           )
           .then(this.gotPost);
       }
-    } else {
-      if (this.$store.state.LoggedIn) {
-        this.$http
+    } else if (this.$store.state.LoggedIn) {
+        this.$axios
           .get(
-            this.$LOTIDE +
-              "/unstable/posts/" +
+             
+               "/api/posts/" +
               this.postID +
               "?include_your=true"
           )
           .then(this.gotPost);
       } else {
-        this.$http
-          .get(this.$LOTIDE + "/unstable/posts/" + this.postID)
+        this.$axios
+          .get("/api/posts/" + this.postID)
           .then(this.gotPost);
       }
-    }
   },
   methods: {
-    gotPost: function (d) {
+    gotPost (d) {
       this.post = d.data;
-      if (this.post.href!=null)
+      if (this.post.href!==null)
           this.post.domain=this.post.href.split('/')[2];
       this.post.comments=this.post.replies;
       this.loaded = true;
     },
     upVote() {
-      return;
+      
     },
     downVote() {
-      return;
+      
     },
   },
 };

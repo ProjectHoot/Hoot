@@ -5,8 +5,10 @@
       timeout="5000"
       @input="setShow"
     >
-      <v-icon v-html="snackbaricon"></v-icon>
-      {{ snackbartext }}
+      <v-icon>
+          {{icon}}
+      </v-icon>
+      {{ message }}
     </v-snackbar>
 </template>
 
@@ -14,10 +16,10 @@
 import {mapMutations, mapState} from 'vuex'
 export default {
     computed:{
-        ...mapState(['message/message', 'message/color', 'message/icon', 'message/show'])
+        ...mapState('message', ['message', 'color', 'icon', 'show'])
     },
     methods:{
-        ...mapMutations({'message/show':setShow}),
+        ...mapMutations('message', {setShow:'show'}),
         
     }
 }

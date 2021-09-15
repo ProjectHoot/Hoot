@@ -1,16 +1,16 @@
 <template>
   <v-container fluid style="padding: 0">
-    <v-card v-if="community != null">
+    <v-card v-if="community !== null">
       <v-card-title>
         {{ community.name }}</v-card-title>
       <v-card-subtitle>{{ community.description }}</v-card-subtitle>
       <v-card-actions v-if="$store.state.LoggedIn">
-        <tooltipbutton v-if="community.your_follow==null || community.your_follow==false" :clicked="subscribe" :clickarg="String(community.id)" icon="mdi-plus-box" hover="Subscribe"></tooltipbutton>
-        <tooltipbutton v-else :clicked="unsubscribe" :clickarg="String(community.id)" icon="mdi-trash-can" hover="Unsubscribe"></tooltipbutton>
-        <tooltipbutton v-if="community.your_follow && community.your_follow.accepted"
-                       :click="togglenewpost" hover="New Post" icon="mdi-pencil"></tooltipbutton>
-        <tooltipbutton v-if="community.your_follow && community.your_follow.accepted"
-                       :click="togglenewlink" hover="New Link" icon="mdi-link"></tooltipbutton>
+        <TooltipButton v-if="community.your_follow===null || community.your_follow===false" :clicked="subscribe" :clickarg="String(community.id)" icon="mdi-plus-box" hover="Subscribe"></TooltipButton>
+        <TooltipButton v-else :clicked="unsubscribe" :clickarg="String(community.id)" icon="mdi-trash-can" hover="Unsubscribe"></TooltipButton>
+        <TooltipButton v-if="community.your_follow && community.your_follow.accepted"
+                       :click="togglenewpost" hover="New Post" icon="mdi-pencil"></TooltipButton>
+        <TooltipButton v-if="community.your_follow && community.your_follow.accepted"
+                       :click="togglenewlink" hover="New Link" icon="mdi-link"></TooltipButton>
       </v-card-actions>
     </v-card>
     <v-card v-if="showeditor">
@@ -37,14 +37,14 @@
       </v-card-text>
     </v-card>
 
-    <v-list dense two-line v-if="loaded">
+    <v-list v-if="loaded" dense two-line>
       <template v-for="(post, index) in posts">
-        <v-list-item style="padding-left: 0" :key="index">
+        <v-list-item :key="index" style="padding-left: 0">
           <v-list-item-action style="margin-right: 4px">
-            <tooltipbutton v-if="$store.state.LoggedIn" :clicked="upVote" :clickarg="String(index)" :icon="post.your_vote ? 'mdi-cards-heart' : 'mdi-heart-outline'" :hover="post.your_vote ? 'Un-love' : 'Love'"></tooltipbutton>
+            <TooltipButton v-if="$store.state.LoggedIn" :clicked="upVote" :clickarg="String(index)" :icon="post.your_vote ? 'mdi-cards-heart' : 'mdi-heart-outline'" :hover="post.your_vote ? 'Un-love' : 'Love'"></TooltipButton>
             <span
+              v-if="post.score !== null"
               style="margin-left: auto; margin-right: auto"
-              v-if="post.score != null"
               >{{ post.score }}</span
             >
           </v-list-item-action>
@@ -66,7 +66,7 @@
             <v-list-item-subtitle>
               <span class="text--secondary">
                 Posted
-                <since :Timestamp="post.created"></since>
+                <since :timestamp="post.created"></since>
                 by
                 <Username
                   :username="post.author.username"
@@ -89,14 +89,14 @@
 import Username from "~/components/Username";
 import Since from "~/components/Since";
 import Editor from "~/components/Editor";
-import Tooltipbutton from "@/components/Tooltipbutton";
+import TooltipButton from "@/components/TooltipButton";
 
 export default {
   components: {
     Username,
     Since,
     Editor,
-    Tooltipbutton,
+    TooltipButton,
   },
   data() {
     return {
@@ -111,25 +111,25 @@ export default {
       linkinput: ''
     };
   },
-  mounted: function () {
-    if (typeof (this.$route.params.communityID) == "undefined") {
+  mounted () {
+    if (typeof (this.$route.params.communityID) === "undefined") {
       this.loadDefaultPosts();
     } else {
       // Load community info
       if (this.$store.state.LoggedIn)
-      this.$http
+      this.$axios
         .get(
-          this.$LOTIDE +
-            "/unstable/communities/" +
+           
+             "/api/communities/" +
             this.$route.params.communityID +
             "?include_your=true"
         )
         .then(this.gotCommunityInfo);
       else
-            this.$http
+            this.$axios
         .get(
-          this.$LOTIDE +
-            "/unstable/communities/" +
+           
+             "/api/communities/" +
             this.$route.params.communityID
         )
         .then(this.gotCommunityInfo);
@@ -138,53 +138,53 @@ export default {
     }
   },
   methods: {
-    subscribe: function () {
-      var postdata = {};
+    subscribe () {
+      const postdata = {};
       postdata.try_wait_for_accept = true;
-      this.$http
-        .post(this.$LOTIDE + "/unstable/communities/" + this.community.id + "/follow", postdata)
+      this.$axios
+        .post("/api/communities/" + this.community.id + "/follow", postdata)
         .then(this.gotsubscribed);
     },
-    togglenewlink: function() {
+    togglenewlink() {
       this.showlinkinput = !this.showlinkinput;
       this.showeditor = false;
 
     },
-    togglenewpost: function() {
+    togglenewpost() {
       this.showeditor = !this.showeditor;
       this.showlinkinput = false;
     },
-    gotunsubscribed: function () {
+    gotunsubscribed () {
       this.$router.go();
     },
-    gotsubscribed: function () {
+    gotsubscribed () {
       this.$router.go();
     },
-    unsubscribe: function () {
-      var postdata = {};
+    unsubscribe () {
+      const postdata = {};
       postdata.try_wait_for_accept = true;
-      this.$http
+      this.$axios
         .post(
-          this.$LOTIDE + "/unstable/communities/" + this.community.id + "/unfollow",
+          "/api/communities/" + this.community.id + "/unfollow",
           postdata
         )
         .then(this.gotunsubscribed);
     },
     loadPosts() {
       if (this.$store.state.LoggedIn) {
-        this.$http
+        this.$axios
           .get(
-            this.$LOTIDE +
-              "/unstable/communities/" +
+             
+               "/api/communities/" +
               this.$route.params.communityID +
               "/posts?include_your=true"
           )
           .then(this.gotPosts);
       } else {
-        this.$http
+        this.$axios
           .get(
-            this.$LOTIDE +
-              "/unstable/communities/" +
+             
+               "/api/communities/" +
               this.$route.params.communityID +
               "/posts"
           )
@@ -193,38 +193,38 @@ export default {
     },
     loadDefaultPosts() {
       if (this.$store.state.LoggedIn) {
-        this.$http
+        this.$axios
           .get(
-            this.$LOTIDE +
-              "/unstable/users/~me/following:posts?include_your=true"
+             
+               "/api/users/~me/following:posts?include_your=true"
           )
           .then(this.gotFollowingPosts);
       } else {
-        this.$http.get(this.$LOTIDE + "/unstable/posts").then(this.gotPosts);
+        this.$axios.get("/api/posts").then(this.gotPosts);
       }
     },
-    gotCommunityInfo: function (d) {
+    gotCommunityInfo (d) {
       this.community = d.data;
       console.log(this.community);
     },
-    gotFollowingPosts: function (d) {
+    gotFollowingPosts (d) {
       this.tempposts = d.data;
-      this.$http
-        .get(this.$LOTIDE + "/unstable/posts?include_your=true")
+      this.$axios
+        .get("/api/posts?include_your=true")
         .then(this.gotMorePosts);
     },
-    gotPosts: function (d) {
+    gotPosts (d) {
       this.posts = d.data;
-      for (var x in this.posts) {
-        if (typeof this.posts[x].score == "undefined") this.posts[x].score = 0;
+      for (const x in this.posts) {
+        if (typeof this.posts[x].score === "undefined") this.posts[x].score = 0;
       }
       this.loaded = true;
     },
-    gotMorePosts: function (d) {
-      for (var i in d.data) {
-        var flag = false;
-        for (var x in this.tempposts) {
-          if (d.data[i].id == this.tempposts[x].id) {
+    gotMorePosts (d) {
+      for (const i in d.data) {
+        let flag = false;
+        for (const x in this.tempposts) {
+          if (d.data[i].id === this.tempposts[x].id) {
             flag = true;
           }
         }
@@ -236,24 +236,24 @@ export default {
       this.loaded = true;
     },
     goToUser() {
-      return;
+      
     },
-    upVote: function (index) {
+    upVote (index) {
       if (!this.posts[index].your_vote) {
-        this.$http
+        this.$axios
           .put(
-            this.$LOTIDE +
-              "/unstable/posts/" +
+             
+               "/api/posts/" +
               this.posts[index].id +
               "/your_vote"
           )
           .then((this.posts[index].your_vote = {}));
         this.posts[index].score++;
       } else {
-        this.$http
+        this.$axios
           .delete(
-            this.$LOTIDE +
-              "/unstable/posts/" +
+             
+               "/api/posts/" +
               this.posts[index].id +
               "/your_vote"
           )
@@ -262,45 +262,45 @@ export default {
       }
     },
     downVote() {
-      return;
+      
     },
     goToComments(postID) {
-      this.$router.push({ name: "PostShow", params: { postID: postID } });
+      this.$router.push({ name: "PostShow", params: { postID } });
     },
     preview(post) {
       return post.postContent.substring(0, this.thecols * 10);
     },
-    submit: function (editorcontent) {
-      if (this.posttitle == "") {
+    submit (editorcontent) {
+      if (this.posttitle === "") {
         this.alerttext = "Your post needs a title.";
         this.alerttimeout = 5000;
         this.showalert = true;
         return;
       }
-      if (!editorcontent || editorcontent == "") {
+      if (!editorcontent || editorcontent === "") {
         this.alerttext = "Type a response before submitting!";
         this.alerttimeout = 5000;
         this.showalert = true;
         return;
       }
-      var submission = {};
+      const submission = {};
       submission.content_markdown = editorcontent;
       submission.community = this.community.id;
       submission.title = this.posttitle;
 
-      this.$http
-        .post(this.$LOTIDE + "/unstable/posts", submission)
+      this.$axios
+        .post("/api/posts", submission)
         .then(this.submitsuccess)
         .catch(this.submitfailed);
     },
-    submitlink: function () {
-      if (this.posttitle == "") {
+    submitlink () {
+      if (this.posttitle === "") {
         this.alerttext = "Your post needs a title.";
         this.alerttimeout = 5000;
         this.showalert = true;
         return;
       }
-      if(!this.linkinput || this.linkinput == "") {
+      if(!this.linkinput || this.linkinput === "") {
         this.alerttext = "Type a url before submitting!";
         this.alerttimeout = 5000;
         this.showalert = true;
@@ -313,17 +313,17 @@ export default {
         return;
       }
 
-      var submission = {};
+      const submission = {};
       submission.href = this.linkinput;
       submission.community = this.community.id;
       submission.title = this.posttitle;
 
-      this.$http
-        .post(this.$LOTIDE + "/unstable/posts", submission)
+      this.$axios
+        .post("/api/posts", submission)
         .then(this.submitsuccess)
         .catch(this.submitfailed);
     },
-    isValidUrl: function(string) {
+    isValidUrl(string) {
       let url;
 
       try {
@@ -334,17 +334,17 @@ export default {
 
       return url.protocol === "http:" || url.protocol === "https:";
     },
-    isValidLinkForm: function() {
+    isValidLinkForm() {
       return this.posttitle && this.isValidUrl(this.linkinput);
     },
-    submitsuccess: function () {
+    submitsuccess () {
       this.alerttext = "Post submitted!";
       this.alerttimeout = 5000;
       this.showalert = true;
       this.replybox = false;
       this.$router.go();
     },
-    submitfailed: function (e) {
+    submitfailed (e) {
       this.alerttext = "Error: " + e.response.status + " : " + e.response.data;
       this.alerttimeout = 5000;
       this.showalert = true;

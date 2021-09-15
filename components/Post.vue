@@ -1,49 +1,78 @@
 <template>
-  <div v-if="loaded" :style="'margin-left: ' + level + 'em;' " class="post">
-    <div class="expandbutton" v-if="level!=0">
-      <tooltipbutton :clicked="expandClicked" :icon="expanded ? 'mdi-minus' : 'mdi-plus'" :hover="expanded ? 'Compress' : 'Expand'"></tooltipbutton>
+  <div v-if="loaded" :style="'margin-left: ' + level + 'em;'" class="post">
+    <div v-if="level !== 0" class="expandbutton">
+      <TooltipButton
+        :clicked="expandClicked"
+        :icon="expanded ? 'mdi-minus' : 'mdi-plus'"
+        :hover="expanded ? 'Compress' : 'Expand'"
+      />
     </div>
-    <div style="display: inline-block;">
-      <username :userid="post.author.id" :username="post.author.username"></username>
-      <span>  @{{ post.author.host }}
-          {{ post.score }} points, <since :Timestamp="post.created"></since></span>
+    <div style="display: inline-block">
+      <username :userid="post.author.id" :username="post.author.username" />
+      <span>
+        @{{ post.author.host }} {{ post.score }} points,
+        <since :timestamp="post.created"
+      /></span>
       <br>
-      <span v-if="expanded"
-            class="post">
+      <span v-if="expanded" class="post">
         <br>
-                 <span v-html="post.content_html ? post.content_html : post.content_text">
-                 </span>
-            </span>
+        <span
+          v-html="post.content_html ? post.content_html : post.content_text"
+        />
+      </span>
       <br>
-      <tooltipbutton v-if="$store.state.LoggedIn" :clicked="upVote" :icon="post.your_vote ? 'mdi-cards-heart' : 'mdi-heart-outline'" :hover="post.your_vote ? 'Un-love' : 'Love'"></tooltipbutton>
-      <tooltipbutton v-if="$store.state.LoggedIn" :clicked="replyClicked" icon="mdi-reply" hover="Reply"></tooltipbutton>
-
+      <TooltipButton
+        v-if="$store.state.LoggedIn"
+        :clicked="upVote"
+        :icon="post.your_vote ? 'mdi-cards-heart' : 'mdi-heart-outline'"
+        :hover="post.your_vote ? 'Un-love' : 'Love'"
+      />
+      <TooltipButton
+        v-if="$store.state.LoggedIn"
+        :clicked="replyClicked"
+        icon="mdi-reply"
+        hover="Reply"
+      />
     </div>
     <v-card v-if="replybox">
       <v-card-title>Reply to {{ post.author.username }}</v-card-title>
       <v-card-text>
-        <editor :submit="submit"></editor>
+        <editor :submit="submit" />
       </v-card-text>
     </v-card>
-    <v-divider></v-divider>
-      <post v-for="(p, i) in post.comments" :id="i" :key="i" :level="level+1" :post="p"></post>
-    <v-snackbar v-model="showalert" :timeout="alerttimeout">{{ alerttext }}</v-snackbar>
+    <v-divider />
+    <post
+      v-for="(p, i) in post.comments"
+      :id="i"
+      :key="i"
+      :level="level + 1"
+      :post="p"
+    />
+    <v-snackbar v-model="showalert" :timeout="alerttimeout">
+      {{ alerttext }}
+    </v-snackbar>
   </div>
 </template>
 <script>
-import Since from "~/components/Since";
-import Username from '~/components/Username';
-import Editor from "~/components/Editor"
-import Tooltipbutton from "@/components/Tooltipbutton";
+import Since from '~/components/Since'
+import Username from '~/components/Username'
+import Editor from '~/components/Editor'
+import TooltipButton from '@/components/TooltipButton'
 
 export default {
+  name: 'Post',
   components: {
     Since,
     Username,
     Editor,
-    Tooltipbutton,
+    TooltipButton,
   },
-  data: function () {
+  props: {
+    post: Object,
+    id: Number,
+    level: Number,
+  },
+  data() {
     return {
       expanded: true,
       replybox: false,
@@ -51,99 +80,104 @@ export default {
       alerttimeout: 5000,
       alerttext: '',
       loaded: false,
-    };
-  },
-  name: "post",
-  props: {
-    post: Object,
-    id: Number,
-    level: Number,
-  },
-  methods: {
-    expandClicked: function() {
-      this.expanded=!this.expanded;
-    },
-    replyClicked: function() {
-      this.replybox=!this.replybox;
-    },
-    upVote: function () {
-      if (this.level == 0) {
-        if (!this.post.your_vote) {
-          this.$http.put(this.$LOTIDE + "/unstable/posts/" + this.post.id + "/your_vote").then(this.post.your_vote = {});
-          this.post.score++;
-        } else {
-          this.$http.delete(this.$LOTIDE + "/unstable/posts/" + this.post.id + "/your_vote").then(this.post.your_vote = null);
-          this.post.score--;
-        }
-      } else {
-        if (!this.post.your_vote) {
-          this.$http.put(this.$LOTIDE + "/unstable/comments/" + this.post.id + "/your_vote").then(this.post.your_vote = {});
-          this.post.score++;
-        } else {
-          this.$http.delete(this.$LOTIDE + "/unstable/comments/" + this.post.id + "/your_vote").then(this.post.your_vote = null);
-          this.post.score--;
-        }
-
-      }
-    },
-    loadReplies: function () {
-      this.$http.get(this.$LOTIDE + "/unstable/posts/" + this.post.id + "/replies").then(this.gotReplies);
-    },
-    gotReplies: function (d) {
-      this.post.comments = d.data.items;
-      this.loaded=true;
-//      this.post.comments = this.post.replies;
-    },
-    submit: function (editorcontent) {
-      if (editorcontent == "") {
-        this.alerttext = "Type a repsonse before submitting!"
-        this.alerttimeout = 5000;
-        this.showalert = true;
-        return;
-      }
-      var submission = {};
-      submission.content_markdown = editorcontent;
-
-      if (this.level == 0) this.$http.post(this.$LOTIDE + "/unstable/posts/" + this.post.id + "/replies", submission).then(this.submitsuccess).catch(this.submitfailed);
-      else this.$http.post(this.$LOTIDE + "/unstable/comments/" + this.post.id + "/replies", submission).then(this.submitsuccess).catch(this.submitfailed);
-
-    },
-    submitsuccess: function () {
-      this.alerttext = "Reply submitted!";
-      this.alerttimeout = 5000;
-      this.showalert = true;
-      this.replybox = false;
-      this.$router.go();
-    },
-    submitfailed: function (e) {
-      this.alerttext = "Error: " + e.response.status + " : " + e.response.data;
-      this.alerttimeout = 5000;
-      this.showalert = true;
     }
   },
   computed: {
-    bgcolor: function () {
+    bgcolor() {
       if (this.$index() % 2) {
-        return ("rgba(0,0,0,0)");
+        return 'rgba(0,0,0,0)'
       }
-      return ("rgba(0,0,0,0.5)");
+      return 'rgba(0,0,0,0.5)'
     },
-    posttest: function () {
-      console.log(this.post);
-      return "";
-    }
+    posttest() {
+      console.log(this.post)
+      return ''
+    },
   },
-  mounted: function () {
+  mounted() {
+    if (this.post.score === '') {
+      this.post.score = 0
+    }
+    if (this.level === 0) this.loadReplies()
+    else this.loaded = true
+  },
+  methods: {
+    expandClicked() {
+      this.expanded = !this.expanded
+    },
+    replyClicked() {
+      this.replybox = !this.replybox
+    },
+    upVote() {
+      if (this.level === 0) {
+        if (!this.post.your_vote) {
+          this.$axios
+            .put('/api/posts/' + this.post.id + '/your_vote')
+            .then((this.post.your_vote = {}))
+          this.post.score++
+        } else {
+          this.$axios
+            .delete('/api/posts/' + this.post.id + '/your_vote')
+            .then((this.post.your_vote = null))
+          this.post.score--
+        }
+      } else if (!this.post.your_vote) {
+        this.$axios
+          .put('/api/comments/' + this.post.id + '/your_vote')
+          .then((this.post.your_vote = {}))
+        this.post.score++
+      } else {
+        this.$axios
+          .delete('/api/comments/' + this.post.id + '/your_vote')
+          .then((this.post.your_vote = null))
+        this.post.score--
+      }
+    },
+    loadReplies() {
+      this.$axios
+        .get('/api/posts/' + this.post.id + '/replies')
+        .then(this.gotReplies)
+    },
+    gotReplies(d) {
+      this.post.comments = d.data.items
+      this.loaded = true
+      //      this.post.comments = this.post.replies;
+    },
+    submit(editorcontent) {
+      if (editorcontent === '') {
+        this.alerttext = 'Type a repsonse before submitting!'
+        this.alerttimeout = 5000
+        this.showalert = true
+        return
+      }
+      const submission = {}
+      submission.content_markdown = editorcontent
 
-    if (this.post.score == "") {
-      this.post.score = 0;
-    }
-    if (this.level==0)
-      this.loadReplies();
-    else
-        this.loaded=true;
+      if (this.level === 0)
+        this.$axios
+          .post('/api/posts/' + this.post.id + '/replies', submission)
+          .then(this.submitsuccess)
+          .catch(this.submitfailed)
+      else
+        this.$axios
+          .post('/api/comments/' + this.post.id + '/replies', submission)
+          .then(this.submitsuccess)
+          .catch(this.submitfailed)
+    },
+    submitsuccess() {
+      this.alerttext = 'Reply submitted!'
+      this.alerttimeout = 5000
+      this.showalert = true
+      this.replybox = false
+      this.$router.go()
+    },
+    submitfailed(e) {
+      this.alerttext = 'Error: ' + e.response.status + ' : ' + e.response.data
+      this.alerttimeout = 5000
+      this.showalert = true
+    },
   },
-};
+}
 </script>
 
 <style>
@@ -156,16 +190,17 @@ blockquote blockquote {
   display: inline;
 }
 
-blockquote:before {
+blockquote::before {
   display: inline;
-  content: " | ";
+  content: ' | ';
 }
 
 blockquote p {
   display: inline;
 }
 
-.v-card__text, .v-card__title {
+.v-card__text,
+.v-card__title {
   word-break: break-word; /* maybe !important  */
 }
 
