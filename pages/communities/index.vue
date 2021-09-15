@@ -55,7 +55,7 @@ export default {
       clicked: null,
       showpop: false,
       subscribed: false,
-      me: null,
+      me: null
     }
   },
   computed: {
@@ -73,7 +73,7 @@ export default {
       if (this.clicked === null) return false
       const me = this.getIndexById(this.clicked)
       return this.communities[me]
-    },
+    }
   },
   beforeMount() {
     if (this.$auth.loggedIn)
@@ -84,7 +84,7 @@ export default {
   },
   methods: {
     gotCommunities(d) {
-      this.communities = d.data
+      this.communities = d.data.items
       for (const k in this.communities) {
         this.communities[k].data = null
       }
@@ -119,7 +119,7 @@ export default {
       this.$axios
         .post('/api/communities/' + i + '/unfollow', postdata)
         .then(this.gotunsubscribed)
-    },
-  },
+    }
+  }
 }
 </script>

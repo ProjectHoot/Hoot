@@ -123,7 +123,7 @@ export default {
     Username,
     Since,
     Editor,
-    TooltipButton,
+    TooltipButton
   },
   data() {
     return {
@@ -135,7 +135,7 @@ export default {
       posttitle: '',
       showeditor: false,
       showlinkinput: false,
-      linkinput: '',
+      linkinput: ''
     }
   },
   mounted() {
@@ -217,26 +217,32 @@ export default {
       console.log(this.community)
     },
     gotFollowingPosts(d) {
+      if (d.data.items) this.tempposts = d.data.items
+      else this.tempposts = d.data
       this.tempposts = d.data
       this.$axios.get('/api/posts?include_your=true').then(this.gotMorePosts)
     },
     gotPosts(d) {
-      this.posts = d.data
+      if (d.data.items) this.posts = d.data.items
+      else this.posts = d.data
       for (const x in this.posts) {
         if (typeof this.posts[x].score === 'undefined') this.posts[x].score = 0
       }
       this.loaded = true
     },
     gotMorePosts(d) {
-      for (const i in d.data) {
-        let flag = false
-        for (const x in this.tempposts) {
-          if (d.data[i].id === this.tempposts[x].id) {
+      var items = []
+      if (d.data.items) items = d.data.items
+      else items = d.data
+      for (var i in items) {
+        var flag = false
+        for (var x in this.tempposts) {
+          if (items[i].id == this.tempposts[x].id) {
             flag = true
           }
         }
         if (!flag) {
-          this.tempposts.push(d.data[i])
+          this.tempposts.push(items[i])
         }
       }
       this.posts = this.tempposts
@@ -341,8 +347,8 @@ export default {
       this.alerttext = 'Error: ' + e.response.status + ' : ' + e.response.data
       this.alerttimeout = 5000
       this.showalert = true
-    },
-  },
+    }
+  }
 }
 </script>
 <style>

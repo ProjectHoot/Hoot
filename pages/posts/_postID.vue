@@ -22,12 +22,12 @@ import Post from '~/components/Post'
 
 export default {
   components: {
-    Post,
+    Post
   },
   data() {
     return {
       post: {},
-      loaded: false,
+      loaded: false
     }
   },
   mounted() {
@@ -59,12 +59,11 @@ export default {
       this.post = d.data
       if (this.post.href !== null)
         this.post.domain = this.post.href.split('/')[2]
-      this.post.comments = this.post.replies
       this.loaded = true
     },
     upVote() {},
-    downVote() {},
-  },
+    downVote() {}
+  }
 }
 </script>
 <style scoped>

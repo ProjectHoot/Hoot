@@ -41,13 +41,15 @@
       </v-card-text>
     </v-card>
     <v-divider />
-    <post
-      v-for="(p, i) in post.comments"
-      :id="i"
-      :key="i"
-      :level="level + 1"
-      :post="p"
-    />
+    <template v-if="hasreplies">
+      <Post
+        v-for="(p, i) in post.replies.items"
+        :id="i"
+        :key="i"
+        :level="level + 1"
+        :post="p"
+      />
+    </template>
     <v-snackbar v-model="showalert" :timeout="alerttimeout">
       {{ alerttext }}
     </v-snackbar>
@@ -65,12 +67,12 @@ export default {
     Since,
     Username,
     Editor,
-    TooltipButton,
+    TooltipButton
   },
   props: {
     post: Object,
     id: Number,
-    level: Number,
+    level: Number
   },
   data() {
     return {
@@ -79,7 +81,7 @@ export default {
       showalert: false,
       alerttimeout: 5000,
       alerttext: '',
-      loaded: false,
+      loaded: false
     }
   },
   computed: {
@@ -89,10 +91,10 @@ export default {
       }
       return 'rgba(0,0,0,0.5)'
     },
-    posttest() {
-      console.log(this.post)
-      return ''
-    },
+    hasreplies() {
+      if (this.post.replies == null) return false
+      return true
+    }
   },
   mounted() {
     if (this.post.score === '') {
@@ -140,13 +142,19 @@ export default {
       this.post.comments = data.items
     },
     gotReplies(d) {
-      this.post.comments = d.data.items
+      if (d.data.items && d.data.items.length != 0) {
+        this.post.replies = {}
+        this.post.replies.items = d.data.items
+      } else if (d.data.length == 0) {
+        this.post.replies = {}
+        this.post.replies.items = d.data
+      }
       this.loaded = true
       //      this.post.comments = this.post.replies;
     },
     submit(editorcontent) {
       if (editorcontent === '') {
-        this.alerttext = 'Type a repsonse before submitting!'
+        this.alerttext = 'Type a response before submitting!'
         this.alerttimeout = 5000
         this.showalert = true
         return
@@ -176,8 +184,8 @@ export default {
       this.alerttext = 'Error: ' + e.response.status + ' : ' + e.response.data
       this.alerttimeout = 5000
       this.showalert = true
-    },
-  },
+    }
+  }
 }
 </script>
 
