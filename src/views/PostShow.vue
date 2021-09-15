@@ -70,7 +70,6 @@ export default {
       this.post = d.data;
       if (this.post.href!=null)
           this.post.domain=this.post.href.split('/')[2];
-      this.post.comments=this.post.replies;
       this.loaded = true;
     },
     upVote() {

@@ -26,7 +26,9 @@
       </v-card-text>
     </v-card>
     <v-divider></v-divider>
+    <span v-if="hasreplies">
       <post v-for="(p, i) in post.replies.items" :id="i" :key="i" :level="level+1" :post="p"></post>
+    </span>
     <v-snackbar v-model="showalert" :timeout="alerttimeout">{{ alerttext }}</v-snackbar>
   </div>
 </template>
@@ -90,13 +92,20 @@ export default {
       this.$http.get(this.$LOTIDE + "/unstable/posts/" + this.post.id + "/replies").then(this.gotReplies);
     },
     gotReplies: function (d) {
-      this.post.comments = d.data.items;
+      if (d.data.items && d.data.items.length!=0) {
+        this.post.replies={};
+        this.post.replies.items = d.data.items;
+      }
+      else if (d.data.length==0) {
+        this.post.replies={};
+        this.post.replies.items=d.data;
+      }
       this.loaded=true;
 //      this.post.comments = this.post.replies;
     },
     submit: function (editorcontent) {
       if (editorcontent == "") {
-        this.alerttext = "Type a repsonse before submitting!"
+        this.alerttext = "Type a response before submitting!"
         this.alerttimeout = 5000;
         this.showalert = true;
         return;
@@ -128,20 +137,20 @@ export default {
       }
       return ("rgba(0,0,0,0.5)");
     },
-    posttest: function () {
-      console.log(this.post);
-      return "";
-    }
+    hasreplies: function() {
+      if (this.post.replies==null) return false;
+      return true;
+    },
   },
   mounted: function () {
-
     if (this.post.score == "") {
       this.post.score = 0;
     }
     if (this.level==0)
       this.loadReplies();
-    else
-        this.loaded=true;
+    else {
+      this.loaded=true;
+    }
   },
 };
 </script>
