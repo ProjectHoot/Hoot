@@ -8,7 +8,7 @@
       />
     </div>
     <div style="display: inline-block">
-      <username :userid="post.author.id" :username="post.author.username" />
+      <Username :userid="post.author.id" :username="post.author.username" />
       <span>
         @{{ post.author.host }} {{ post.score }} points,
         <since :timestamp="post.created"
@@ -16,9 +16,9 @@
       <br />
       <span v-if="expanded" class="post">
         <br />
-        <span
+        <article
           v-html="post.content_html ? post.content_html : post.content_text"
-        />
+        ></article>
       </span>
       <br />
       <TooltipButton
@@ -37,7 +37,7 @@
     <v-card v-if="replybox">
       <v-card-title>Reply to {{ post.author.username }}</v-card-title>
       <v-card-text>
-        <editor :submit="submit" />
+        <Editor :submit="submit" />
       </v-card-text>
     </v-card>
     <v-divider />
@@ -59,7 +59,8 @@
 import Since from '~/components/Since'
 import Username from '~/components/Username'
 import Editor from '~/components/Editor'
-import TooltipButton from '@/components/TooltipButton'
+import TooltipButton from '~/components/TooltipButton'
+import Post from '~/components/Post'
 
 export default {
   name: 'Post',
@@ -67,12 +68,13 @@ export default {
     Since,
     Username,
     Editor,
-    TooltipButton
+    TooltipButton,
+    Post,
   },
   props: {
     post: Object,
     id: Number,
-    level: Number
+    level: Number,
   },
   data() {
     return {
@@ -81,7 +83,7 @@ export default {
       showalert: false,
       alerttimeout: 5000,
       alerttext: '',
-      loaded: false
+      loaded: false,
     }
   },
   computed: {
@@ -92,9 +94,8 @@ export default {
       return 'rgba(0,0,0,0.5)'
     },
     hasreplies() {
-      if (this.post.replies == null) return false
-      return true
-    }
+      return this.post.replies?.length > 0
+    },
   },
   mounted() {
     if (this.post.score === '') {
@@ -135,22 +136,20 @@ export default {
         this.post.score--
       }
     },
-    async loadReplies() {
-      const data = await this.$axios.$get(
-        '/api/posts/' + this.post.id + '/replies'
-      )
-      this.post.comments = data.items
+    loadReplies() {
+      this.$axios
+        .get('/api/posts/' + this.post.id + '/replies')
+        .then(this.gotReplies)
     },
     gotReplies(d) {
-      if (d.data.items && d.data.items.length != 0) {
+      if (d.data.items && d.data.items.length !== 0) {
         this.post.replies = {}
         this.post.replies.items = d.data.items
-      } else if (d.data.length == 0) {
+      } else if (d.data.length === 0) {
         this.post.replies = {}
         this.post.replies.items = d.data
       }
       this.loaded = true
-      //      this.post.comments = this.post.replies;
     },
     submit(editorcontent) {
       if (editorcontent === '') {
@@ -184,8 +183,8 @@ export default {
       this.alerttext = 'Error: ' + e.response.status + ' : ' + e.response.data
       this.alerttimeout = 5000
       this.showalert = true
-    }
-  }
+    },
+  },
 }
 </script>
 

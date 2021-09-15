@@ -22,12 +22,12 @@ import Post from '~/components/Post'
 
 export default {
   components: {
-    Post
+    Post,
   },
   data() {
     return {
       post: {},
-      loaded: false
+      loaded: false,
     }
   },
   mounted() {
@@ -62,8 +62,8 @@ export default {
       this.loaded = true
     },
     upVote() {},
-    downVote() {}
-  }
+    downVote() {},
+  },
 }
 </script>
 <style scoped>
