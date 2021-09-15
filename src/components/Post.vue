@@ -26,7 +26,7 @@
       </v-card-text>
     </v-card>
     <v-divider></v-divider>
-      <post v-for="(p, i) in post.comments" :id="i" :key="i" :level="level+1" :post="p"></post>
+      <post v-for="(p, i) in post.replies.items" :id="i" :key="i" :level="level+1" :post="p"></post>
     <v-snackbar v-model="showalert" :timeout="alerttimeout">{{ alerttext }}</v-snackbar>
   </div>
 </template>

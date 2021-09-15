@@ -51,7 +51,7 @@ export default {
     },
     methods: {
         gotCommunities: function(d) {
-            this.communities=d.data;
+            this.communities=d.data.items;
             for (var k in this.communities) {
                 this.communities[k].data=null;
             }

@@ -208,28 +208,33 @@ export default {
       console.log(this.community);
     },
     gotFollowingPosts: function (d) {
-      this.tempposts = d.data;
+      if (d.data.items) this.tempposts=d.data.items;
+      else this.tempposts=d.data;
       this.$http
         .get(this.$LOTIDE + "/unstable/posts?include_your=true")
         .then(this.gotMorePosts);
     },
     gotPosts: function (d) {
-      this.posts = d.data;
+      if (d.data.items) this.posts=d.data.items;
+      else this.posts=d.data;
       for (var x in this.posts) {
         if (typeof this.posts[x].score == "undefined") this.posts[x].score = 0;
       }
       this.loaded = true;
     },
     gotMorePosts: function (d) {
-      for (var i in d.data) {
+      var items=[];
+      if (d.data.items) items=d.data.items;
+      else items=d.data;
+      for (var i in items) {
         var flag = false;
         for (var x in this.tempposts) {
-          if (d.data[i].id == this.tempposts[x].id) {
+          if (items[i].id == this.tempposts[x].id) {
             flag = true;
           }
         }
         if (!flag) {
-          this.tempposts.push(d.data[i]);
+          this.tempposts.push(items[i]);
         }
       }
       this.posts = this.tempposts;
