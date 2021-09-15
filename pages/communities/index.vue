@@ -11,25 +11,23 @@
     <v-list v-if="loaded">
       <template v-for="c in filteredcommunities">
         <v-list-item v-if="subscribed ? c.your_follow : true" :key="c.id">
-          <v-list-item-action v-if="$store.state.LoggedIn">
+          <v-list-item-action v-if="$auth.loggedIn">
             <TooltipButton
               v-if="c.your_follow === null || c.your_follow === false"
-              :clicked="subscribe"
-              :clickarg="String(c.id)"
               icon="mdi-plus-box"
               hover="Subscribe"
+              @click="subscribe(c.id)"
             />
             <TooltipButton
               v-else
-              :clicked="unsubscribe"
-              :clickarg="String(c.id)"
               icon="mdi-trash-can"
               hover="Unsubscribe"
+              @click="unsubscribe(c.id)"
             />
           </v-list-item-action>
           <v-list-item-content>
             <v-list-item-title>
-              <nuxt-link :to="'/c/' + c.id + '/' + c.name">
+              <nuxt-link :to="'/communities/' + c.id">
                 {{ c.name }}
               </nuxt-link>
               - {{ c.description }}
@@ -78,7 +76,7 @@ export default {
     },
   },
   beforeMount() {
-    if (this.$store.state.LoggedIn)
+    if (this.$auth.loggedIn)
       this.$axios
         .get('/api/communities?include_your=true')
         .then(this.gotCommunities)

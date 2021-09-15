@@ -8,12 +8,12 @@
       </v-toolbar-title>
       <v-spacer />
       <TooltipButton
-        to="/comunities"
+        to="/communities"
         hover="Community List"
         icon="mdi-clipboard-list"
       />
       <TooltipButton
-        :clicked="toggleDark"
+        @click="toggleDark"
         :icon="$vuetify.theme.dark ? 'mdi-flashlight-off' : 'mdi-flashlight'"
         hover="Toggle Dark/Light Mode"
       /><v-menu
@@ -53,13 +53,13 @@
           </v-card-text>
         </v-card>
       </v-menu>
-      <v-menu v-if="$store.state.LoggedIn" v-model="useractions" offset-y>
+      <v-menu v-if="$auth.loggedIn" v-model="useractions" offset-y>
         <template #activator="{ on: menu, attrs }">
           <v-tooltip bottom>
             <template #activator="{ on: tooltip }">
               <v-btn v-bind="attrs" text v-on="{ ...tooltip, ...menu }">
-                <v-icon color="gray"> mdi-account </v-icon>
-                {{ $store.state.Username }}
+                <v-icon left color="gray"> mdi-account </v-icon>
+                {{ $auth.user.username }}
               </v-btn>
             </template>
             <span>User Settings</span>
@@ -152,7 +152,6 @@
 
     <v-main>
       <v-container fluid style="padding: 0">
-        <v-card-title> TEST </v-card-title>
         <Nuxt />
       </v-container>
     </v-main>
@@ -188,25 +187,18 @@ export default {
     //
   }),
   mounted() {
-    this.$vuetify.theme.dark = localStorage.getItem('isDarkTheme')
-    if (this.$store.state.Username) this.$store.commit('loggedIn', true)
+    this.$vuetify.theme.dark = this.$auth.$storage.getUniversal('isDarkTheme')
   },
   methods: {
     login() {
-      const postData = {}
-      postData.username = this.loginform.username
-      postData.password = this.loginform.password
-      this.$axios
-        .post('/api/logins', postData)
-        .then(this.gotLogin)
-        .catch(this.failedLogin)
+      const data = {}
+      data.username = this.loginform.username
+      data.password = this.loginform.password
+      this.$auth.loginWith('local', { data })
     },
-    logout() {
-      this.$axios.post('/api/logins/~current')
-
-      this.$store.commit('token', '')
-      this.$store.commit('username', '')
-      this.$store.commit('loggedIn', false)
+    async logout() {
+      await this.$auth.logout()
+      // this.$axios.post('/api/logins/~current')
 
       this.useractions = false
       this.viewkey = Date.now()
@@ -215,7 +207,7 @@ export default {
     profile() {
       this.$router.push('/me')
     },
-    signup() {
+    async signup() {
       // Basic form validation
       if (this.loginform.username.length < 3) {
         alert('Username must be 3 or more characters')
@@ -245,11 +237,11 @@ export default {
       if (this.loginform.email !== '') {
         postData.email_address = this.loginform.email
       }
-      postData.login = true
-      this.$axios
-        .post('/api/users', postData)
-        .then(this.gotLogin)
-        .catch(this.failedSignup)
+      await this.$axios.post('/api/users', postData)
+      this.$auth.loginWith('local', {
+        username: postData.username,
+        password: postData.password,
+      })
     },
     gotLogin(d) {
       this.$store.commit('token', d.data.token)
@@ -275,7 +267,7 @@ export default {
     toggleDark() {
       const val = !this.$vuetify.theme.dark
       this.$vuetify.theme.dark = val
-      localStorage.setItem('isDarkTheme', val)
+      this.$auth.$storage.setUniversal('isDarkTheme', val)
     },
   },
 }

@@ -2,9 +2,9 @@
   <div v-if="loaded" :style="'margin-left: ' + level + 'em;'" class="post">
     <div v-if="level !== 0" class="expandbutton">
       <TooltipButton
-        :clicked="expandClicked"
         :icon="expanded ? 'mdi-minus' : 'mdi-plus'"
         :hover="expanded ? 'Compress' : 'Expand'"
+        @click="expandClicked"
       />
     </div>
     <div style="display: inline-block">
@@ -13,25 +13,25 @@
         @{{ post.author.host }} {{ post.score }} points,
         <since :timestamp="post.created"
       /></span>
-      <br>
+      <br />
       <span v-if="expanded" class="post">
-        <br>
+        <br />
         <span
           v-html="post.content_html ? post.content_html : post.content_text"
         />
       </span>
-      <br>
+      <br />
       <TooltipButton
-        v-if="$store.state.LoggedIn"
-        :clicked="upVote"
+        v-if="$auth.loggedIn"
         :icon="post.your_vote ? 'mdi-cards-heart' : 'mdi-heart-outline'"
         :hover="post.your_vote ? 'Un-love' : 'Love'"
+        @click="upVote"
       />
       <TooltipButton
-        v-if="$store.state.LoggedIn"
-        :clicked="replyClicked"
+        v-if="$auth.loggedIn"
         icon="mdi-reply"
         hover="Reply"
+        @click="replyClicked"
       />
     </div>
     <v-card v-if="replybox">
@@ -133,10 +133,11 @@ export default {
         this.post.score--
       }
     },
-    loadReplies() {
-      this.$axios
-        .get('/api/posts/' + this.post.id + '/replies')
-        .then(this.gotReplies)
+    async loadReplies() {
+      const data = await this.$axios.$get(
+        '/api/posts/' + this.post.id + '/replies'
+      )
+      this.post.comments = data.items
     },
     gotReplies(d) {
       this.post.comments = d.data.items

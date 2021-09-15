@@ -14,10 +14,9 @@ module.exports = {
     'prettier',
     'plugin:vue/recommended',
   ],
-  plugins: ['prettier'],
+  plugins: [],
   // add your custom rules here
   rules: {
-    'prettier/prettier': 'warn',
     'vue/no-mutating-props': 'warn',
   },
 }

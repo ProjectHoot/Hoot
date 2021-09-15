@@ -39,6 +39,7 @@ export default {
     // https://go.nuxtjs.dev/pwa
     '@nuxtjs/pwa',
     '@nuxtjs/proxy',
+    '@nuxtjs/auth-next',
   ],
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
@@ -58,6 +59,27 @@ export default {
       lang: 'en',
     },
   },
+  auth: {
+    strategies: {
+      local: {
+        token: {
+          property: 'token',
+          global: true,
+          // required: true,
+          // type: 'Bearer'
+        },
+        user: {
+          property: 'user',
+          // autoFetch: true
+        },
+        endpoints: {
+          login: { url: '/api/logins', method: 'post' },
+          logout: { url: '/api/logins/~current', method: 'delete' },
+          user: { url: '/api/logins/~current', method: 'get' },
+        },
+      },
+    },
+  },
 
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
   vuetify: {
@@ -73,15 +95,13 @@ export default {
           success: '#4CAF50',
           warning: '#FFC107',
         },
-        /*
-      dark: {
-        primary: '#F2A01D',
-        secondary: '#5EC39F',
-        accent: '#BE5A29',
-        error: '#5EC39F',
-        success: '#1DF26B',
-      }
-      */
+        dark: {
+          primary: '#F2A01D',
+          secondary: '#5EC39F',
+          accent: '#BE5A29',
+          error: '#5EC39F',
+          success: '#1DF26B',
+        },
       },
     },
   },
