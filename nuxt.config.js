@@ -44,7 +44,9 @@ export default {
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
-    proxy: true,
+    proxy: !process.env.SPA,
+    baseURL: process.env.SPA ? process.env.LOTIDE : undefined,
+    browserBaseURL: process.env.SPA ? process.env.LOTIDE : undefined,
   },
   proxy: {
     '/api/': {
