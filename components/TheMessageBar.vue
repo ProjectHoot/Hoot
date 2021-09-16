@@ -1,15 +1,15 @@
 <template>
-     <v-snackbar
-      :value="show"
-      :color="color"
-      timeout="5000"
-      @input="setShow"
-    >
-      <v-icon>
-          {{icon}}
-      </v-icon>
-      {{ message }}
-    </v-snackbar>
+  <v-snackbar
+    :value="show"
+    :color="color"
+    timeout="5000"
+    @input="setShow"
+  >
+    <v-icon>
+      {{ icon }}
+    </v-icon>
+    {{ message }}
+  </v-snackbar>
 </template>
 
 <script>
