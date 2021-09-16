@@ -3,22 +3,20 @@
     <v-card v-if="community !== null">
       <v-card-title> {{ community.name }}</v-card-title>
       <v-card-subtitle>{{ community.description }}</v-card-subtitle>
-      <v-card-actions v-if="$store.state.LoggedIn">
+      <v-card-actions v-if="$auth.loggedIn">
         <TooltipButton
           v-if="
             community.your_follow === null || community.your_follow === false
           "
-          :clicked="subscribe"
-          :clickarg="String(community.id)"
           icon="mdi-plus-box"
           hover="Subscribe"
+          @click="subscribe(community.id)"
         />
         <TooltipButton
           v-else
-          :clicked="unsubscribe"
-          :clickarg="String(community.id)"
           icon="mdi-trash-can"
           hover="Unsubscribe"
+          @click="unsubscribe(community.id)"
         />
         <TooltipButton
           v-if="community.your_follow && community.your_follow.accepted"
@@ -63,22 +61,22 @@
       </v-card-text>
     </v-card>
 
-    <v-list v-if="loaded" dense two-line>
+    <v-list v-if="!$fetchState.pending" dense two-line>
       <template v-for="(post, index) in posts">
         <v-list-item :key="index" style="padding-left: 0">
-          <v-list-item-action style="margin-right: 4px">
+          <v-list-item-action>
             <TooltipButton
-              v-if="$store.state.LoggedIn"
-              :clicked="upVote"
-              :clickarg="String(index)"
+              v-if="$auth.loggedIn"
               :icon="post.your_vote ? 'mdi-cards-heart' : 'mdi-heart-outline'"
               :hover="post.your_vote ? 'Un-love' : 'Love'"
+              @click="upVote(index)"
             />
             <span
               v-if="post.score !== null"
               style="margin-left: auto; margin-right: auto"
-              >{{ post.score }}</span
             >
+              {{ post.score }}
+            </span>
           </v-list-item-action>
           <v-list-item-content>
             <v-list-item-title>
@@ -110,6 +108,8 @@
         <v-divider :key="index + 'divider'" />
       </template>
     </v-list>
+    <v-skeleton-loader v-else type="list-item-avatar-three-line@12">
+    </v-skeleton-loader>
   </v-container>
 </template>
 
@@ -129,7 +129,6 @@ export default {
   data() {
     return {
       thecols: '6',
-      loaded: false,
       posts: [],
       tempposts: [],
       community: null,
@@ -139,25 +138,21 @@ export default {
       linkinput: '',
     }
   },
-  mounted() {
-    if (typeof this.$route.params.communityID === 'undefined') {
-      this.loadDefaultPosts()
+  async fetch() {
+    if (this.$route.params.communityID === undefined) {
+      await this.loadDefaultPosts()
     } else {
       // Load community info
-      if (this.$store.state.LoggedIn)
-        this.$axios
-          .get(
-            '/api/communities/' +
-              this.$route.params.communityID +
-              '?include_your=true'
-          )
-          .then(this.gotCommunityInfo)
-      else
-        this.$axios
-          .get('/api/communities/' + this.$route.params.communityID)
-          .then(this.gotCommunityInfo)
-
-      this.loadPosts()
+      if (this.$auth.loggedIn) {
+        this.community = await this.$axios.$get(
+          `/api/communities/${this.$route.params.communityID}?include_your=true`
+        )
+      } else {
+        this.community = await this.$axios.$get(
+          `/api/communities/${this.$route.params.communityID}`
+        )
+      }
+      await this.loadPosts()
     }
   },
   methods: {
@@ -165,7 +160,7 @@ export default {
       const postdata = {}
       postdata.try_wait_for_accept = true
       this.$axios
-        .post('/api/communities/' + this.community.id + '/follow', postdata)
+        .post(`/api/communities/${this.community.id}/follow`, postdata)
         .then(this.gotsubscribed)
     },
     togglenewlink() {
@@ -186,75 +181,56 @@ export default {
       const postdata = {}
       postdata.try_wait_for_accept = true
       this.$axios
-        .post('/api/communities/' + this.community.id + '/unfollow', postdata)
+        .post(`/api/communities/${this.community.id}/unfollow`, postdata)
         .then(this.gotunsubscribed)
     },
-    loadPosts() {
-      if (this.$store.state.LoggedIn) {
-        this.$axios
-          .get(
-            '/api/communities/' +
-              this.$route.params.communityID +
-              '/posts?include_your=true'
-          )
-          .then(this.gotPosts)
+    async loadPosts() {
+      let posts = []
+      if (this.$auth.loggedIn) {
+        posts = await this.$axios.get(
+          `/api/communities/${this.$route.params.communityID}/posts?include_your=true`
+        )
       } else {
-        this.$axios
-          .get('/api/communities/' + this.$route.params.communityID + '/posts')
-          .then(this.gotPosts)
+        posts = await this.$axios.get(
+          `/api/communities/${this.$route.params.communityID}/posts`
+        )
       }
+      this.posts = posts.map((post) => {
+        if (post.score === undefined) {
+          return { ...post, score: 0 }
+        }
+        return post
+      })
     },
-    loadDefaultPosts() {
-      if (this.$store.state.LoggedIn) {
-        this.$axios
-          .get('/api/users/~me/following:posts?include_your=true')
-          .then(this.gotFollowingPosts)
+    async loadDefaultPosts() {
+      if (this.$auth.loggedIn) {
+        // fetch posts from what you're following, then fetch posts from what you aren't
+        const [followingPosts, { items: otherPosts }] = await Promise.all([
+          this.$axios.$get('/api/users/~me/following:posts?include_your=true'),
+          this.$axios.$get('/api/posts?include_yours=true'),
+        ])
+        this.posts.push(...followingPosts, ...otherPosts)
       } else {
-        this.$axios.get('/api/posts').then(this.gotPosts)
-      }
-    },
-    gotCommunityInfo(d) {
-      this.community = d.data
-      console.log(this.community)
-    },
-    gotFollowingPosts(d) {
-      this.tempposts = d.data.items
-      this.$axios.get('/api/posts?include_your=true').then(this.gotMorePosts)
-    },
-    gotPosts(d) {
-      this.posts = d.data.items
-      for (const x in this.posts) {
-        if (typeof this.posts[x].score === 'undefined') this.posts[x].score = 0
-      }
-      this.loaded = true
-    },
-    gotMorePosts(d) {
-      for (const i in d.data.items) {
-        let flag = false
-        for (const x in this.tempposts) {
-          if (d.data[i].id === this.tempposts[x].id) {
-            flag = true
+        const { items: posts } = await this.$axios.$get('/api/posts')
+        this.posts = posts.map((post) => {
+          if (post.score === undefined) {
+            return { ...post, score: 0 }
           }
-        }
-        if (!flag) {
-          this.tempposts.push(d.data[i])
-        }
+          return post
+        })
       }
-      this.posts = this.tempposts
-      this.loaded = true
     },
-    goToUser() {},
     upVote(index) {
       if (!this.posts[index].your_vote) {
         this.$axios
-          .put('/api/posts/' + this.posts[index].id + '/your_vote')
+          .put(`/api/posts/${this.posts[index].id}/your_vote`)
           .then((this.posts[index].your_vote = {}))
-        this.posts[index].score++
+        this.posts[index].score += 1
       } else {
         this.$axios
-          .delete('/api/posts/' + this.posts[index].id + '/your_vote')
+          .delete(`/api/posts/${this.posts[index].id}/your_vote`)
           .then((this.posts[index].your_vote = null))
-        this.posts[index].score--
+        this.posts[index].score -= 1
       }
     },
     downVote() {},
@@ -339,7 +315,7 @@ export default {
       this.$router.go()
     },
     submitfailed(e) {
-      this.alerttext = 'Error: ' + e.response.status + ' : ' + e.response.data
+      this.alerttext = `Error: ${e.response.status} : ${e.response.data}`
       this.alerttimeout = 5000
       this.showalert = true
     },

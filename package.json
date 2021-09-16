@@ -24,8 +24,7 @@
     "nuxt": "^2.15.8",
     "vue-easymde": "^1.2.1",
     "vue-moment": "^4.1.0",
-    "vuetify": "^2.5.8",
-    "vuex-persistedstate": "^4.0.0-beta.2"
+    "vuetify": "^2.5.8"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.14.7",
@@ -36,8 +35,10 @@
     "@vue/test-utils": "^1.2.1",
     "babel-core": "7.0.0-bridge.0",
     "babel-jest": "^27.0.5",
-    "eslint": "^7.29.0",
+    "eslint": "^7.32.0",
+    "eslint-config-airbnb-base": "^14.2.1",
     "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-import": "^2.24.2",
     "eslint-plugin-nuxt": "^2.0.0",
     "eslint-plugin-vue": "^7.12.1",
     "jest": "^27.0.5",

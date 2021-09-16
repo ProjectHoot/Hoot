@@ -8,19 +8,11 @@ export default {
       theInfo: 'Loading',
     }
   },
-  mounted() {
-    this.$axios.get('/api/instance').then(this.gotServerInfo)
-  },
-  methods: {
-    gotServerInfo(d) {
-      this.$store.dispatch('message/showMessage', {
-        message:
-          'Connected to server ' +
-          d.data.software.name +
-          ' version ' +
-          d.data.software.version,
-      })
-    },
+  async mounted() {
+    const { software } = await this.$axios.$get('/api/instance')
+    this.$store.dispatch('message/showMessage', {
+      message: `Connected to server ${software.name} version ${software.version}`,
+    })
   },
 }
 </script>

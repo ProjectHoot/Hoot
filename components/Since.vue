@@ -16,11 +16,11 @@ export default {
       const diff = now - then
       const minutes = diff / 60
       if (minutes < 1) return 'Just Now'
-      if (minutes < 60) return Math.round(minutes) + ' Minutes Ago'
+      if (minutes < 60) return `${Math.round(minutes)} Minutes Ago`
       const hours = minutes / 60
-      if (hours < 24) return Math.round(hours) + ' Hours Ago'
+      if (hours < 24) return `${Math.round(hours)} Hours Ago`
       const days = hours / 24
-      return Math.round(days) + ' Days Ago'
+      return `${Math.round(days)} Days Ago`
     },
   },
 }

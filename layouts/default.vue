@@ -25,9 +25,7 @@
           <v-tooltip bottom>
             <template #activator="{ on: tooltip }">
               <v-btn v-bind="attrs" icon v-on="{ ...tooltip, ...menu }">
-                <v-icon class="text--primary">
-                  mdi-magnify
-                </v-icon>
+                <v-icon class="text--primary"> mdi-magnify </v-icon>
               </v-btn>
             </template>
             <span>Search</span>
@@ -46,22 +44,15 @@
               label="Limit results to this server"
             /><v-row>
               <v-col cols="6">
-                <v-btn dense @click="searchwindow = false">
-                  Search!
-                </v-btn>
+                <v-btn dense @click="searchwindow = false"> Search! </v-btn>
               </v-col>
               <v-col cols="6">
-                <v-btn dense @click="searchwindow = false">
-                  Close
-                </v-btn>
+                <v-btn dense @click="searchwindow = false"> Close </v-btn>
               </v-col>
             </v-row>
           </v-card-text>
         </v-card>
       </v-menu>
-      <v-btn>
-        {{ $auth.loggedIn }}
-      </v-btn>
       <TheLoginButton v-if="!$auth.loggedIn" />
       <TheProfileButton v-else />
     </v-app-bar>

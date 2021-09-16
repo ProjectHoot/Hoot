@@ -17,7 +17,7 @@
         </span>
         <TooltipButton
           v-if="$auth.loggedIn"
-          :icon="post.your_vote ? 'mdi-cards-heart' : 'mdi-heart-outline'"
+          :icon="icon"
           :hover="post.your_vote ? 'Un-love' : 'Love'"
           @click="upVote"
         />
@@ -82,11 +82,11 @@ export default {
     }
   },
   computed: {
-    bgcolor() {
-      if (this.$index() % 2) {
-        return 'rgba(0,0,0,0)'
+    icon() {
+      if (this.post.your_vote) {
+        return 'mdi-cards-heart'
       }
-      return 'rgba(0,0,0,0.5)'
+      return 'mdi-heart-outline'
     },
     hasreplies() {
       return this.post.replies?.items.length > 0
@@ -110,30 +110,30 @@ export default {
       if (this.level === 0) {
         if (!this.post.your_vote) {
           this.$axios
-            .put('/api/posts/' + this.post.id + '/your_vote')
-            .then((this.post.your_vote = {}))
-          this.post.score++
+            .put(`/api/posts/${this.post.id}/your_vote`)
+            .then((this.post.your_vote = true))
+          this.post.score += 1
         } else {
           this.$axios
-            .delete('/api/posts/' + this.post.id + '/your_vote')
-            .then((this.post.your_vote = null))
-          this.post.score--
+            .delete(`/api/posts/${this.post.id}/your_vote`)
+            .then((this.post.your_vote = false))
+          this.post.score -= 1
         }
       } else if (!this.post.your_vote) {
         this.$axios
-          .put('/api/comments/' + this.post.id + '/your_vote')
-          .then((this.post.your_vote = {}))
-        this.post.score++
+          .put(`/api/comments/${this.post.id}/your_vote`)
+          .then((this.post.your_vote = true))
+        this.post.score += 1
       } else {
         this.$axios
-          .delete('/api/comments/' + this.post.id + '/your_vote')
-          .then((this.post.your_vote = null))
-        this.post.score--
+          .delete(`/api/comments/${this.post.id}/your_vote`)
+          .then((this.post.your_vote = false))
+        this.post.score -= 1
       }
     },
     loadReplies() {
       this.$axios
-        .get('/api/posts/' + this.post.id + '/replies')
+        .get(`/api/posts/${this.post.id}/replies`)
         .then(this.gotReplies)
     },
     gotReplies(d) {
@@ -158,12 +158,12 @@ export default {
 
       if (this.level === 0)
         this.$axios
-          .post('/api/posts/' + this.post.id + '/replies', submission)
+          .post(`/api/posts/${this.post.id}/replies`, submission)
           .then(this.submitsuccess)
           .catch(this.submitfailed)
       else
         this.$axios
-          .post('/api/comments/' + this.post.id + '/replies', submission)
+          .post(`/api/comments/${this.post.id}/replies`, submission)
           .then(this.submitsuccess)
           .catch(this.submitfailed)
     },
@@ -175,7 +175,7 @@ export default {
       this.$router.go()
     },
     submitfailed(e) {
-      this.alerttext = 'Error: ' + e.response.status + ' : ' + e.response.data
+      this.alerttext = `Error: ${e.response.status} : ${e.response.data}`
       this.alerttimeout = 5000
       this.showalert = true
     },
