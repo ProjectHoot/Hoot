@@ -13,7 +13,7 @@ export default {
     ],
     link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
   },
-  ssr: !process.env.SPA,
+  ssr: process.env.SPA === 'false',
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [],
 
@@ -44,9 +44,9 @@ export default {
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
-    proxy: !process.env.SPA,
-    baseURL: process.env.SPA ? process.env.LOTIDE : undefined,
-    browserBaseURL: process.env.SPA ? process.env.LOTIDE : undefined,
+    proxy: process.env.SPA === 'false',
+    baseURL: process.env.SPA === 'true' ? process.env.LOTIDE : undefined,
+    browserBaseURL: process.env.SPA === 'true' ? process.env.LOTIDE : undefined,
   },
   proxy: {
     '/api/': {
