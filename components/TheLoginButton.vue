@@ -2,18 +2,12 @@
   <v-menu :close-on-content-click="false" :nudge-width="200" offset-y>
     <template #activator="{ on }">
       <v-btn icon v-on="on">
-        <v-icon color="gray">
-          mdi-account
-        </v-icon>
+        <v-icon color="gray"> mdi-account </v-icon>
       </v-btn>
     </template>
     <v-tabs v-model="currentTab">
-      <v-tab key="0">
-        Login
-      </v-tab>
-      <v-tab key="1">
-        Signup
-      </v-tab>
+      <v-tab key="0"> Login </v-tab>
+      <v-tab key="1"> Signup </v-tab>
     </v-tabs>
     <v-tabs-items v-model="currentTab">
       <v-tab-item key="0">
@@ -26,9 +20,7 @@
                 label="Password"
                 type="password"
               />
-              <v-btn @click="login">
-                Login
-              </v-btn>
+              <v-btn @click="login"> Login </v-btn>
             </v-form>
           </v-card-text>
         </v-card>
@@ -46,7 +38,7 @@
               <v-alert
                 v-if="
                   loginForm.password.length !== 0 &&
-                    loginForm.password.length < 6
+                  loginForm.password.length < 6
                 "
               >
                 <v-icon>mdi-alert-circle</v-icon>
@@ -68,9 +60,7 @@
                 label="Email (optional)"
                 type="text"
               />
-              <v-btn @click="signup">
-                Sign Up
-              </v-btn>
+              <v-btn @click="signup"> Sign Up </v-btn>
             </v-form>
           </v-card-text>
         </v-card>
@@ -89,7 +79,7 @@ export default {
         repeatpassword: '',
         email: '',
       },
-      currentTab: 0
+      currentTab: 0,
     }
   },
   methods: {
@@ -138,8 +128,10 @@ export default {
       }
       await this.$axios.post('/api/users', postData)
       this.$auth.loginWith('local', {
-        username: postData.username,
-        password: postData.password,
+        data: {
+          username: postData.username,
+          password: postData.password,
+        },
       })
     },
     failedSignup() {
