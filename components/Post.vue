@@ -11,28 +11,23 @@
       <Username :userid="post.author.id" :username="post.author.username" />
       <span>
         @{{ post.author.host }} {{ post.score }} points,
-        <since :timestamp="post.created"
-      /></span>
-      <br />
-      <span v-if="expanded" class="post">
-        <br />
-        <article
-          v-html="post.content_html ? post.content_html : post.content_text"
-        ></article>
+        <since :timestamp="post.created" />
+        <span v-if="expanded" class="post">
+          <article v-html="post.content_html || post.content_text" />
+        </span>
+        <TooltipButton
+          v-if="$auth.loggedIn"
+          :icon="post.your_vote ? 'mdi-cards-heart' : 'mdi-heart-outline'"
+          :hover="post.your_vote ? 'Un-love' : 'Love'"
+          @click="upVote"
+        />
+        <TooltipButton
+          v-if="$auth.loggedIn"
+          icon="mdi-reply"
+          hover="Reply"
+          @click="replyClicked"
+        />
       </span>
-      <br />
-      <TooltipButton
-        v-if="$auth.loggedIn"
-        :icon="post.your_vote ? 'mdi-cards-heart' : 'mdi-heart-outline'"
-        :hover="post.your_vote ? 'Un-love' : 'Love'"
-        @click="upVote"
-      />
-      <TooltipButton
-        v-if="$auth.loggedIn"
-        icon="mdi-reply"
-        hover="Reply"
-        @click="replyClicked"
-      />
     </div>
     <v-card v-if="replybox">
       <v-card-title>Reply to {{ post.author.username }}</v-card-title>
@@ -94,7 +89,7 @@ export default {
       return 'rgba(0,0,0,0.5)'
     },
     hasreplies() {
-      return this.post.replies?.length > 0
+      return this.post.replies?.items.length > 0
     },
   },
   mounted() {

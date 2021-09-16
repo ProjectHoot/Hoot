@@ -190,11 +190,17 @@ export default {
     this.$vuetify.theme.dark = this.$auth.$storage.getUniversal('isDarkTheme')
   },
   methods: {
-    login() {
+    async login() {
       const data = {}
       data.username = this.loginform.username
       data.password = this.loginform.password
-      this.$auth.loginWith('local', { data })
+      try {
+        await this.$auth.loginWith('local', { data })
+      } catch (err) {
+        this.$store.dispatch('message/showError', {
+          message: err.response.data,
+        })
+      }
     },
     async logout() {
       await this.$auth.logout()

@@ -13,7 +13,7 @@ export default {
     ],
     link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
   },
-
+  ssr: process.env.SPA,
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [],
 
@@ -99,7 +99,7 @@ export default {
           primary: '#F2A01D',
           secondary: '#5EC39F',
           accent: '#BE5A29',
-          error: '#5EC39F',
+          error: '#FF5252',
           success: '#1DF26B',
         },
       },
