@@ -108,7 +108,7 @@ dist
 
 # Service worker
 
-sw.\*
+static/sw.js
 
 # macOS
 
