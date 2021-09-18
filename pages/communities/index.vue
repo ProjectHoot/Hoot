@@ -8,8 +8,8 @@
         <v-text-field v-model="filter" label="Filter" />
       </v-col>
     </v-row>
-    <v-list v-if="loaded">
-      <template v-for="c in filteredcommunities">
+    <v-list>
+      <template v-for="c in filteredCommunities">
         <v-list-item v-if="subscribed ? c.your_follow : true" :key="c.id">
           <v-list-item-action v-if="$auth.loggedIn">
             <TooltipButton
@@ -37,9 +37,6 @@
         </v-list-item>
       </template>
     </v-list>
-    <v-list v-else>
-      <h2>Loading...</h2>
-    </v-list>
   </v-container>
 </template>
 <script>
@@ -47,49 +44,45 @@ import TooltipButton from '@/components/TooltipButton'
 
 export default {
   components: { TooltipButton },
+  async asyncData({ $auth, $axios }) {
+    let data
+    if ($auth.loggedIn) {
+      data = await $axios.$get('/api/communities?include_your=true')
+    } else {
+      data = await $axios.$get('/api/communities')
+    }
+    const communities = data.items.map((community) => ({
+      ...community,
+      data: null,
+    }))
+    return { communities }
+  },
   data() {
     return {
-      communities: [],
       filter: '',
-      loaded: false,
       clicked: null,
       showpop: false,
       subscribed: false,
-      me: null
+      me: null,
     }
   },
   computed: {
-    filteredcommunities() {
-      const out = []
-      for (const k in this.communities) {
-        if (this.communities[k].name.includes(this.filter)) {
-          out.push(this.communities[k])
-        }
-      }
-      out.sort()
-      return out
+    filteredCommunities() {
+      if (this.filter.length > 0) {
+        return this.communities.filter((community) =>
+          this.filter
+            .toLocaleLowerCase()
+            .includes(community.name.toLocaleLowerCase())
+        )
+      } else return this.communities
     },
     activecommunity() {
       if (this.clicked === null) return false
       const me = this.getIndexById(this.clicked)
       return this.communities[me]
-    }
-  },
-  beforeMount() {
-    if (this.$auth.loggedIn)
-      this.$axios
-        .get('/api/communities?include_your=true')
-        .then(this.gotCommunities)
-    else this.$axios.get('/api/communities').then(this.gotCommunities)
+    },
   },
   methods: {
-    gotCommunities(d) {
-      this.communities = d.data.items
-      for (const k in this.communities) {
-        this.communities[k].data = null
-      }
-      this.loaded = true
-    },
     getIndexById(i) {
       for (const k in this.communities) {
         if (this.communities[k].id === i) return k
@@ -102,7 +95,7 @@ export default {
       const postdata = {}
       postdata.try_wait_for_accept = true
       this.$axios
-        .post('/api/communities/' + i + '/follow', postdata)
+        .post(`/api/communities/${i}/follow`, postdata)
         .then(this.gotsubscribed)
     },
     gotunsubscribed() {
@@ -117,9 +110,9 @@ export default {
       const postdata = {}
       postdata.try_wait_for_accept = true
       this.$axios
-        .post('/api/communities/' + i + '/unfollow', postdata)
+        .post(`/api/communities/${i}/unfollow`, postdata)
         .then(this.gotunsubscribed)
-    }
-  }
+    },
+  },
 }
 </script>
