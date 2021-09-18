@@ -51,7 +51,7 @@ export default {
   proxy: {
     '/api/': {
       target: process.env.LOTIDE,
-      pathRewrite: { '^/api/': '' },
+      // pathRewrite: { '^/api/': '' },
     },
   },
 
