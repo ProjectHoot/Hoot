@@ -205,7 +205,12 @@ export default {
     async loadDefaultPosts() {
       if (this.$auth.loggedIn) {
         // fetch posts from what you're following, then fetch posts from what you aren't
-        const [followingPosts, { items: otherPosts }] = await Promise.all([
+        const [
+          { value: followingPosts = [] },
+          {
+            value: { items: otherPosts = [] },
+          },
+        ] = await Promise.allSettled([
           this.$axios.$get('/api/users/~me/following:posts?include_your=true'),
           this.$axios.$get('/api/posts?include_yours=true'),
         ])

@@ -1,11 +1,22 @@
 <template>
   <v-container>
     <v-row>
-      <v-col cols="2">
-        <v-switch v-model="subscribed" label="Show Subscribed Communities" />
+      <v-col>
+        <CreateCommunityDialog />
       </v-col>
-      <v-col cols="6">
-        <v-text-field v-model="filter" label="Filter" />
+    </v-row>
+    <v-row>
+      <v-col>
+        <v-text-field
+          v-model="filter"
+          label="Filter"
+          rounded
+          filled
+          dense
+          prepend-inner-icon="mdi-magnify"
+          hide-details
+        />
+        <v-switch v-model="subscribed" label="Show Subscribed Communities" />
       </v-col>
     </v-row>
     <v-list>
@@ -45,13 +56,15 @@ import TooltipButton from '@/components/TooltipButton'
 export default {
   components: { TooltipButton },
   async asyncData({ $auth, $axios }) {
-    let data
+    let data = []
     if ($auth.loggedIn) {
-      data = await $axios.$get('/api/communities?include_your=true')
+      const { items } = await $axios.$get('/api/communities?include_your=true')
+      data = items
     } else {
-      data = await $axios.$get('/api/communities')
+      const { items } = await $axios.$get('/api/communities')
+      data = items
     }
-    const communities = data.items.map((community) => ({
+    const communities = data.map((community) => ({
       ...community,
       data: null,
     }))
