@@ -1,4 +1,4 @@
-FROM node:lts as builder
+FROM node:16-alpine as builder
 
 WORKDIR /app
 
@@ -19,7 +19,7 @@ RUN rm -rf node_modules && \
     --non-interactive \
     --production=true
 
-FROM node:lts
+FROM node:16-alpine
 
 WORKDIR /app
 
