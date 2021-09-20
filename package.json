@@ -1,6 +1,10 @@
 {
   "name": "Project-Hoot",
   "version": "0.1.0",
+  "engines": {
+    "node": "16.x",
+    "npm": "7.x"
+  },
   "private": true,
   "scripts": {
     "dev": "nuxt",
