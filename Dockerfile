@@ -26,6 +26,9 @@ WORKDIR /app
 COPY --from=builder /app  .
 
 ENV HOST 0.0.0.0
-EXPOSE 80
+ENV LOTIDE http://localhost:3333/api/unstable
+ENV STATIC false
+ENV PROXY true
+EXPOSE 3000
 
 CMD [ "npm", "run", "start" ]
