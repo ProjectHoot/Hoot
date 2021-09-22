@@ -83,7 +83,8 @@ export default {
     searchwindow: false,
   }),
   mounted() {
-    this.$vuetify.theme.dark = this.$auth.$storage.getUniversal('isDarkTheme')
+    const isDarkTheme = this.$auth.$storage.getUniversal('isDarkTheme')
+    this.$vuetify.theme.dark = isDarkTheme
   },
   methods: {
     toggleDark() {

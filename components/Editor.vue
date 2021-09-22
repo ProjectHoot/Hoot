@@ -1,32 +1,37 @@
 <template>
   <div>
-    <!-- <vue-easymde v-model="editorcontent" :configs="editorconfig"></vue-easymde> -->
-    <v-btn @click="Submit">Submit</v-btn>
+    <v-sheet outlined rounded class="my-4">
+      <Ink v-model="editorContent" class="editor" />
+    </v-sheet>
+    <v-btn @click="submit"> Submit </v-btn>
   </div>
 </template>
 <script>
-// import VueEasymde from "vue-easymde";
-
+import Ink from '@writewithocto/vue-ink'
 export default {
   components: {
-    // VueEasymde,
+    Ink,
   },
   props: {
-    submit: Function,
-    initialcontent: String,
+    initialContent: String,
   },
   data() {
     return {
-      editorcontent: this.initialcontent,
+      editorContent: this.initialContent,
       editorconfig: {
         hideIcons: ['fullscreen', 'side-by-side'],
       },
     }
   },
   methods: {
-    Submit() {
-      this.submit(this.editorcontent)
+    submit() {
+      this.$emit('submit', this.editorContent)
     },
   },
 }
 </script>
+<style lang="scss">
+.theme--light .editor .cm-line {
+  caret-color: #000;
+}
+</style>

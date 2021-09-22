@@ -21,6 +21,7 @@
     "@nuxtjs/axios": "^5.13.6",
     "@nuxtjs/proxy": "^2.1.0",
     "@nuxtjs/pwa": "^3.3.5",
+    "@writewithocto/vue-ink": "^0.5.1",
     "ansi-regex": "^5.0.0",
     "core-js": "^3.15.1",
     "moment": "^2.29.1",

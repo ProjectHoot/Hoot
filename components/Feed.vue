@@ -20,15 +20,15 @@
         />
         <TooltipButton
           v-if="community.your_follow && community.your_follow.accepted"
-          :click="togglenewpost"
           hover="New Post"
           icon="mdi-pencil"
+          @click="togglenewpost"
         />
         <TooltipButton
           v-if="community.your_follow && community.your_follow.accepted"
-          :click="togglenewlink"
           hover="New Link"
           icon="mdi-link"
+          @click="togglenewlink"
         />
       </v-card-actions>
     </v-card>

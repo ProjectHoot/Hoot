@@ -20,25 +20,27 @@
           hover="Unsubscribe"
           @click="unsubscribe(community.id)"
         />
+        <v-btn
+          v-if="community.your_follow && community.your_follow.accepted"
+          color="primary"
+          @click="toggleNewPost"
+        >
+          <v-icon left> mdi-plus-circle </v-icon>
+          New Post
+        </v-btn>
         <TooltipButton
           v-if="community.your_follow && community.your_follow.accepted"
-          :click="togglenewpost"
-          hover="New Post"
-          icon="mdi-pencil"
-        />
-        <TooltipButton
-          v-if="community.your_follow && community.your_follow.accepted"
-          :click="togglenewlink"
           hover="New Link"
           icon="mdi-link"
+          @click="togglenewlink"
         />
       </v-card-actions>
     </v-card>
-    <v-card v-if="showeditor">
+    <v-card v-if="showEditor">
       <v-card-title>New Post</v-card-title>
       <v-card-text>
         <v-text-field v-model="posttitle" placeholder="Post Title" />
-        <Editor :submit="submit" />
+        <Editor @submit="submit" />
       </v-card-text>
     </v-card>
     <v-card v-if="showlinkinput">
@@ -123,7 +125,7 @@ export default {
     Username,
     Since,
     Editor,
-    TooltipButton
+    TooltipButton,
   },
   data() {
     return {
@@ -133,32 +135,34 @@ export default {
       tempposts: [],
       community: null,
       posttitle: '',
-      showeditor: false,
+      showEditor: false,
       showlinkinput: false,
-      linkinput: ''
+      linkinput: '',
     }
   },
-  mounted() {
-    if (typeof this.$route.params.communityID === 'undefined') {
-      this.loadDefaultPosts()
+  async fetch() {
+    if (this.$route.params.communityID === undefined) {
+      await this.loadDefaultPosts()
     } else {
       // Load community info
-      if (this.$auth.loggedIn)
-        this.$axios
-          .get(
-            '/api/communities/' +
-              this.$route.params.communityID +
-              '?include_your=true'
-          )
-          .then(this.gotCommunityInfo)
-      else
-        this.$axios
-          .get('/api/communities/' + this.$route.params.communityID)
-          .then(this.gotCommunityInfo)
+      if (this.$auth.loggedIn) {
+        const response = await this.$axios.get(
+          '/api/communities/' +
+            this.$route.params.communityID +
+            '?include_your=true'
+        )
+        this.gotCommunityInfo(response)
+      } else {
+        const response = await this.$axios.get(
+          '/api/communities/' + this.$route.params.communityID
+        )
+        this.gotCommunityInfo(response)
+      }
 
-      this.loadPosts()
+      await this.loadPosts()
     }
   },
+  mounted() {},
   methods: {
     subscribe() {
       const postdata = {}
@@ -169,10 +173,10 @@ export default {
     },
     togglenewlink() {
       this.showlinkinput = !this.showlinkinput
-      this.showeditor = false
+      this.showEditor = false
     },
-    togglenewpost() {
-      this.showeditor = !this.showeditor
+    toggleNewPost() {
+      this.showEditor = !this.showEditor
       this.showlinkinput = false
     },
     gotunsubscribed() {
@@ -188,33 +192,32 @@ export default {
         .post('/api/communities/' + this.community.id + '/unfollow', postdata)
         .then(this.gotunsubscribed)
     },
-    loadPosts() {
+    async loadPosts() {
       if (this.$auth.loggedIn) {
-        this.$axios
-          .get(
-            '/api/communities/' +
-              this.$route.params.communityID +
-              '/posts?include_your=true'
-          )
-          .then(this.gotPosts)
+        const response = await this.$axios.get(
+          `/api/posts?include_your=true&community=${this.$route.params.communityID}`
+        )
+        this.gotPosts(response)
       } else {
-        this.$axios
-          .get('/api/communities/' + this.$route.params.communityID + '/posts')
-          .then(this.gotPosts)
+        const response = await this.$axios.get(
+          '/api/communities/' + this.$route.params.communityID + '/posts'
+        )
+        this.gotPosts(response)
       }
     },
-    loadDefaultPosts() {
+    async loadDefaultPosts() {
       if (this.$auth.loggedIn) {
-        this.$axios
-          .get('/api/users/~me/following:posts?include_your=true')
-          .then(this.gotFollowingPosts)
+        const response = await this.$axios.get(
+          '/api/users/~me/following:posts?include_your=true'
+        )
+        this.gotFollowingPosts(response)
       } else {
-        this.$axios.get('/api/posts').then(this.gotPosts)
+        const response = await this.$axios.get('/api/posts')
+        this.gotPosts(response)
       }
     },
     gotCommunityInfo(d) {
       this.community = d.data
-      console.log(this.community)
     },
     gotFollowingPosts(d) {
       if (d.data.items) this.tempposts = d.data.items
@@ -231,13 +234,13 @@ export default {
       this.loaded = true
     },
     gotMorePosts(d) {
-      var items = []
+      let items = []
       if (d.data.items) items = d.data.items
       else items = d.data
-      for (var i in items) {
-        var flag = false
-        for (var x in this.tempposts) {
-          if (items[i].id == this.tempposts[x].id) {
+      for (const i in items) {
+        let flag = false
+        for (const x in this.tempposts) {
+          if (items[i].id === this.tempposts[x].id) {
             flag = true
           }
         }
@@ -341,14 +344,14 @@ export default {
       this.alerttimeout = 5000
       this.showalert = true
       this.replybox = false
-      this.$router.go()
+      // this.$router.go()
     },
     submitfailed(e) {
       this.alerttext = 'Error: ' + e.response.status + ' : ' + e.response.data
       this.alerttimeout = 5000
       this.showalert = true
-    }
-  }
+    },
+  },
 }
 </script>
 <style>
