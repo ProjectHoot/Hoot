@@ -1,5 +1,4 @@
 import colors from 'vuetify/es5/util/colors'
-
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
@@ -46,16 +45,19 @@ export default {
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
     proxy: process.env.PROXY === 'true',
-    baseURL: process.env.STATIC === 'true' ? process.env.LOTIDE : undefined,
+    baseURL: process.env.PROXY === 'false' ? process.env.LOTIDE : undefined,
     browserBaseURL:
-      process.env.STATIC === 'true' ? process.env.LOTIDE : undefined,
+      process.env.PROXY === 'false' ? process.env.LOTIDE : undefined,
   },
-  proxy: {
-    '/api/': {
-      target: process.env.LOTIDE,
-      pathRewrite: { '^/api/': '' },
-    },
-  },
+  proxy:
+    process.env.PROXY === 'true'
+      ? {
+          '/api/': {
+            target: process.env.LOTIDE,
+            pathRewrite: { '^/api/': '' },
+          },
+        }
+      : false,
 
   // PWA module configuration: https://go.nuxtjs.dev/pwa
   pwa: {
