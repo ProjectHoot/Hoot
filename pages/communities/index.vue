@@ -52,9 +52,10 @@
 </template>
 <script>
 import TooltipButton from '@/components/TooltipButton'
+import CreateCommunityDialog from '~/components/CreateCommunityDialog.vue'
 
 export default {
-  components: { TooltipButton },
+  components: { TooltipButton, CreateCommunityDialog },
   async asyncData({ $auth, $axios }) {
     let data = []
     if ($auth.loggedIn) {
@@ -64,10 +65,13 @@ export default {
       const { items } = await $axios.$get('/api/communities')
       data = items
     }
-    const communities = data.map((community) => ({
-      ...community,
-      data: null,
-    }))
+    let communities = []
+    if (data) {
+      communities = data.map((community) => ({
+        ...community,
+        data: null,
+      }))
+    }
     return { communities }
   },
   data() {
