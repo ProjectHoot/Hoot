@@ -13,14 +13,14 @@
       <v-tab-item key="0">
         <v-card>
           <v-card-text>
-            <v-form @submit.prevent>
+            <v-form @submit.prevent="login">
               <v-text-field v-model="loginForm.username" label="Username" />
               <v-text-field
                 v-model="loginForm.password"
                 label="Password"
                 type="password"
               />
-              <v-btn @click="login"> Login </v-btn>
+              <v-btn type="submit"> Login </v-btn>
             </v-form>
           </v-card-text>
         </v-card>
@@ -28,7 +28,7 @@
       <v-tab-item key="1">
         <v-card>
           <v-card-text>
-            <v-form>
+            <v-form @submit.prevent="signup">
               <v-text-field v-model="loginForm.username" label="Username" />
               <v-text-field
                 v-model="loginForm.password"
@@ -60,7 +60,7 @@
                 label="Email (optional)"
                 type="text"
               />
-              <v-btn @click="signup"> Sign Up </v-btn>
+              <v-btn type="submit"> Sign Up </v-btn>
             </v-form>
           </v-card-text>
         </v-card>
