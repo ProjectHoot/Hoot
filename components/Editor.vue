@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-sheet outlined rounded class="my-4">
-      <Ink v-model="editorContent" class="editor" />
+      <Ink v-model="editorContent" class="editor px-4" />
     </v-sheet>
     <v-btn @click="submit"> Submit </v-btn>
   </div>

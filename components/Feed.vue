@@ -36,7 +36,7 @@
       <v-card-title>New Post</v-card-title>
       <v-card-text>
         <v-text-field v-model="posttitle" placeholder="Post Title" />
-        <Editor :submit="submit" />
+        <Editor @submit="submit" />
       </v-card-text>
     </v-card>
     <v-card v-if="showlinkinput">

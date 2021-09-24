@@ -25,7 +25,6 @@ WORKDIR /app
 
 COPY --from=builder /app  .
 
-ENV HOST 0.0.0.0
 ENV LOTIDE http://localhost:3333/api/unstable
 ENV STATIC false
 ENV PROXY true

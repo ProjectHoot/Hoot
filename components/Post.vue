@@ -32,7 +32,7 @@
     <v-card v-if="replybox">
       <v-card-title>Reply to {{ post.author.username }}</v-card-title>
       <v-card-text>
-        <Editor :submit="submit" />
+        <Editor @submit="submit" />
       </v-card-text>
     </v-card>
     <v-divider />
