@@ -1,35 +1,15 @@
 <template>
   <div>
-    <v-btn @click="preview">
-      <v-icon left> mdi-eye </v-icon>
-      Preview
-    </v-btn>
     <div class="d-flex">
       <v-sheet outlined rounded class="my-4 flex-grow-1">
-        <Ink v-model="editorContent" class="editor" />
-      </v-sheet>
-      <v-sheet
-        v-if="previewContent"
-        class="flex-grow-1 ma-4 d-flex flex-column"
-        outlined
-        rounded
-      >
-        <v-btn tile class="mb-4" text @click="previewContent = ''">
-          <v-icon left> mdi-close </v-icon>
-          close preview
-        </v-btn>
-        <div v-html="previewContent"></div>
+        <vue-easymde v-model="editorContent" class="editor" />
       </v-sheet>
     </div>
     <v-btn @click="submit"> Submit </v-btn>
   </div>
 </template>
 <script>
-import Ink from '@writewithocto/vue-ink'
 export default {
-  components: {
-    Ink,
-  },
   props: {
     initialContent: String,
   },
@@ -39,27 +19,88 @@ export default {
       editorconfig: {
         hideIcons: ['fullscreen', 'side-by-side'],
       },
-      previewContent: '',
     }
   },
   methods: {
     submit() {
       this.$emit('submit', this.editorContent)
     },
-    async preview() {
-      const { content_html: contentHtml } = await this.$axios.$post(
-        '/api/misc/render_markdown',
-        {
-          content_markdown: this.editorContent,
-        }
-      )
-      this.previewContent = contentHtml
-    },
   },
 }
 </script>
 <style lang="scss">
-.theme--light .editor .cm-line {
-  caret-color: #000;
+.editor {
+  .CodeMirror {
+    border: none !important;
+  }
+  .editor-toolbar {
+    border: none;
+  }
+  button {
+    &.active,
+    &:hover {
+      background: inherit;
+    }
+  }
+}
+
+$dark-body-background: #121212;
+$dark-border-color: #3a3a3a;
+$dark-toolbar-color: #212121;
+.theme--dark .editor {
+  .vue-easymde,
+  .CodeMirror {
+    background-color: $dark-body-background;
+    color: #fff;
+  }
+  .editor-preview {
+    background: $dark-body-background;
+    border: none;
+    &-side {
+      background-color: $dark-body-background;
+      border-left: 1px solid $dark-border-color;
+    }
+  }
+  .CodeMirror-cursor {
+    border-left: 1px solid #fff;
+  }
+  .editor-toolbar {
+    background: $dark-toolbar-color;
+    border-bottom: 1px solid $dark-border-color;
+    button {
+      background: $dark-toolbar-color;
+    }
+  }
+  .editor-statusbar {
+    border-top: 1px solid $dark-border-color;
+  }
+}
+$light-body-background: #f7f7f7;
+$light-border-color: #dadfea;
+$light-toolbar-color: #eee;
+.theme--light .editor {
+  .vue-easymde,
+  .CodeMirror {
+    background-color: $light-body-background;
+    color: #000;
+  }
+  .editor-preview {
+    background: $light-body-background;
+    border: none;
+    &-side {
+      background-color: $light-body-background;
+      border-left: 1px solid $light-toolbar-color;
+    }
+  }
+  .CodeMirror-cursor {
+    border-left: 1px solid #000;
+  }
+  .editor-toolbar {
+    background-color: $light-toolbar-color;
+    border-bottom: 1px solid $light-border-color;
+  }
+  .editor-statusbar {
+    border-top: 1px solid $light-border-color;
+  }
 }
 </style>
