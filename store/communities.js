@@ -20,7 +20,11 @@ export const actions = {
   async createCommunity({ commit }, { name }) {
     return await makeRequest(
       commit,
-      this.$axios({ url: '/api/communities', method: 'POST', data: { name } })
+      this.$axios({
+        url: `${this.$config.lotide}/communities`,
+        method: 'POST',
+        data: { name },
+      })
     )
   },
 }

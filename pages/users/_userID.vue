@@ -79,7 +79,7 @@ export default {
   mounted() {
     if (this.$auth.loggedIn) {
       this.$axios
-        .get('/api/users/~me')
+        .get(`${this.$config.lotide}/users/~me`)
         .then(this.gotProfile)
         .catch(this.failprofile)
     } else {
@@ -96,7 +96,7 @@ export default {
       const m = {}
       m.description = this.description
       this.$axios
-        .patch('/api/users/~me', m)
+        .patch(`${this.$config.lotide}/users/~me`, m)
         .then(this.gotDescriptionChanged)
         .catch(this.failDescriptionChange)
     },
@@ -126,7 +126,7 @@ export default {
       const m = {}
       m.password = this.newPassword
       this.$axios
-        .patch('/api/users/~me', m)
+        .patch(`${this.$config.lotide}/users/~me`, m)
         .then(this.gotChangedPassword)
         .catch(this.failChangePassword)
     },

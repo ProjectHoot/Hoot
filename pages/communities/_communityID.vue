@@ -115,11 +115,11 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 import Username from '~/components/Username'
 import Since from '~/components/Since'
 import Editor from '~/components/Editor'
 import TooltipButton from '@/components/TooltipButton'
-
 export default {
   components: {
     Username,
@@ -147,14 +147,14 @@ export default {
       // Load community info
       if (this.$auth.loggedIn) {
         const response = await this.$axios.get(
-          '/api/communities/' +
+          `${this.$config.lotide}/communities/` +
             this.$route.params.communityID +
             '?include_your=true'
         )
         this.gotCommunityInfo(response)
       } else {
         const response = await this.$axios.get(
-          '/api/communities/' + this.$route.params.communityID
+          `${this.$config.lotide}/communities/` + this.$route.params.communityID
         )
         this.gotCommunityInfo(response)
       }
@@ -164,11 +164,15 @@ export default {
   },
   mounted() {},
   methods: {
+    ...mapActions('message', ['showMessage', 'showError']),
     subscribe() {
       const postdata = {}
       postdata.try_wait_for_accept = true
       this.$axios
-        .post('/api/communities/' + this.community.id + '/follow', postdata)
+        .post(
+          `${this.$config.lotide}/communities/` + this.community.id + '/follow',
+          postdata
+        )
         .then(this.gotsubscribed)
     },
     togglenewlink() {
@@ -189,18 +193,25 @@ export default {
       const postdata = {}
       postdata.try_wait_for_accept = true
       this.$axios
-        .post('/api/communities/' + this.community.id + '/unfollow', postdata)
+        .post(
+          `${this.$config.lotide}/communities/` +
+            this.community.id +
+            '/unfollow',
+          postdata
+        )
         .then(this.gotunsubscribed)
     },
     async loadPosts() {
       if (this.$auth.loggedIn) {
         const response = await this.$axios.get(
-          `/api/posts?include_your=true&community=${this.$route.params.communityID}`
+          `${this.$config.lotide}/posts?include_your=true&community=${this.$route.params.communityID}`
         )
         this.gotPosts(response)
       } else {
         const response = await this.$axios.get(
-          '/api/communities/' + this.$route.params.communityID + '/posts'
+          `${this.$config.lotide}/communities/` +
+            this.$route.params.communityID +
+            '/posts'
         )
         this.gotPosts(response)
       }
@@ -208,11 +219,11 @@ export default {
     async loadDefaultPosts() {
       if (this.$auth.loggedIn) {
         const response = await this.$axios.get(
-          '/api/users/~me/following:posts?include_your=true'
+          `${this.$config.lotide}/users/~me/following:posts?include_your=true`
         )
         this.gotFollowingPosts(response)
       } else {
-        const response = await this.$axios.get('/api/posts')
+        const response = await this.$axios.get(`${this.$config.lotide}/posts`)
         this.gotPosts(response)
       }
     },
@@ -223,7 +234,9 @@ export default {
       if (d.data.items) this.tempposts = d.data.items
       else this.tempposts = d.data
       this.tempposts = d.data
-      this.$axios.get('/api/posts?include_your=true').then(this.gotMorePosts)
+      this.$axios
+        .get(`${this.$config.lotide}/posts?include_your=true`)
+        .then(this.gotMorePosts)
     },
     gotPosts(d) {
       if (d.data.items) this.posts = d.data.items
@@ -255,12 +268,20 @@ export default {
     upVote(index) {
       if (!this.posts[index].your_vote) {
         this.$axios
-          .put('/api/posts/' + this.posts[index].id + '/your_vote')
+          .put(
+            `${this.$config.lotide}/posts/` +
+              this.posts[index].id +
+              '/your_vote'
+          )
           .then((this.posts[index].your_vote = {}))
         this.posts[index].score++
       } else {
         this.$axios
-          .delete('/api/posts/' + this.posts[index].id + '/your_vote')
+          .delete(
+            `${this.$config.lotide}/posts/` +
+              this.posts[index].id +
+              '/your_vote'
+          )
           .then((this.posts[index].your_vote = null))
         this.posts[index].score--
       }
@@ -291,7 +312,7 @@ export default {
       submission.title = this.posttitle
 
       this.$axios
-        .post('/api/posts', submission)
+        .post(`${this.$config.lotide}/posts`, submission)
         .then(this.submitsuccess)
         .catch(this.submitfailed)
     },
@@ -321,7 +342,7 @@ export default {
       submission.title = this.posttitle
 
       this.$axios
-        .post('/api/posts', submission)
+        .post(`${this.$config.lotide}/posts`, submission)
         .then(this.submitsuccess)
         .catch(this.submitfailed)
     },
@@ -339,17 +360,20 @@ export default {
     isValidLinkForm() {
       return this.posttitle && this.isValidUrl(this.linkinput)
     },
-    submitsuccess() {
-      this.alerttext = 'Post submitted!'
-      this.alerttimeout = 5000
-      this.showalert = true
-      this.replybox = false
-      // this.$router.go()
+    submitsuccess({ data: { id } }) {
+      this.showMessage({
+        message: 'Post submitted!',
+        icon: 'mdi-check',
+        color: 'success',
+        position: { top: true },
+      })
+      this.$router.push(`/posts/${id}`)
     },
     submitfailed(e) {
-      this.alerttext = 'Error: ' + e.response.status + ' : ' + e.response.data
-      this.alerttimeout = 5000
-      this.showalert = true
+      this.showError({
+        message: 'Error: ' + e.response.status + ' : ' + e.response.data,
+        icon: 'mdi-exclamation',
+      })
     },
   },
 }

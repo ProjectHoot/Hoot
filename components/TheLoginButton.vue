@@ -126,7 +126,7 @@ export default {
       if (this.loginForm.email !== '') {
         postData.email_address = this.loginForm.email
       }
-      await this.$axios.post('/api/users', postData)
+      await this.$axios.post(`${this.$config.lotide}/users`, postData)
       this.$auth.loginWith('local', {
         data: {
           username: postData.username,

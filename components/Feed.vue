@@ -145,11 +145,11 @@ export default {
       // Load community info
       if (this.$auth.loggedIn) {
         this.community = await this.$axios.$get(
-          `/api/communities/${this.$route.params.communityID}?include_your=true`
+          `${this.$config.lotide}/communities/${this.$route.params.communityID}?include_your=true`
         )
       } else {
         this.community = await this.$axios.$get(
-          `/api/communities/${this.$route.params.communityID}`
+          `${this.$config.lotide}/communities/${this.$route.params.communityID}`
         )
       }
       await this.loadPosts()
@@ -160,7 +160,10 @@ export default {
       const postdata = {}
       postdata.try_wait_for_accept = true
       this.$axios
-        .post(`/api/communities/${this.community.id}/follow`, postdata)
+        .post(
+          `${this.$config.lotide}/communities/${this.community.id}/follow`,
+          postdata
+        )
         .then(this.gotsubscribed)
     },
     togglenewlink() {
@@ -181,18 +184,21 @@ export default {
       const postdata = {}
       postdata.try_wait_for_accept = true
       this.$axios
-        .post(`/api/communities/${this.community.id}/unfollow`, postdata)
+        .post(
+          `${this.$config.lotide}/communities/${this.community.id}/unfollow`,
+          postdata
+        )
         .then(this.gotunsubscribed)
     },
     async loadPosts() {
       let posts = []
       if (this.$auth.loggedIn) {
         posts = await this.$axios.get(
-          `/api/communities/${this.$route.params.communityID}/posts?include_your=true`
+          `${this.$config.lotide}/communities/${this.$route.params.communityID}/posts?include_your=true`
         )
       } else {
         posts = await this.$axios.get(
-          `/api/communities/${this.$route.params.communityID}/posts`
+          `${this.$config.lotide}/communities/${this.$route.params.communityID}/posts`
         )
       }
       this.posts = posts.map((post) => {
@@ -211,12 +217,16 @@ export default {
             value: { items: otherPosts = [] },
           },
         ] = await Promise.allSettled([
-          this.$axios.$get('/api/users/~me/following:posts?include_your=true'),
-          this.$axios.$get('/api/posts?include_yours=true'),
+          this.$axios.$get(
+            `${this.$config.lotide}/users/~me/following:posts?include_your=true`
+          ),
+          this.$axios.$get(`${this.$config.lotide}/posts?include_yours=true`),
         ])
         this.posts.push(...followingPosts, ...otherPosts)
       } else {
-        const { items: posts } = await this.$axios.$get('/api/posts')
+        const { items: posts } = await this.$axios.$get(
+          `${this.$config.lotide}/posts`
+        )
         this.posts = posts.map((post) => {
           if (post.score === undefined) {
             return { ...post, score: 0 }
@@ -228,12 +238,14 @@ export default {
     upVote(index) {
       if (!this.posts[index].your_vote) {
         this.$axios
-          .put(`/api/posts/${this.posts[index].id}/your_vote`)
+          .put(`${this.$config.lotide}/posts/${this.posts[index].id}/your_vote`)
           .then((this.posts[index].your_vote = {}))
         this.posts[index].score += 1
       } else {
         this.$axios
-          .delete(`/api/posts/${this.posts[index].id}/your_vote`)
+          .delete(
+            `${this.$config.lotide}/posts/${this.posts[index].id}/your_vote`
+          )
           .then((this.posts[index].your_vote = null))
         this.posts[index].score -= 1
       }
@@ -264,7 +276,7 @@ export default {
       submission.title = this.posttitle
 
       this.$axios
-        .post('/api/posts', submission)
+        .post(`${this.$config.lotide}/posts`, submission)
         .then(this.submitsuccess)
         .catch(this.submitfailed)
     },
@@ -294,7 +306,7 @@ export default {
       submission.title = this.posttitle
 
       this.$axios
-        .post('/api/posts', submission)
+        .post(`${this.$config.lotide}/posts`, submission)
         .then(this.submitsuccess)
         .catch(this.submitfailed)
     },

@@ -10,7 +10,9 @@ export default {
   },
   async mounted() {
     try {
-      const { software } = await this.$axios.$get('/api/instance')
+      const { software } = await this.$axios.$get(
+        `${this.$config.lotide}/instance`
+      )
       this.$store.dispatch('message/showMessage', {
         message: `Connected to server ${software.name} version ${software.version}`,
       })

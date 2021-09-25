@@ -1,11 +1,12 @@
 <template>
   <v-snackbar
+    v-bind="position"
     :value="show"
     :color="color"
     timeout="5000"
     @input="setShow"
   >
-    <v-icon>
+    <v-icon left>
       {{ icon }}
     </v-icon>
     {{ message }}
@@ -13,14 +14,13 @@
 </template>
 
 <script>
-import {mapMutations, mapState} from 'vuex'
+import { mapMutations, mapState } from 'vuex'
 export default {
-    computed:{
-        ...mapState('message', ['message', 'color', 'icon', 'show'])
-    },
-    methods:{
-        ...mapMutations('message', {setShow:'show'}),
-        
-    }
+  computed: {
+    ...mapState('message', ['message', 'color', 'icon', 'show', 'position']),
+  },
+  methods: {
+    ...mapMutations('message', { setShow: 'show' }),
+  },
 }
 </script>

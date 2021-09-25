@@ -65,14 +65,16 @@ export default {
     },
     loaduser() {
       this.$axios
-        .get('/api/users/' + this.userid + '?include_your=true')
+        .get(
+          `${this.$config.lotide}/users/` + this.userid + '?include_your=true'
+        )
         .then(this.gotuser)
     },
     updatenote() {
       const p = {}
       p.content_text = this.your_note
       this.$axios
-        .put('/api/users/' + this.userid + '/your_note', p)
+        .put(`${this.$config.lotide}/users/` + this.userid + '/your_note', p)
         .then(this.updatednote)
         .catch(this.notupdated)
     },

@@ -110,30 +110,30 @@ export default {
       if (this.level === 0) {
         if (!this.post.your_vote) {
           this.$axios
-            .put(`/api/posts/${this.post.id}/your_vote`)
+            .put(`${this.$config.lotide}/posts/${this.post.id}/your_vote`)
             .then((this.post.your_vote = true))
           this.post.score += 1
         } else {
           this.$axios
-            .delete(`/api/posts/${this.post.id}/your_vote`)
+            .delete(`${this.$config.lotide}/posts/${this.post.id}/your_vote`)
             .then((this.post.your_vote = false))
           this.post.score -= 1
         }
       } else if (!this.post.your_vote) {
         this.$axios
-          .put(`/api/comments/${this.post.id}/your_vote`)
+          .put(`${this.$config.lotide}/comments/${this.post.id}/your_vote`)
           .then((this.post.your_vote = true))
         this.post.score += 1
       } else {
         this.$axios
-          .delete(`/api/comments/${this.post.id}/your_vote`)
+          .delete(`${this.$config.lotide}/comments/${this.post.id}/your_vote`)
           .then((this.post.your_vote = false))
         this.post.score -= 1
       }
     },
     loadReplies() {
       this.$axios
-        .get(`/api/posts/${this.post.id}/replies`)
+        .get(`${this.$config.lotide}/posts/${this.post.id}/replies`)
         .then(this.gotReplies)
     },
     gotReplies(d) {
@@ -158,12 +158,18 @@ export default {
 
       if (this.level === 0)
         this.$axios
-          .post(`/api/posts/${this.post.id}/replies`, submission)
+          .post(
+            `${this.$config.lotide}/posts/${this.post.id}/replies`,
+            submission
+          )
           .then(this.submitsuccess)
           .catch(this.submitfailed)
       else
         this.$axios
-          .post(`/api/comments/${this.post.id}/replies`, submission)
+          .post(
+            `${this.$config.lotide}/comments/${this.post.id}/replies`,
+            submission
+          )
           .then(this.submitsuccess)
           .catch(this.submitfailed)
     },

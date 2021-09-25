@@ -19,6 +19,12 @@ export default {
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: ['@/plugins/VueEasymde.client.js'],
+  publicRuntimeConfig: {
+    lotide:
+      process.env.STATIC !== 'true' && process.env.PROXY === 'true'
+        ? '/api'
+        : process.env.LOTIDE,
+  },
 
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,
@@ -45,9 +51,9 @@ export default {
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
     proxy: process.env.PROXY === 'true',
-    baseURL: process.env.PROXY === 'false' ? process.env.LOTIDE : undefined,
+    baseURL: process.env.PROXY !== 'true' ? process.env.LOTIDE : undefined,
     browserBaseURL:
-      process.env.PROXY === 'false' ? process.env.LOTIDE : undefined,
+      process.env.PROXY !== 'true' ? process.env.LOTIDE : undefined,
   },
   proxy:
     process.env.PROXY === 'true'
@@ -79,9 +85,30 @@ export default {
           // autoFetch: true
         },
         endpoints: {
-          login: { url: '/api/logins', method: 'post' },
-          logout: { url: '/api/logins/~current', method: 'delete' },
-          user: { url: '/api/logins/~current', method: 'get' },
+          login: {
+            url: `${
+              process.env.STATIC !== 'true' && process.env.PROXY === 'true'
+                ? '/api'
+                : process.env.LOTIDE
+            }/logins`,
+            method: 'post',
+          },
+          logout: {
+            url: `${
+              process.env.STATIC !== 'true' && process.env.PROXY === 'true'
+                ? '/api'
+                : process.env.LOTIDE
+            }/logins/~current`,
+            method: 'delete',
+          },
+          user: {
+            url: `${
+              process.env.STATIC !== 'true' && process.env.PROXY === 'true'
+                ? '/api'
+                : process.env.LOTIDE
+            }/logins/~current`,
+            method: 'get',
+          },
         },
       },
     },
@@ -110,6 +137,9 @@ export default {
         },
       },
     },
+  },
+  generate: {
+    fallback: true,
   },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build

@@ -56,13 +56,15 @@ import CreateCommunityDialog from '~/components/CreateCommunityDialog.vue'
 
 export default {
   components: { TooltipButton, CreateCommunityDialog },
-  async asyncData({ $auth, $axios }) {
+  async asyncData({ $auth, $axios, $config }) {
     let data = []
     if ($auth.loggedIn) {
-      const { items } = await $axios.$get('/api/communities?include_your=true')
+      const { items } = await $axios.$get(
+        `${$config.lotide}/communities?include_your=true`
+      )
       data = items
     } else {
-      const { items } = await $axios.$get('/api/communities')
+      const { items } = await $axios.$get(`${$config.lotide}/communities`)
       data = items
     }
     let communities = []
@@ -112,7 +114,7 @@ export default {
       const postdata = {}
       postdata.try_wait_for_accept = true
       this.$axios
-        .post(`/api/communities/${i}/follow`, postdata)
+        .post(`${this.$config.lotide}/communities/${i}/follow`, postdata)
         .then(this.gotsubscribed)
     },
     gotunsubscribed() {
@@ -127,7 +129,7 @@ export default {
       const postdata = {}
       postdata.try_wait_for_accept = true
       this.$axios
-        .post(`/api/communities/${i}/unfollow`, postdata)
+        .post(`${this.$config.lotide}/communities/${i}/unfollow`, postdata)
         .then(this.gotunsubscribed)
     },
   },

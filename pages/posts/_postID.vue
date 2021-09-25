@@ -36,22 +36,28 @@ export default {
       if (this.$auth.loggedIn) {
         this.$axios
           .get(
-            '/api/comments/' +
+            `${this.$config.lotide}/comments/` +
               this.$route.params.commentID +
               '?include_your=true'
           )
           .then(this.gotPost)
       } else {
         this.$axios
-          .get('/api/comments/' + this.$route.params.commentID)
+          .get(
+            `${this.$config.lotide}/comments/` + this.$route.params.commentID
+          )
           .then(this.gotPost)
       }
     } else if (this.$auth.loggedIn) {
       this.$axios
-        .get('/api/posts/' + this.postID + '?include_your=true')
+        .get(
+          `${this.$config.lotide}/posts/` + this.postID + '?include_your=true'
+        )
         .then(this.gotPost)
     } else {
-      this.$axios.get('/api/posts/' + this.postID).then(this.gotPost)
+      this.$axios
+        .get(`${this.$config.lotide}/posts/` + this.postID)
+        .then(this.gotPost)
     }
   },
   methods: {
