@@ -21,7 +21,7 @@
     "@nuxtjs/axios": "^5.13.6",
     "@nuxtjs/proxy": "^2.1.0",
     "@nuxtjs/pwa": "^3.3.5",
-    "ansi-regex": "^5.0.0",
+    "ansi-regex": "^5.0.1",
     "core-js": "^3.15.1",
     "nuxt": "^2.15.8",
     "vue-easymde": "^1.2.1",
