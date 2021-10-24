@@ -1,17 +1,65 @@
 <template>
   <v-app>
+    <v-navigation-drawer v-model="drawer" data-cy="appDrawer" absolute temporary>
+      <v-list>
+        <v-list-item data-cy="appDrawer-home" nuxt to="/">
+          <v-list-item-icon>
+            <v-icon>
+              mdi-home
+            </v-icon>
+          </v-list-item-icon>
+          <v-list-item-content>
+            <v-list-item-title>
+              Home
+            </v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item data-cy="appDrawer-communities" nuxt to="/communities">
+          <v-list-item-icon>
+            <v-icon>
+              mdi-clipboard-list
+            </v-icon>
+          </v-list-item-icon>
+          <v-list-item-content>
+            <v-list-item-title>
+              Communities
+            </v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item v-if="$auth.loggedIn" data-cy="appDrawer-profile" nuxt to="/me">
+          <v-list-item-icon>
+            <v-icon>
+              mdi-account
+            </v-icon>
+          </v-list-item-icon>
+          <v-list-item-content>
+            <v-list-item-title>
+              Profile
+            </v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item v-if="$auth.loggedIn" data-cy="appDrawer-logout" @click="$auth.logout()">
+          <v-list-item-icon>
+            <v-icon>
+              mdi-logout
+            </v-icon>
+          </v-list-item-icon>
+          <v-list-item-content>
+            <v-list-item-title>
+              Logout
+            </v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+      </v-list>
+    </v-navigation-drawer>
     <v-app-bar app color="primary">
+      <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
       <v-toolbar-title>
         <nuxt-link to="/" class="text--primary title text-decoration-none">
           Hoot
         </nuxt-link>
       </v-toolbar-title>
       <v-spacer />
-      <TooltipButton
-        to="/communities"
-        hover="Community List"
-        icon="mdi-clipboard-list"
-      />
       <TooltipButton
         :icon="$vuetify.theme.dark ? 'mdi-flashlight-off' : 'mdi-flashlight'"
         hover="Toggle Dark/Light Mode"
@@ -25,7 +73,9 @@
           <v-tooltip bottom>
             <template #activator="{ on: tooltip }">
               <v-btn v-bind="attrs" icon v-on="{ ...tooltip, ...menu }">
-                <v-icon class="text--primary"> mdi-magnify </v-icon>
+                <v-icon class="text--primary">
+                  mdi-magnify
+                </v-icon>
               </v-btn>
             </template>
             <span>Search</span>
@@ -44,15 +94,27 @@
               label="Limit results to this server"
             /><v-row>
               <v-col cols="6">
-                <v-btn dense @click="searchwindow = false"> Search! </v-btn>
+                <v-btn dense @click="searchwindow = false">
+                  Search!
+                </v-btn>
               </v-col>
               <v-col cols="6">
-                <v-btn dense @click="searchwindow = false"> Close </v-btn>
+                <v-btn dense @click="searchwindow = false">
+                  Close
+                </v-btn>
               </v-col>
             </v-row>
           </v-card-text>
         </v-card>
       </v-menu>
+      <v-btn data-cy="appBar-communities" title="communities" to="/communities" :icon="$vuetify.breakpoint.smAndDown" :text="$vuetify.breakpoint.mdAndUp">
+        <v-icon :left="$vuetify.breakpoint.mdAndUp">
+          mdi-clipboard-list
+        </v-icon>
+        <template v-if="$vuetify.breakpoint.mdAndUp">
+          Communities
+        </template>
+      </v-btn>
       <TheLoginButton v-if="!$auth.loggedIn" />
       <TheProfileButton v-else />
     </v-app-bar>
@@ -71,16 +133,19 @@
 <script>
 import Node from '~/components/Node.vue'
 import TooltipButton from '~/components/TooltipButton.vue'
+import TheLoginButton from '~/components/TheLoginButton.vue'
 
 export default {
   components: {
     Node,
     TooltipButton,
+    TheLoginButton
   },
 
   data: () => ({
     limitsearch: true,
     searchwindow: false,
+    drawer: false
   }),
   mounted() {
     const isDarkTheme = this.$auth.$storage.getUniversal('isDarkTheme')

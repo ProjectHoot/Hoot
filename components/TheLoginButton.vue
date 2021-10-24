@@ -1,11 +1,21 @@
 <template>
   <v-menu :close-on-content-click="false" :nudge-width="200" offset-y>
     <template #activator="{ on }">
-      <v-btn data-cy="login" icon v-on="on">
-        <v-icon color="gray">
-          mdi-account
-        </v-icon>
-      </v-btn>
+      <template v-if="$vuetify.breakpoint.mdAndUp">
+        <v-btn data-cy="login" text v-on="on">
+          <v-icon left>
+            mdi-account
+          </v-icon>
+          Login / Signup
+        </v-btn>
+      </template>
+      <template v-else>
+        <v-btn data-cy="login" icon v-on="on">
+          <v-icon>
+            mdi-account
+          </v-icon>
+        </v-btn>
+      </template>
     </template>
     <v-tabs v-model="currentTab">
       <v-tab key="0" data-cy="loginTab">
