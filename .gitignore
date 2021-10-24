@@ -33,7 +33,10 @@ coverage
 
 .grunt
 
-# Bower dependency directory (https://bower.io/)
+# Bower dependen
+# Cypress stuff
+cypress/videos
+cypress/screenshots directory (https://bower.io/)
 
 bower_components
 
@@ -117,3 +120,7 @@ static/sw.js
 # Vim swap files
 
 \*.swp
+
+# Cypress stuff
+cypress/videos
+cypress/screenshots

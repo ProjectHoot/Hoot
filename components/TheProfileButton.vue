@@ -3,7 +3,7 @@
     <template #activator="{ on: menu, attrs }">
       <v-tooltip bottom>
         <template #activator="{ on: tooltip }">
-          <v-btn v-bind="attrs" text v-on="{ ...tooltip, ...menu }">
+          <v-btn data-cy="authUsername" v-bind="attrs" text v-on="{ ...tooltip, ...menu }">
             <v-icon left color="gray">
               mdi-account
             </v-icon>
