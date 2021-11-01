@@ -5,14 +5,24 @@ Hoot is a software front-end for lotide that provides a clean, modern, and user-
 # Prerequisites
 
 1. A working [lotide](https://git.sr.ht/~vpzom/lotide) server.
-2. Node/NPM
+2. Node
+3. Yarn 
+   1. Yarn doesn't have to be installed globally, you can use NPX to run yarn commands: `npx yarn` `npx yarn dev` etc.
 
 # Building
+
+## Docker
+The docker image only does the SSR build, and PROXY is `true` by default
+
+this will start the container and map it to port 3000 on your machine:
+```bash
+docker run --name hoot -p 3000:3000 -e LOTIDE=https://lotide-instance.com/api hoot
+```
 
 ## SSR Build
 install dependencies:
 ```
-npm ci
+yarn
 ```
 Set your Environment Variables in a .env file or your hosting provider's environment settings
 ```.env
@@ -25,41 +35,41 @@ PROXY=true
 Build the app
 
 ```
-npm run build
+yarn build
 ```
 
 Start the app
 
 ```
-npm run start
+yarn start
 ```
 
 ## Static Build
 
 install dependencies:
 ```
-npm ci
+yarn
 ```
 Set your Environment Variables in a .env file or your hosting provider's environment settings
 ```.env
 LOTIDE=https://your-lotide-instance.app/api
 STATIC=true
-# if you're using the Static Build, proxy won't be applied anyway so just set it to false or true it won't matter
+# if you're using the Static Build, proxy won't be applied and doesn't have to be set
 PROXY=false
 ```
 
 Build the app
 
 ```
-npm run build
-npm run generate
+yarn build
+yarn generate
 ```
 After the build is completed, the results are output to the dist/ directory. Copy those files to your web root and Hoot should now be accessible.
 
  or you can serve the app with a simple node server with
 
 ```
-npm run start
+yarn start
 ```
 For detailed explanation on how things work, check out the [documentation](https://nuxtjs.org).
 
