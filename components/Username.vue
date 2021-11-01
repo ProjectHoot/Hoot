@@ -65,27 +65,22 @@ export default {
     },
     loaduser() {
       this.$axios
-        .get(
-          `${this.$config.lotide}/users/` + this.userid + '?include_your=true'
-        )
+        .get(`/users/` + this.userid + '?include_your=true')
         .then(this.gotuser)
     },
     updatenote() {
       const p = {}
       p.content_text = this.your_note
       this.$axios
-        .put(`${this.$config.lotide}/users/` + this.userid + '/your_note', p)
+        .put(`/users/` + this.userid + '/your_note', p)
         .then(this.updatednote)
         .catch(this.notupdated)
     },
     updatednote() {
-      console.log('Updated')
       this.your_note_initial = this.your_note
       this.$store.dispatch('message/showMessage', { message: 'Updated notes' })
     },
-    notupdated() {
-      console.log('Not Updated')
-    },
+    notupdated() {},
   },
 }
 </script>

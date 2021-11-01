@@ -59,12 +59,10 @@ export default {
   async asyncData({ $auth, $axios, $config }) {
     let data = []
     if ($auth.loggedIn) {
-      const { items } = await $axios.$get(
-        `${$config.lotide}/communities?include_your=true`
-      )
+      const { items } = await $axios.$get(`/communities?include_your=true`)
       data = items
     } else {
-      const { items } = await $axios.$get(`${$config.lotide}/communities`)
+      const { items } = await $axios.$get(`/communities`)
       data = items
     }
     let communities = []
@@ -114,7 +112,7 @@ export default {
       const postdata = {}
       postdata.try_wait_for_accept = true
       this.$axios
-        .post(`${this.$config.lotide}/communities/${i}/follow`, postdata)
+        .post(`/communities/${i}/follow`, postdata)
         .then(this.gotsubscribed)
     },
     gotunsubscribed() {
@@ -129,7 +127,7 @@ export default {
       const postdata = {}
       postdata.try_wait_for_accept = true
       this.$axios
-        .post(`${this.$config.lotide}/communities/${i}/unfollow`, postdata)
+        .post(`/communities/${i}/unfollow`, postdata)
         .then(this.gotunsubscribed)
     },
   },

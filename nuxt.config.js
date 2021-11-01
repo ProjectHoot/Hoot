@@ -19,12 +19,28 @@ export default {
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: ['@/plugins/VueEasymde.client.js'],
-  publicRuntimeConfig: {
-    lotide:
-      process.env.STATIC !== 'true' && process.env.PROXY === 'true'
-        ? '/api'
-        : process.env.LOTIDE,
-  },
+  publicRuntimeConfig:
+    process.env.STATIC !== 'true' && process.env.PROXY === 'true'
+      ? {
+          lotide: process.env.LOTIDE,
+          axios: {
+            browserBaseURL: '/api',
+          },
+        }
+      : {
+          lotide: process.env.LOTIDE,
+          axios: {
+            browserBaseURL: process.env.LOTIDE,
+          },
+        },
+  privateRuntimeConfig:
+    process.env.STATIC !== 'true' && process.env.PROXY === 'true'
+      ? {}
+      : {
+          axios: {
+            baseURL: process.env.LOTIDE,
+          },
+        },
 
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,
@@ -51,19 +67,20 @@ export default {
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
     proxy: process.env.PROXY === 'true',
-    baseURL: process.env.PROXY !== 'true' ? process.env.LOTIDE : undefined,
-    browserBaseURL:
-      process.env.PROXY !== 'true' ? process.env.LOTIDE : undefined,
+    prefix: process.env.PROXY === 'true' && '/api',
   },
-  proxy:
-    process.env.PROXY === 'true'
-      ? {
-          '/api/': {
-            target: process.env.LOTIDE,
-            pathRewrite: { '^/api/': '' },
-          },
-        }
-      : false,
+  // process.env.PROXY === 'true'
+  //   ? {
+  //       proxy: true,
+  //       // prefix: '/api',
+  //     }
+  //   : {},
+  proxy: (process.env.STATIC !== 'true' || process.env.PROXY === 'true') && {
+    '/api': {
+      target: process.env.LOTIDE,
+      pathRewrite: { '^/api/': '' },
+    },
+  },
 
   // PWA module configuration: https://go.nuxtjs.dev/pwa
   pwa: {
@@ -86,27 +103,15 @@ export default {
         },
         endpoints: {
           login: {
-            url: `${
-              process.env.STATIC !== 'true' && process.env.PROXY === 'true'
-                ? '/api'
-                : process.env.LOTIDE
-            }/logins`,
+            url: '/logins',
             method: 'post',
           },
           logout: {
-            url: `${
-              process.env.STATIC !== 'true' && process.env.PROXY === 'true'
-                ? '/api'
-                : process.env.LOTIDE
-            }/logins/~current`,
+            url: '/logins/~current',
             method: 'delete',
           },
           user: {
-            url: `${
-              process.env.STATIC !== 'true' && process.env.PROXY === 'true'
-                ? '/api'
-                : process.env.LOTIDE
-            }/logins/~current`,
+            url: '/logins/~current',
             method: 'get',
           },
         },

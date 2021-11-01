@@ -147,14 +147,14 @@ export default {
       // Load community info
       if (this.$auth.loggedIn) {
         const response = await this.$axios.get(
-          `${this.$config.lotide}/communities/` +
+          `/communities/` +
             this.$route.params.communityID +
             '?include_your=true'
         )
         this.gotCommunityInfo(response)
       } else {
         const response = await this.$axios.get(
-          `${this.$config.lotide}/communities/` + this.$route.params.communityID
+          `/communities/` + this.$route.params.communityID
         )
         this.gotCommunityInfo(response)
       }
@@ -169,10 +169,7 @@ export default {
       const postdata = {}
       postdata.try_wait_for_accept = true
       this.$axios
-        .post(
-          `${this.$config.lotide}/communities/` + this.community.id + '/follow',
-          postdata
-        )
+        .post(`/communities/` + this.community.id + '/follow', postdata)
         .then(this.gotsubscribed)
     },
     togglenewlink() {
@@ -193,25 +190,18 @@ export default {
       const postdata = {}
       postdata.try_wait_for_accept = true
       this.$axios
-        .post(
-          `${this.$config.lotide}/communities/` +
-            this.community.id +
-            '/unfollow',
-          postdata
-        )
+        .post(`/communities/` + this.community.id + '/unfollow', postdata)
         .then(this.gotunsubscribed)
     },
     async loadPosts() {
       if (this.$auth.loggedIn) {
         const response = await this.$axios.get(
-          `${this.$config.lotide}/posts?include_your=true&community=${this.$route.params.communityID}`
+          `/posts?include_your=true&community=${this.$route.params.communityID}`
         )
         this.gotPosts(response)
       } else {
         const response = await this.$axios.get(
-          `${this.$config.lotide}/communities/` +
-            this.$route.params.communityID +
-            '/posts'
+          `/communities/` + this.$route.params.communityID + '/posts'
         )
         this.gotPosts(response)
       }
@@ -219,11 +209,11 @@ export default {
     async loadDefaultPosts() {
       if (this.$auth.loggedIn) {
         const response = await this.$axios.get(
-          `${this.$config.lotide}/users/~me/following:posts?include_your=true`
+          `/users/~me/following:posts?include_your=true`
         )
         this.gotFollowingPosts(response)
       } else {
-        const response = await this.$axios.get(`${this.$config.lotide}/posts`)
+        const response = await this.$axios.get(`/posts`)
         this.gotPosts(response)
       }
     },
@@ -234,9 +224,7 @@ export default {
       if (d.data.items) this.tempposts = d.data.items
       else this.tempposts = d.data
       this.tempposts = d.data
-      this.$axios
-        .get(`${this.$config.lotide}/posts?include_your=true`)
-        .then(this.gotMorePosts)
+      this.$axios.get(`/posts?include_your=true`).then(this.gotMorePosts)
     },
     gotPosts(d) {
       if (d.data.items) this.posts = d.data.items
@@ -268,20 +256,12 @@ export default {
     upVote(index) {
       if (!this.posts[index].your_vote) {
         this.$axios
-          .put(
-            `${this.$config.lotide}/posts/` +
-              this.posts[index].id +
-              '/your_vote'
-          )
+          .put(`/posts/` + this.posts[index].id + '/your_vote')
           .then((this.posts[index].your_vote = {}))
         this.posts[index].score++
       } else {
         this.$axios
-          .delete(
-            `${this.$config.lotide}/posts/` +
-              this.posts[index].id +
-              '/your_vote'
-          )
+          .delete(`/posts/` + this.posts[index].id + '/your_vote')
           .then((this.posts[index].your_vote = null))
         this.posts[index].score--
       }
@@ -312,7 +292,7 @@ export default {
       submission.title = this.posttitle
 
       this.$axios
-        .post(`${this.$config.lotide}/posts`, submission)
+        .post(`/posts`, submission)
         .then(this.submitsuccess)
         .catch(this.submitfailed)
     },
@@ -342,7 +322,7 @@ export default {
       submission.title = this.posttitle
 
       this.$axios
-        .post(`${this.$config.lotide}/posts`, submission)
+        .post(`/posts`, submission)
         .then(this.submitsuccess)
         .catch(this.submitfailed)
     },

@@ -1,21 +1,20 @@
 FROM node:14-alpine as builder
 
 WORKDIR /app
-ARG STATIC=false
 
 COPY . .
 
 
-RUN npm install \
+RUN yarn install \
     --prefer-offline \
     --frozen-lockfile \
     --non-interactive \
     --production=false
 
-RUN npm run build
+RUN yarn build
 
 RUN rm -rf node_modules && \
-    NODE_ENV=production npm install \
+    NODE_ENV=production yarn install \
     --prefer-offline \
     --pure-lockfile \
     --non-interactive \

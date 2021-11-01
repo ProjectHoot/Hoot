@@ -8,11 +8,9 @@ export default {
       theInfo: 'Loading',
     }
   },
-  async mounted() {
+  async fetch() {
     try {
-      const { software } = await this.$axios.$get(
-        `${this.$config.lotide}/instance`
-      )
+      const { software } = await this.$axios.$get(`/instance`)
       this.$store.dispatch('message/showMessage', {
         message: `Connected to server ${software.name} version ${software.version}`,
       })

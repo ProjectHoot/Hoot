@@ -3,43 +3,37 @@
     <template #activator="{ on }">
       <template v-if="$vuetify.breakpoint.mdAndUp">
         <v-btn data-cy="login" text v-on="on">
-          <v-icon left>
-            mdi-account
-          </v-icon>
+          <v-icon left> mdi-account </v-icon>
           Login / Signup
         </v-btn>
       </template>
       <template v-else>
         <v-btn data-cy="login" icon v-on="on">
-          <v-icon>
-            mdi-account
-          </v-icon>
+          <v-icon> mdi-account </v-icon>
         </v-btn>
       </template>
     </template>
     <v-tabs v-model="currentTab">
-      <v-tab key="0" data-cy="loginTab">
-        Login
-      </v-tab>
-      <v-tab key="1" data-cy="signupTab">
-        Signup
-      </v-tab>
+      <v-tab key="0" data-cy="loginTab"> Login </v-tab>
+      <v-tab key="1" data-cy="signupTab"> Signup </v-tab>
     </v-tabs>
     <v-tabs-items v-model="currentTab">
       <v-tab-item key="0">
         <v-card>
           <v-card-text>
             <v-form @submit.prevent="login">
-              <v-text-field v-model="loginForm.username" data-cy="loginUsername" label="Username" />
+              <v-text-field
+                v-model="loginForm.username"
+                data-cy="loginUsername"
+                label="Username"
+              />
               <v-text-field
                 v-model="loginForm.password"
                 data-cy="loginPassword"
                 label="Password"
                 type="password"
               />
-              <v-btn data-cy="loginSubmit" type="submit">
-                Login
-              </v-btn>
+              <v-btn data-cy="loginSubmit" type="submit"> Login </v-btn>
             </v-form>
           </v-card-text>
         </v-card>
@@ -62,7 +56,7 @@
               <v-alert
                 v-if="
                   loginForm.password.length !== 0 &&
-                    loginForm.password.length < 6
+                  loginForm.password.length < 6
                 "
               >
                 <v-icon>mdi-alert-circle</v-icon>Password must be at least 6
@@ -85,9 +79,7 @@
                 label="Email (optional)"
                 type="text"
               />
-              <v-btn data-cy="signupSubmit" type="submit">
-                Sign Up
-              </v-btn>
+              <v-btn data-cy="signupSubmit" type="submit"> Sign Up </v-btn>
             </v-form>
           </v-card-text>
         </v-card>
@@ -153,7 +145,7 @@ export default {
       if (this.loginForm.email !== '') {
         postData.email_address = this.loginForm.email
       }
-      await this.$axios.post(`${this.$config.lotide}/users`, postData)
+      await this.$axios.post(`/users`, postData)
       this.$auth.loginWith('local', {
         data: {
           username: postData.username,

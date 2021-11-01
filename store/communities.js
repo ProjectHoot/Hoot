@@ -21,7 +21,7 @@ export const actions = {
     return await makeRequest(
       commit,
       this.$axios({
-        url: `${this.$config.lotide}/communities`,
+        url: `/communities`,
         method: 'POST',
         data: { name },
       })

@@ -110,31 +110,29 @@ export default {
       if (this.level === 0) {
         if (!this.post.your_vote) {
           this.$axios
-            .put(`${this.$config.lotide}/posts/${this.post.id}/your_vote`)
+            .put(`/posts/${this.post.id}/your_vote`)
             .then((this.post.your_vote = true))
           this.post.score += 1
         } else {
           this.$axios
-            .delete(`${this.$config.lotide}/posts/${this.post.id}/your_vote`)
+            .delete(`/posts/${this.post.id}/your_vote`)
             .then((this.post.your_vote = false))
           this.post.score -= 1
         }
       } else if (!this.post.your_vote) {
         this.$axios
-          .put(`${this.$config.lotide}/comments/${this.post.id}/your_vote`)
+          .put(`/comments/${this.post.id}/your_vote`)
           .then((this.post.your_vote = true))
         this.post.score += 1
       } else {
         this.$axios
-          .delete(`${this.$config.lotide}/comments/${this.post.id}/your_vote`)
+          .delete(`/comments/${this.post.id}/your_vote`)
           .then((this.post.your_vote = false))
         this.post.score -= 1
       }
     },
     loadReplies() {
-      this.$axios
-        .get(`${this.$config.lotide}/posts/${this.post.id}/replies`)
-        .then(this.gotReplies)
+      this.$axios.get(`/posts/${this.post.id}/replies`).then(this.gotReplies)
     },
     gotReplies(d) {
       if (d.data.items && d.data.items.length !== 0) {
@@ -158,18 +156,12 @@ export default {
 
       if (this.level === 0)
         this.$axios
-          .post(
-            `${this.$config.lotide}/posts/${this.post.id}/replies`,
-            submission
-          )
+          .post(`/posts/${this.post.id}/replies`, submission)
           .then(this.submitsuccess)
           .catch(this.submitfailed)
       else
         this.$axios
-          .post(
-            `${this.$config.lotide}/comments/${this.post.id}/replies`,
-            submission
-          )
+          .post(`/comments/${this.post.id}/replies`, submission)
           .then(this.submitsuccess)
           .catch(this.submitfailed)
     },

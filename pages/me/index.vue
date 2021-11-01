@@ -62,6 +62,9 @@
 <script>
 export default {
   components: {},
+  asyncData({ $auth }) {
+    console.log('LOGGED IN', $auth.loggedIn)
+  },
   data() {
     return {
       currentPassword: '',
@@ -82,7 +85,7 @@ export default {
   mounted() {
     if (this.$auth.loggedIn) {
       this.$axios
-        .get(`${this.$config.lotide}/users/~me`)
+        .get(`/users/~me`)
         .then(this.gotProfile)
         .catch(this.failprofile)
     } else {
@@ -99,7 +102,7 @@ export default {
       const m = {}
       m.description = this.description
       this.$axios
-        .patch(`${this.$config.lotide}/users/~me`, m)
+        .patch(`/users/~me`, m)
         .then(this.gotDescriptionChanged)
         .catch(this.failDescriptionChange)
     },
@@ -129,7 +132,7 @@ export default {
       const m = {}
       m.password = this.newPassword
       this.$axios
-        .patch(`${this.$config.lotide}/users/~me`, m)
+        .patch(`/users/~me`, m)
         .then(this.gotChangedPassword)
         .catch(this.failChangePassword)
     },
