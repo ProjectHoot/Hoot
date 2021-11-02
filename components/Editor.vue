@@ -5,9 +5,7 @@
         <vue-easymde v-model="editorContent" class="editor" />
       </v-sheet>
     </div>
-    <v-btn color="primary" @click="submit">
-      Submit
-    </v-btn>
+    <v-btn depressed color="primary" @click="submit"> Submit </v-btn>
   </div>
 </template>
 <script>

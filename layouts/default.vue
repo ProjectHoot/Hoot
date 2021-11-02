@@ -50,10 +50,18 @@
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
-    <v-app-bar app color="primary">
+    <v-app-bar app flat>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
-      <v-toolbar-title>
-        <nuxt-link to="/" class="text--primary title text-decoration-none">
+      <v-toolbar-title class="primary--text">
+        <nuxt-link
+          to="/"
+          class="title text-decoration-none"
+          :class="
+            $vuetify.theme.dark
+              ? 'primary--text'
+              : 'primary--text text--darken-3'
+          "
+        >
           Hoot
         </nuxt-link>
       </v-toolbar-title>
@@ -115,10 +123,10 @@
       <TheProfileButton v-else />
     </v-app-bar>
 
-    <Node />
+    <!-- <Node /> -->
 
     <v-main>
-      <v-container fluid style="padding: 0">
+      <v-container>
         <Nuxt />
       </v-container>
     </v-main>
@@ -127,13 +135,11 @@
 </template>
 
 <script>
-import Node from '~/components/Node.vue'
 import TooltipButton from '~/components/TooltipButton.vue'
 import TheLoginButton from '~/components/TheLoginButton.vue'
 
 export default {
   components: {
-    Node,
     TooltipButton,
     TheLoginButton,
   },

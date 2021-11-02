@@ -1,117 +1,128 @@
 <template>
-  <v-container fluid style="padding: 0">
-    <v-card v-if="community !== null">
-      <v-card-title>
-        {{ community.name }}
-      </v-card-title>
-      <v-card-subtitle>{{ community.description }}</v-card-subtitle>
-      <v-card-actions v-if="$auth.loggedIn">
-        <TooltipButton
-          v-if="
-            community.your_follow === null || community.your_follow === false
-          "
-          icon="mdi-plus-box"
-          hover="Subscribe"
-          @click="subscribe(community.id)"
-        />
-        <TooltipButton
-          v-else
-          icon="mdi-trash-can"
-          hover="Unsubscribe"
-          @click="unsubscribe(community.id)"
-        />
-        <v-btn
-          v-if="community.your_follow && community.your_follow.accepted"
-          color="primary"
-          @click="toggleNewPost"
-        >
-          <v-icon left> mdi-plus-circle </v-icon>
-          New Post
-        </v-btn>
-        <TooltipButton
-          v-if="community.your_follow && community.your_follow.accepted"
-          hover="New Link"
-          icon="mdi-link"
-          @click="togglenewlink"
-        />
-      </v-card-actions>
-    </v-card>
-    <v-card v-if="showEditor">
-      <v-card-title>New Post</v-card-title>
-      <v-card-text>
-        <v-text-field v-model="posttitle" placeholder="Post Title" />
-        <Editor @submit="submit" />
-      </v-card-text>
-    </v-card>
-    <v-card v-if="showlinkinput">
-      <v-card-title>New Link</v-card-title>
-      <v-card-text>
-        <v-text-field v-model="posttitle" placeholder="Post Title" />
-        <form>
-          <input
-            v-model="linkinput"
-            class="linkinput"
-            type="text"
-            placeholder="Enter Url"
+  <v-row justify="center">
+    <v-col lg="9">
+      <v-card flat v-if="community !== null">
+        <v-card-title>
+          {{ community.name }}
+        </v-card-title>
+        <v-card-subtitle>{{ community.description }}</v-card-subtitle>
+        <v-card-actions v-if="$auth.loggedIn">
+          <TooltipButton
+            v-if="
+              community.your_follow === null || community.your_follow === false
+            "
+            icon="mdi-plus-box"
+            hover="Subscribe"
+            @click="subscribe(community.id)"
           />
-          <v-btn
-            :disabled="!isValidLinkForm()"
-            class="submitlinkbutton"
-            @click="submitlink"
-          >
-            Submit
-          </v-btn>
-        </form>
-      </v-card-text>
-    </v-card>
 
-    <v-list v-if="loaded" dense two-line>
-      <template v-for="(post, index) in posts">
-        <v-list-item :key="index" style="padding-left: 0">
-          <v-list-item-action style="margin-right: 4px">
-            <TooltipButton
-              v-if="$auth.loggedIn"
-              :icon="post.your_vote ? 'mdi-cards-heart' : 'mdi-heart-outline'"
-              :hover="post.your_vote ? 'Un-love' : 'Love'"
-              @click="upVote(index)"
+          <v-btn
+            v-if="community.your_follow && community.your_follow.accepted"
+            depressed
+            color="primary"
+            @click="toggleNewPost"
+          >
+            <v-icon left> mdi-plus-circle </v-icon>
+            New Post
+          </v-btn>
+          <v-btn
+            v-if="community.your_follow && community.your_follow.accepted"
+            text
+            @click="togglenewlink"
+          >
+            <v-icon left> mdi-link </v-icon>
+            New Link
+          </v-btn>
+          <v-btn
+            text
+            v-if="
+              !community.your_follow === null ||
+              !community.your_follow === false
+            "
+            @click="unsubscribe(community.id)"
+          >
+            <v-icon left> mdi-minus-circle </v-icon>
+            unsubscribe
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+      <v-card v-if="showEditor">
+        <v-card-title>New Post</v-card-title>
+        <v-card-text>
+          <v-text-field v-model="posttitle" placeholder="Post Title" />
+          <Editor @submit="submit" />
+        </v-card-text>
+      </v-card>
+      <v-card v-if="showlinkinput">
+        <v-card-title>New Link</v-card-title>
+        <v-card-text>
+          <v-text-field v-model="posttitle" placeholder="Post Title" />
+          <form>
+            <input
+              v-model="linkinput"
+              class="linkinput"
+              type="text"
+              placeholder="Enter Url"
             />
-            <span
-              v-if="post.score !== null"
-              style="margin-left: auto; margin-right: auto"
-              >{{ post.score }}</span
+            <v-btn
+              :disabled="!isValidLinkForm()"
+              class="submitlinkbutton"
+              @click="submitlink"
             >
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>
-              <nuxt-link
-                class="text-h5 text-decoration-none"
-                :to="`/posts/${post.id}`"
+              Submit
+            </v-btn>
+          </form>
+        </v-card-text>
+      </v-card>
+
+      <v-list v-if="loaded" dense two-line>
+        <template v-for="(post, index) in posts">
+          <v-list-item :key="index" style="padding-left: 0">
+            <v-list-item-action style="margin-right: 4px">
+              <TooltipButton
+                v-if="$auth.loggedIn"
+                :icon="post.your_vote ? 'mdi-cards-heart' : 'mdi-heart-outline'"
+                :hover="post.your_vote ? 'Un-love' : 'Love'"
+                @click="upVote(index)"
+              />
+              <span
+                v-if="post.score !== null"
+                style="margin-left: auto; margin-right: auto"
+                >{{ post.score }}</span
               >
-                {{ post.title }}
-              </nuxt-link>
-            </v-list-item-title>
-            <v-list-item-subtitle>
-              <span class="text--secondary">
-                Posted
-                <since :timestamp="post.created" />
-                by
-                <Username
-                  :username="post.author.username"
-                  :userid="post.author.id"
-                />@{{ post.author.host }}
-                in
-                {{ post.community.name }}@{{ post.community.host }} ({{
-                  post.replies_count_total
-                }}
-                replies)
-              </span>
-            </v-list-item-subtitle>
-          </v-list-item-content>
-        </v-list-item>
-        <v-divider :key="index + 'divider'" />
-      </template>
-    </v-list>
-  </v-container>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>
+                <nuxt-link
+                  class="text-h5 text-decoration-none"
+                  :to="`/posts/${post.id}`"
+                >
+                  {{ post.title }}
+                </nuxt-link>
+              </v-list-item-title>
+              <v-list-item-subtitle>
+                <span class="text--secondary">
+                  Posted
+                  <since :timestamp="post.created" />
+                  by
+                  <Username
+                    :username="post.author.username"
+                    :userid="post.author.id"
+                  />@{{ post.author.host }}
+                  in
+                  {{ post.community.name }}@{{ post.community.host }} ({{
+                    post.replies_count_total
+                  }}
+                  replies)
+                </span>
+              </v-list-item-subtitle>
+            </v-list-item-content>
+          </v-list-item>
+          <v-divider :key="index + 'divider'" />
+        </template>
+      </v-list>
+    </v-col>
+  </v-row>
 </template>
 
 <script>
