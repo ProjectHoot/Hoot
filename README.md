@@ -1,6 +1,41 @@
 # Hoot
 
+How come you can self-host an e-mail server but can't self-host a subreddit? Well, now you can. I hear you saying, "But I could always just throw PHPbb on a lamp stack in the corner, there's a REASON I don't do that! People aren't going to make a brand new account and remember to start going to my website every day!"
+
+Well now they don't have to! Using the omni-present and terrifyingly powerful magic contained on the Fediverse, you can not only self-host your own internet community, but do it in a decentralized way that allows ANYONE, from ANYWHERE, to make an account on almost ANY server! With that, they can communicate with people on TOTALLY DIFFERENT servers, without having to mess about with web URLs, and without having to create an account on EVERY server they interact with! You don't bother making a gmail account just to talk to your friend Sally who happens to have a gmail account. You can send Sally a lengthy diatribe on the tactics of couch-surfing from your AOL address. Why should your INTERNET WEB FORUM behave any differently? 
+
+The answer is it doesn't have to! Just use Hoot and you'll be able to:
+
+ - Create an account (fluffy2001@somedomain.example)!
+ - Create a community (flufflovers@somedomain.example)!
+ - Communicate on the community with people on TOTALLY DIFFERENT servers run by TOTALLY DIFFERENT people (jd@goldandblack.xyz)!
+ - Upvote stuff you like!
+ - Ban people you don't!
+ - Argue over minutae without all the tedious mucking about on centralized platforms!
+
+All this and more can be YOURS if you run a Hoot node today!
+
+#OK but what is hoot?
+
 Hoot is a software front-end for lotide that provides a clean, modern, and user-friendly interface. Hoot provides a [Nuxt.js](https://nuxtjs.org/) app, that can be built to use either Server Side Rendering(SSR) or for static file hosting 
+
+#FAQ
+
+Q: Do I *need* to self-host in order for me to use hoot? I can't afford computers.
+
+A: You can just create an account on someone else's Hoot server!
+
+Q: Does it have a mobile app?
+
+A: Abso-doodly-utely it has a mobile app! 
+
+Q: What else do I need to run Hoot?
+
+A: You need a server running lotide. Hoot is a frontend for lotide, lotide is a backend that handles all the complicated bits and database stuff. 
+
+Q: It's great but I want a NEW FEATURE. Do you guys accept pull requests?
+
+A: We would ADORE it if you sent us a pull request. 
 
 # Prerequisites
 
