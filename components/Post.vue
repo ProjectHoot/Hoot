@@ -29,7 +29,7 @@
         />
       </span>
     </div>
-    <v-card v-if="replybox">
+    <v-card flat v-if="replybox">
       <v-card-title>Reply to {{ post.author.username }}</v-card-title>
       <v-card-text>
         <Editor @submit="submit" />
@@ -43,6 +43,7 @@
         :key="i"
         :level="level + 1"
         :post="p"
+        @submit="$emit('submit')"
       />
     </template>
     <v-snackbar v-model="showalert" :timeout="alerttimeout">
@@ -164,13 +165,13 @@ export default {
           .post(`/comments/${this.post.id}/replies`, submission)
           .then(this.submitsuccess)
           .catch(this.submitfailed)
+      this.$emit('submit')
     },
     submitsuccess() {
       this.alerttext = 'Reply submitted!'
       this.alerttimeout = 5000
       this.showalert = true
       this.replybox = false
-      this.$router.go()
     },
     submitfailed(e) {
       this.alerttext = `Error: ${e.response.status} : ${e.response.data}`

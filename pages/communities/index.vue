@@ -1,54 +1,63 @@
 <template>
-  <v-container>
-    <v-row>
-      <v-col>
-        <CreateCommunityDialog />
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col>
-        <v-text-field
-          v-model="filter"
-          label="Filter"
-          rounded
-          filled
-          dense
-          prepend-inner-icon="mdi-magnify"
-          hide-details
-        />
-        <v-switch v-model="subscribed" label="Show Subscribed Communities" />
-      </v-col>
-    </v-row>
-    <v-list>
-      <template v-for="c in filteredCommunities">
-        <v-list-item v-if="subscribed ? c.your_follow : true" :key="c.id">
-          <v-list-item-action v-if="$auth.loggedIn">
-            <TooltipButton
-              v-if="c.your_follow === null || c.your_follow === false"
-              icon="mdi-plus-box"
-              hover="Subscribe"
-              @click="subscribe(c.id)"
-            />
-            <TooltipButton
-              v-else
-              icon="mdi-trash-can"
-              hover="Unsubscribe"
-              @click="unsubscribe(c.id)"
-            />
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>
-              <nuxt-link :to="'/communities/' + c.id">
-                {{ c.name }}
-              </nuxt-link>
-              - {{ c.description }}
-            </v-list-item-title>
-            <v-list-item-subtitle>{{ c.host }}</v-list-item-subtitle>
-          </v-list-item-content>
-        </v-list-item>
-      </template>
-    </v-list>
-  </v-container>
+  <v-row justify="center">
+    <v-col md="6">
+      <v-row>
+        <v-col v-if="$auth.loggedIn">
+          <CreateCommunityDialog />
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col>
+          <v-text-field
+            v-model="filter"
+            label="Filter"
+            rounded
+            filled
+            dense
+            prepend-inner-icon="mdi-magnify"
+            hide-details
+          />
+          <v-switch v-model="subscribed" label="Show Subscribed Communities" />
+        </v-col>
+      </v-row>
+      <v-list>
+        <template v-for="c in filteredCommunities">
+          <v-list-item v-if="subscribed ? c.your_follow : true" :key="c.id">
+            <v-list-item-action v-if="$auth.loggedIn">
+              <TooltipButton
+                v-if="c.your_follow === null || c.your_follow === false"
+                icon="mdi-plus-circle-outline"
+                hover="Subscribe"
+                @click="subscribe(c.id)"
+              />
+              <TooltipButton
+                v-else
+                icon="mdi-minus-circle"
+                hover="Unsubscribe"
+                @click="unsubscribe(c.id)"
+              />
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>
+                <nuxt-link
+                  :class="
+                    $vuetify.theme.dark
+                      ? 'primary--text text--darken-2'
+                      : 'primary--text text--darken-4'
+                  "
+                  :to="'/communities/' + c.id"
+                >
+                  {{ c.name }}
+                </nuxt-link>
+                - {{ c.description }}
+              </v-list-item-title>
+              <v-list-item-subtitle>{{ c.host }}</v-list-item-subtitle>
+            </v-list-item-content>
+          </v-list-item>
+        </template>
+      </v-list>
+    </v-col>
+  </v-row>
 </template>
 <script>
 import TooltipButton from '@/components/TooltipButton'

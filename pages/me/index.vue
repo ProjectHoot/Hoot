@@ -1,70 +1,68 @@
 <template>
-  <v-container v-if="loaded">
-    <v-row v-if="$auth.loggedIn">
-      <v-col cols="12" md="6">
-        <v-card>
-          <v-card-title>Change Password</v-card-title>
-          <v-card-text>
-            <v-text-field
-              v-model="currentPassword"
-              type="password"
-              label="Current Password"
-            />
-            <v-text-field
-              v-model="newPassword"
-              type="password"
-              label="New Password"
-            />
-            <v-alert v-if="newPassword.length !== 0 && newPassword.length < 6">
-              <v-icon>mdi-alert-circle</v-icon>Must be at least 6 characters
-            </v-alert>
-            <v-text-field
-              v-model="verifyPassword"
-              type="password"
-              label="Verify New Password"
-            />
-            <v-alert v-if="newPassword !== verifyPassword">
-              <v-icon>mdi-alert-circle</v-icon>New passwords don't match
-            </v-alert>
-          </v-card-text>
-          <v-card-actions>
-            <v-btn :disabled="invalidPass" @click="submitChangePassword">
-              Apply
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-col>
-      <v-col cols="12" md="6">
-        <v-card>
-          <v-card-title>Change Your Description</v-card-title>
-          <v-card-text>
-            <v-textarea v-model="description" />
-          </v-card-text>
-          <v-card-actions>
-            <v-btn
-              :disabled="description === initialdescription"
-              @click="submitDescription"
-            >
-              Apply
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-col>
-    </v-row>
-    <v-row v-else>
-      <h1>You must be logged in to have a profile!</h1>
-    </v-row>
-  </v-container>
-  <v-container v-else>
-    <h1>Loading profile</h1>
-  </v-container>
+  <v-row justify="center">
+    <v-col md="9">
+      <v-row v-if="$auth.loggedIn">
+        <v-col cols="12" md="6">
+          <v-card outlined>
+            <v-card-title>Change Password</v-card-title>
+            <v-card-text>
+              <v-text-field
+                v-model="currentPassword"
+                type="password"
+                label="Current Password"
+              />
+              <v-text-field
+                v-model="newPassword"
+                type="password"
+                label="New Password"
+              />
+              <v-alert
+                v-if="newPassword.length !== 0 && newPassword.length < 6"
+              >
+                <v-icon>mdi-alert-circle</v-icon>Must be at least 6 characters
+              </v-alert>
+              <v-text-field
+                v-model="verifyPassword"
+                type="password"
+                label="Verify New Password"
+              />
+              <v-alert v-if="newPassword !== verifyPassword">
+                <v-icon>mdi-alert-circle</v-icon>New passwords don't match
+              </v-alert>
+            </v-card-text>
+            <v-card-actions>
+              <v-btn :disabled="invalidPass" @click="submitChangePassword">
+                Apply
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-col>
+        <v-col cols="12" md="6">
+          <v-card outlined>
+            <v-card-title>Change Your Description</v-card-title>
+            <v-card-text>
+              <v-textarea v-model="description" />
+            </v-card-text>
+            <v-card-actions>
+              <v-btn
+                :disabled="description === initialdescription"
+                @click="submitDescription"
+              >
+                Apply
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-col>
+      </v-row>
+      <v-row v-else>
+        <h1>You must be logged in to have a profile!</h1>
+      </v-row>
+    </v-col>
+  </v-row>
 </template>
 <script>
 export default {
   components: {},
-  asyncData({ $auth }) {
-    console.log('LOGGED IN', $auth.loggedIn)
-  },
   data() {
     return {
       currentPassword: '',

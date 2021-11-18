@@ -1,158 +1,92 @@
 <template>
-  <v-container fluid style="padding: 0">
-    <v-card v-if="community !== null">
-      <v-card-title> {{ community.name }}</v-card-title>
-      <v-card-subtitle>{{ community.description }}</v-card-subtitle>
-      <v-card-actions v-if="$auth.loggedIn">
-        <TooltipButton
-          v-if="
-            community.your_follow === null || community.your_follow === false
-          "
-          icon="mdi-plus-box"
-          hover="Subscribe"
-          @click="subscribe(community.id)"
-        />
-        <TooltipButton
-          v-else
-          icon="mdi-trash-can"
-          hover="Unsubscribe"
-          @click="unsubscribe(community.id)"
-        />
-        <TooltipButton
-          v-if="community.your_follow && community.your_follow.accepted"
-          hover="New Post"
-          icon="mdi-pencil"
-          @click="togglenewpost"
-        />
-        <TooltipButton
-          v-if="community.your_follow && community.your_follow.accepted"
-          hover="New Link"
-          icon="mdi-link"
-          @click="togglenewlink"
-        />
-      </v-card-actions>
-    </v-card>
-    <v-card v-if="showeditor">
-      <v-card-title>New Post</v-card-title>
-      <v-card-text>
-        <v-text-field v-model="posttitle" placeholder="Post Title" />
-        <Editor @submit="submit" />
-      </v-card-text>
-    </v-card>
-    <v-card v-if="showlinkinput">
-      <v-card-title>New Link</v-card-title>
-      <v-card-text>
-        <v-text-field v-model="posttitle" placeholder="Post Title" />
-        <form>
-          <input
-            v-model="linkinput"
-            class="linkinput"
-            type="text"
-            placeholder="Enter Url"
+  <v-list class="" dense two-line>
+    <template v-for="(post, index) in posts">
+      <v-list-item :key="index" style="padding-left: 0">
+        <v-list-item-action>
+          <TooltipButton
+            v-if="$auth.loggedIn"
+            :icon="post.your_vote ? 'mdi-cards-heart' : 'mdi-heart-outline'"
+            :hover="post.your_vote ? 'Un-love' : 'Love'"
+            @click="upVote(index)"
           />
-          <v-btn
-            :disabled="!isValidLinkForm()"
-            class="submitlinkbutton"
-            @click="submitlink"
+          <span
+            v-if="post.score !== null"
+            style="margin-left: auto; margin-right: auto"
           >
-            Submit
-          </v-btn>
-        </form>
-      </v-card-text>
-    </v-card>
-
-    <v-list v-if="!$fetchState.pending" dense two-line>
-      <template v-for="(post, index) in posts">
-        <v-list-item :key="index" style="padding-left: 0">
-          <v-list-item-action>
-            <TooltipButton
-              v-if="$auth.loggedIn"
-              :icon="post.your_vote ? 'mdi-cards-heart' : 'mdi-heart-outline'"
-              :hover="post.your_vote ? 'Un-love' : 'Love'"
-              @click="upVote(index)"
-            />
-            <span
-              v-if="post.score !== null"
-              style="margin-left: auto; margin-right: auto"
+            {{ post.score }}
+          </span>
+        </v-list-item-action>
+        <v-list-item-content>
+          <v-list-item-title>
+            <nuxt-link
+              :class="
+                $vuetify.theme.dark
+                  ? 'grey--text text--lighten-3'
+                  : 'grey--text text--darken-4'
+              "
+              class="text-h5 text-decoration-none"
+              :to="`/posts/${post.id}`"
             >
-              {{ post.score }}
+              {{ post.title }}
+            </nuxt-link>
+          </v-list-item-title>
+          <v-list-item-subtitle
+            :class="
+              $vuetify.theme.dark ? 'grey--text' : 'grey--text text--darken-4'
+            "
+          >
+            <span
+              class="font-weight-bold"
+              :class="
+                $vuetify.theme.dark
+                  ? 'grey--text text--lighten-1'
+                  : 'grey--text text--darken-2 '
+              "
+            >
+              <Username
+                :username="post.author.username"
+                :userid="post.author.id"
+              />@{{ post.author.host }}
             </span>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>
-              <nuxt-link
-                class="text-h5 text-decoration-none"
-                :to="`/posts/${post.id}`"
-              >
-                {{ post.title }}
-              </nuxt-link>
-            </v-list-item-title>
-            <v-list-item-subtitle>
-              <span class="text--secondary">
-                Posted
-                <since :timestamp="post.created" />
-                by
-                <Username
-                  :username="post.author.username"
-                  :userid="post.author.id"
-                />@{{ post.author.host }}
-                in
-                {{ post.community.name }}@{{ post.community.host }} ({{
-                  post.replies_count_total
-                }}
-                replies)
-              </span>
-            </v-list-item-subtitle>
-          </v-list-item-content>
-        </v-list-item>
-        <v-divider :key="index + 'divider'" />
-      </template>
-    </v-list>
-    <v-skeleton-loader v-else type="list-item-avatar-three-line@12">
-    </v-skeleton-loader>
-  </v-container>
+            in
+            <nuxt-link
+              style="text-decoration: none"
+              :to="`/communities/${post.community.id}`"
+              class="font-weight-bold"
+              :class="
+                $vuetify.theme.dark
+                  ? 'primary--text text--darken-2'
+                  : 'primary--text text--darken-4'
+              "
+            >
+              {{ post.community.name }}@{{ post.community.host }}
+            </nuxt-link>
+            ({{ post.replies_count_total }}
+            replies) &#8226;
+            <since :timestamp="post.created" />
+          </v-list-item-subtitle>
+        </v-list-item-content>
+      </v-list-item>
+      <v-divider :key="index + 'divider'" />
+    </template>
+  </v-list>
 </template>
 
 <script>
-import Username from '~/components/Username'
-import Since from '~/components/Since'
-import Editor from '~/components/Editor'
-import TooltipButton from '@/components/TooltipButton'
-
 export default {
-  components: {
-    Username,
-    Since,
-    Editor,
-    TooltipButton,
+  props: {
+    posts: {
+      type: Array,
+      default: () => [],
+    },
+    community: {
+      type: Object,
+      default: () => ({}),
+    },
   },
   data() {
     return {
-      thecols: '6',
-      posts: [],
-      tempposts: [],
-      community: null,
-      posttitle: '',
-      showeditor: false,
-      showlinkinput: false,
-      linkinput: '',
-    }
-  },
-  async fetch() {
-    if (this.$route.params.communityID === undefined) {
-      await this.loadDefaultPosts()
-    } else {
-      // Load community info
-      if (this.$auth.loggedIn) {
-        this.community = await this.$axios.$get(
-          `/communities/${this.$route.params.communityID}?include_your=true`
-        )
-      } else {
-        this.community = await this.$axios.$get(
-          `/communities/${this.$route.params.communityID}`
-        )
-      }
-      await this.loadPosts()
+      theCols: '6',
     }
   },
   methods: {
@@ -162,14 +96,6 @@ export default {
       this.$axios
         .post(`/communities/${this.community.id}/follow`, postdata)
         .then(this.gotsubscribed)
-    },
-    togglenewlink() {
-      this.showlinkinput = !this.showlinkinput
-      this.showeditor = false
-    },
-    togglenewpost() {
-      this.showeditor = !this.showeditor
-      this.showlinkinput = false
     },
     gotunsubscribed() {
       this.$router.go()
@@ -183,47 +109,6 @@ export default {
       this.$axios
         .post(`/communities/${this.community.id}/unfollow`, postdata)
         .then(this.gotunsubscribed)
-    },
-    async loadPosts() {
-      let posts = []
-      if (this.$auth.loggedIn) {
-        posts = await this.$axios.get(
-          `/communities/${this.$route.params.communityID}/posts?include_your=true`
-        )
-      } else {
-        posts = await this.$axios.get(
-          `/communities/${this.$route.params.communityID}/posts`
-        )
-      }
-      this.posts = posts.map((post) => {
-        if (post.score === undefined) {
-          return { ...post, score: 0 }
-        }
-        return post
-      })
-    },
-    async loadDefaultPosts() {
-      if (this.$auth.loggedIn) {
-        // fetch posts from what you're following, then fetch posts from what you aren't
-        const [
-          { value: followingPosts = [] },
-          {
-            value: { items: otherPosts = [] },
-          },
-        ] = await Promise.allSettled([
-          this.$axios.$get(`/users/~me/following:posts?include_your=true`),
-          this.$axios.$get(`/posts?include_yours=true`),
-        ])
-        this.posts.push(...followingPosts, ...otherPosts)
-      } else {
-        const { items: posts } = await this.$axios.$get(`/posts`)
-        this.posts = posts.map((post) => {
-          if (post.score === undefined) {
-            return { ...post, score: 0 }
-          }
-          return post
-        })
-      }
     },
     upVote(index) {
       if (!this.posts[index].your_vote) {
@@ -243,10 +128,10 @@ export default {
       this.$router.push(`/posts/${postID}`)
     },
     preview(post) {
-      return post.postContent.substring(0, this.thecols * 10)
+      return post.postContent.substring(0, this.theCols * 10)
     },
     submit(editorcontent) {
-      if (this.posttitle === '') {
+      if (this.postTitle === '') {
         this.alerttext = 'Your post needs a title.'
         this.alerttimeout = 5000
         this.showalert = true
@@ -261,7 +146,7 @@ export default {
       const submission = {}
       submission.content_markdown = editorcontent
       submission.community = this.community.id
-      submission.title = this.posttitle
+      submission.title = this.postTitle
 
       this.$axios
         .post(`/posts`, submission)
@@ -269,7 +154,7 @@ export default {
         .catch(this.submitfailed)
     },
     submitlink() {
-      if (this.posttitle === '') {
+      if (this.postTitle === '') {
         this.alerttext = 'Your post needs a title.'
         this.alerttimeout = 5000
         this.showalert = true
@@ -291,7 +176,7 @@ export default {
       const submission = {}
       submission.href = this.linkinput
       submission.community = this.community.id
-      submission.title = this.posttitle
+      submission.title = this.postTitle
 
       this.$axios
         .post(`/posts`, submission)
@@ -310,7 +195,7 @@ export default {
       return url.protocol === 'http:' || url.protocol === 'https:'
     },
     isValidLinkForm() {
-      return this.posttitle && this.isValidUrl(this.linkinput)
+      return this.postTitle && this.isValidUrl(this.linkinput)
     },
     submitsuccess() {
       this.alerttext = 'Post submitted!'
