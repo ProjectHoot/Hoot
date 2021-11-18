@@ -15,11 +15,11 @@ The answer is it doesn't have to! Just use Hoot and you'll be able to:
 
 All this and more can be YOURS if you run a Hoot node today!
 
-#OK but what is hoot?
+# OK but what is hoot?
 
 Hoot is a software front-end for lotide that provides a clean, modern, and user-friendly interface. Hoot provides a [Nuxt.js](https://nuxtjs.org/) app, that can be built to use either Server Side Rendering(SSR) or for static file hosting 
 
-#FAQ
+# FAQ
 
 Q: Do I *need* to self-host in order for me to use hoot? I can't afford computers.
 
