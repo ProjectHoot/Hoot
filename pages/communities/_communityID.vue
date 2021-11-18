@@ -1,20 +1,23 @@
 <template>
   <v-row justify="center">
     <v-col lg="9">
-      <v-card flat v-if="community !== null">
+      <v-card v-if="community !== null" flat>
         <v-card-title>
           {{ community.name }}
         </v-card-title>
         <v-card-subtitle>{{ community.description }}</v-card-subtitle>
         <v-card-actions v-if="$auth.loggedIn">
-          <TooltipButton
+          <v-btn
             v-if="
               community.your_follow === null || community.your_follow === false
             "
-            icon="mdi-plus-box"
-            hover="Subscribe"
+            color="primary"
+            depressed
             @click="subscribe(community.id)"
-          />
+          >
+            <v-icon left> mdi-plus-box </v-icon>
+            Subscribe
+          </v-btn>
 
           <v-btn
             v-if="community.your_follow && community.your_follow.accepted"
@@ -34,11 +37,11 @@
             New Link
           </v-btn>
           <v-btn
-            text
             v-if="
               !community.your_follow === null ||
               !community.your_follow === false
             "
+            text
             @click="unsubscribe(community.id)"
           >
             <v-icon left> mdi-minus-circle </v-icon>

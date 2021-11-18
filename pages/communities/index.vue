@@ -39,7 +39,14 @@
             </v-list-item-action>
             <v-list-item-content>
               <v-list-item-title>
-                <nuxt-link :to="'/communities/' + c.id">
+                <nuxt-link
+                  :class="
+                    $vuetify.theme.dark
+                      ? 'primary--text text--darken-2'
+                      : 'primary--text text--darken-4'
+                  "
+                  :to="'/communities/' + c.id"
+                >
                   {{ c.name }}
                 </nuxt-link>
                 - {{ c.description }}
