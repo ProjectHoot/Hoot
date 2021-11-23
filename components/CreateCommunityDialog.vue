@@ -16,14 +16,39 @@
       </v-btn>
     </template>
     <v-card>
-      <v-card-title>Create New Community</v-card-title>
-      <v-card-text>
-        <v-text-field v-model="name" label="Community Name" hide-details />
-      </v-card-text>
-      <v-card-actions class="justify-end">
-        <v-btn text @click="cancel"> cancel </v-btn>
-        <v-btn v-bind="loading" color="primary" @click="create"> create </v-btn>
-      </v-card-actions>
+      <v-tabs v-model="tab">
+        <v-tab> Create Local Community </v-tab>
+        <v-tab> Add Remote Community </v-tab>
+      </v-tabs>
+      <v-tabs-items v-model="tab">
+        <v-tab-item>
+          <v-card-text>
+            <v-text-field v-model="name" label="Community Name" hide-details />
+          </v-card-text>
+          <v-card-actions class="justify-end">
+            <v-btn text @click="cancel"> cancel </v-btn>
+            <v-btn v-bind="loading" color="primary" @click="createLocal">
+              create
+            </v-btn>
+          </v-card-actions>
+        </v-tab-item>
+        <v-tab-item>
+          <v-card-text>
+            <v-text-field
+              v-model="remoteId"
+              label="Remote Community"
+              placeholder="community@www.example.com"
+              hide-details
+            />
+          </v-card-text>
+          <v-card-actions class="justify-end">
+            <v-btn text @click="cancel"> cancel </v-btn>
+            <v-btn v-bind="loading" color="primary" @click="createRemote">
+              create
+            </v-btn>
+          </v-card-actions>
+        </v-tab-item>
+      </v-tabs-items>
     </v-card>
   </v-dialog>
 </template>
@@ -33,16 +58,24 @@ export default {
   data() {
     return {
       name: '',
+      remoteId: '',
       showDialog: false,
+      tab: 0,
     }
   },
   computed: {
     ...mapState('communities', ['loading']),
   },
   methods: {
-    ...mapActions('communities', ['createCommunity']),
-    async create() {
+    ...mapActions('communities', ['createCommunity', 'createRemoteCommunity']),
+    async createLocal() {
       const [response] = await this.createCommunity({ name: this.name })
+      this.$router.push(`/communities/${response.data.community.id}`)
+    },
+    async createRemote() {
+      const [response] = await this.createRemoteCommunity({
+        remoteId: this.remoteId,
+      })
       this.$router.push(`/communities/${response.data.community.id}`)
     },
     cancel() {

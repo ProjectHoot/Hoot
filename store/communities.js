@@ -27,4 +27,13 @@ export const actions = {
       })
     )
   },
+  async createRemoteCommunity({ commit }, { remoteId }) {
+    return await makeRequest(
+      commit,
+      this.$axios({
+        url: `/actors:lookup/${remoteId}`,
+        method: 'GET',
+      })
+    )
+  },
 }
