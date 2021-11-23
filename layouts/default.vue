@@ -69,7 +69,7 @@
       <TooltipButton
         :icon="$vuetify.theme.dark ? 'mdi-flashlight-off' : 'mdi-flashlight'"
         hover="Toggle Dark/Light Mode"
-        @click="toggleDark"
+        @click="setDark(!$vuetify.theme.dark)"
       /><v-menu
         v-model="searchwindow"
         :close-on-click="false"
@@ -149,13 +149,20 @@ export default {
     searchwindow: false,
     drawer: false,
   }),
-  fetch() {
+  mounted() {
     const isDarkTheme = this.$auth.$storage.getUniversal('isDarkTheme')
-    this.$vuetify.theme.dark = isDarkTheme
+    const darkMediaQuery = window.matchMedia('(prefers-color-scheme: light)')
+    if (isDarkTheme !== undefined) {
+      this.setDark(isDarkTheme)
+    } else {
+      darkMediaQuery.matches ? this.setDark(false) : this.setDark(true)
+    }
+    darkMediaQuery.addEventListener('change', (e) => {
+      this.$vuetify.theme.dark = !this.$vuetify.theme.dark
+    })
   },
   methods: {
-    toggleDark() {
-      const val = !this.$vuetify.theme.dark
+    setDark(val) {
       this.$vuetify.theme.dark = val
       this.$auth.$storage.setUniversal('isDarkTheme', val)
     },

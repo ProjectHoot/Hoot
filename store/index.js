@@ -14,6 +14,9 @@ export const mutations = {
 export const actions = {
   nuxtServerInit(_, { $auth, $vuetify }) {
     // updating vuetify theme here so the theme is consistent during SSR
-    $vuetify.theme.dark = $auth.$storage.getUniversal('isDarkTheme')
+    const isDarkTheme = $auth.$storage.getUniversal('isDarkTheme')
+    if (isDarkTheme !== undefined) {
+      $vuetify.theme.dark = isDarkTheme
+    }
   },
 }
